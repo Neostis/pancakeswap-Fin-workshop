@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers } from "ethers"
 import abi from "../ABI_CONTRACT/abi.json";
 
 declare global {

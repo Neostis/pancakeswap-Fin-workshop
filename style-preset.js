@@ -15,6 +15,8 @@ module.exports = {
       'redbg': "#D70000",
       'textblue': '#2F308C',
       'bluebg': '#061F61',
+      'bluesky': '#0144CC',
+      'blueclean': '#086BF0',
     }
     
   }

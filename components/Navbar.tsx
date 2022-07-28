@@ -33,49 +33,25 @@ function Navbar() {
                  
                   <Link
                     href="/"
-                    // activeClass="/"
-                    // to="/"
-                    // smooth={true}
-                    // offset={50}
-                    // duration={500}
                     className="cursor-pointer text-blue-600 font-semibold px-3 py-2 text-md hover:font-black"
                   >
-                    {/* <a>Home</a> */}
                     Home
                   </Link>
                   <Link
                     href="/swap"
-                    // activeClass="swap"
-                    // to="swap"
-                    // smooth={true}
-                    // offset={50}
-                    // duration={500}
                     className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Swap
                   </Link>
                   <Link
                     href="/addliquidity"
-                    // activeClass="work"
-                    // to="work"
-                    // smooth={true}
-                    // offset={50}
-                    // duration={500}
-                    
-                  >
-                    <a className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-
+                    className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                     Addliquidity
-                    </a>
+    
                   </Link>
                   <button
-                    // href="/addliquidity"
-                    // activeClass="contact"
-                    // to="contact"
-                    // smooth={true}
-                    // offset={50}
-                    // duration={500}
-                    className="p-4  font-serif text-textwhite bg-bluebg outline outline-offset-1 text-back-700 sm: text-sm outline-[#2f5c6d] bg-red rounded-lg  drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                    // className="p-4  font-serif text-textwhite bg-bluebg outline outline-offset-1 text-back-700 sm: text-sm outline-[#2f5c6d] bg-red rounded-lg  drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                    className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                   >
                     Connect Wallet
                   </button>
@@ -128,7 +104,7 @@ function Navbar() {
             </div>
           </div>
         </div>
-        {/* 
+        
         <Transition
           show={isOpen}
           enter="transition ease-out duration-100 transform"
@@ -144,55 +120,30 @@ function Navbar() {
                 ref={ref}
                 className="bg-white px-2 pt-2 pb-3 space-y-1 sm:px-3"
               >
-                <Link
-                  href="/"
-                  activeClass="home"
-                  to="home"
-                  smooth={true}
-                  offset={50}
-                  duration={500}
-                  className="cursor-pointer hover:bg-blue-600 text-black hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/about"
-                  activeClass="about"
-                  to="about"
-                  smooth={true}
-                  offset={50}
-                  duration={500}
-                  className="cursor-pointer hover:bg-blue-600 text-black hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                >
-                  About
-                </Link>
+              <Link
+                    href="/"
+                    className="cursor-pointer text-blue-600 font-semibold px-3 py-2 text-md hover:font-black"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/swap"
+                    className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Swap
+                  </Link>
+                  <Link
+                    href="/addliquidity"
+                  >
+                    <a className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium">
 
-                <Link
-                  href="/work"
-                  activeClass="work"
-                  to="work"
-                  smooth={true}
-                  offset={50}
-                  duration={500}
-                  className="cursor-pointer hover:bg-blue-600 text-black hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                >
-                  Projects
-                </Link>
-                <Link
-                  href="/contact"
-                  activeClass="work"
-                  to="work"
-                  smooth={true}
-                  offset={50}
-                  duration={500}
-                  className="cursor-pointer hover:bg-blue-600 text-black hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                >
-                  Contact
-                </Link>
+                    Addliquidity
+                    </a>
+                  </Link>
               </div>
             </div>
           )}
-        </Transition> */}
+        </Transition>
       </nav>
     </div>
   );

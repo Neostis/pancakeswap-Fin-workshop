@@ -1,12 +1,51 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react";
 // import SwapComponent from "../components/SwapComponent";
 // import ViewSwap from "../view/ViewSwap";
+import {
+  connectWallet,
+  getBalance,
+  getChainId,
+  getEthereum,
+  getProvider,
+  getWalletAddress,
+} from "../services/wallet-service";
+
 const swap = () => {
+  const [address, setAddress] = useState<string | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
+
+  const loadAccountData = async () => {
+    const addr = getWalletAddress();
+    setAddress(addr);
+    const chainId = await getChainId();
+    setNetwork(chainId);
+  };
+
+  useEffect(() => {
+    loadAccountData();
+    const handleAccountChange = (addresses: string[]) => {
+      setAddress(addresses[0]);
+
+      loadAccountData();
+    };
+
+    const handleNetworkChange = (networkId: string) => {
+      setNetwork(networkId);
+
+      loadAccountData();
+    };
+
+    getEthereum()?.on("accountsChanged", handleAccountChange);
+
+    getEthereum()?.on("chainChanged", handleNetworkChange);
+  }, []);
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
       {/* แก้grid for set width */}
       <div className="justify-self-center bg-blueWidget rounded-3xl ">
+        <div>{address}</div>
         <div className="w-96 rounded-lg  font-bold">
           <div>
             <div className="">

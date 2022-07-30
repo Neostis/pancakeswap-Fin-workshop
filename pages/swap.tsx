@@ -1,6 +1,6 @@
-import React from "react";
-import Navbar from "../components/Navbar";
-import { useEffect, useState } from "react";
+import React from 'react';
+import Navbar from '../components/Navbar';
+import { useEffect, useState } from 'react';
 // import SwapComponent from "../components/SwapComponent";
 // import ViewSwap from "../view/ViewSwap";
 import {
@@ -11,6 +11,7 @@ import {
   getProvider,
   getWalletAddress,
 } from "../services/wallet-service";
+
 
 const swap = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -40,6 +41,7 @@ const swap = () => {
     getEthereum()?.on("accountsChanged", handleAccountChange);
 
     getEthereum()?.on("chainChanged", handleNetworkChange);
+
   }, []);
   return (
     <div className="bg-bgtheme py-10 w-auto grid">

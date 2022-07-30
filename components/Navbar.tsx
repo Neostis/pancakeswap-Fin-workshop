@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Transition } from "@headlessui/react";
 // import { Link } from "react-scroll";
@@ -14,6 +15,7 @@ import {
   getProvider,
   getWalletAddress,
 } from "../services/wallet-service";
+
 
 function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
@@ -40,10 +42,10 @@ function Navbar() {
 
       loadAccountData();
     };
-
     getEthereum()?.on("accountsChanged", handleAccountChange);
 
     getEthereum()?.on("chainChanged", handleNetworkChange);
+
   }, []);
   return (
     <div>
@@ -79,10 +81,12 @@ function Navbar() {
                     Swap
                   </Link>
                   <Link
+
                     href="/liquidity"
                     className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Addliquidity
+
                   </Link>
                   {address ? (
                     <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
@@ -118,12 +122,7 @@ function Navbar() {
                     stroke="currentColor"
                     aria-hidden="true"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 ) : (
                   <svg
@@ -134,12 +133,7 @@ function Navbar() {
                     stroke="currentColor"
                     aria-hidden="true"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 )}
               </button>
@@ -158,10 +152,12 @@ function Navbar() {
         >
           {(ref) => (
             <div className="md:hidden" id="mobile-menu">
+
               <div
                 ref={ref}
                 className="bg-white px-2 pt-2 pb-3 space-y-1 sm:px-3"
               >
+
                 <Link
                   href="/"
                   className="cursor-pointer text-blue-600 font-semibold px-3 py-2 text-md hover:font-black"
@@ -174,7 +170,9 @@ function Navbar() {
                 >
                   Swap
                 </Link>
+
                 <Link href="/liquidity">
+
                   <a className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                     Addliquidity
                   </a>

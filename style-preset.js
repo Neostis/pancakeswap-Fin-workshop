@@ -13,6 +13,7 @@ module.exports = {
       'lightblue': '#4EABDD',
       'textwhite': '#FFFFFF',
       'textblack': '#0C1831',
+      'textinvalid' : '#717171',
       'redbg': "#D70000",
       'textblue': '#2F308C',
       'bluebg': '#061F61',
@@ -24,6 +25,7 @@ module.exports = {
       'blueswapdark' : '#002360',
       'bgtheme': '#507DAC',
       'roundedbuttonswap' : '#2A5295',
+      
     }
     
   }

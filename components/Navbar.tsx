@@ -6,7 +6,14 @@ import * as ethers from 'ethers';
 import Image from 'next/image';
 import Logo from '../public/fin-logo.png';
 import { Button } from 'react-scroll';
-import { connectWallet, getChainId, getEthereum, getWalletAddress } from '../services/wallet-service';
+import {
+  connectWallet,
+  getBalance,
+  getChainId,
+  getEthereum,
+  getProvider,
+  getWalletAddress,
+} from '../services/wallet-service';
 
 function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
@@ -33,7 +40,6 @@ function Navbar() {
 
       loadAccountData();
     };
-
     getEthereum()?.on('accountsChanged', handleAccountChange);
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
@@ -75,7 +81,7 @@ function Navbar() {
                     href="/addLiquidity"
                     className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    AddLiquidity
+                    Addliquidity
                   </Link>
                   {address ? (
                     <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
@@ -154,6 +160,7 @@ function Navbar() {
                 >
                   Swap
                 </Link>
+
                 <Link href="/addLiquidity">
                   <a className="cursor-pointer hover:bg-blue-600 text-black hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                     Addliquidity

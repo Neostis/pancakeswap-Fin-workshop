@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
-import abi from "../ABI_CONTRACT/abi.json";
+import { ethers } from 'ethers';
+import abi from '../ABI_CONTRACT/abi.json';
 
 declare global {
   interface Window {
@@ -8,7 +8,7 @@ declare global {
 }
 
 export const getEthereum = () => {
-  if (typeof window.ethereum !== "undefined") {
+  if (typeof window.ethereum !== 'undefined') {
     return window.ethereum;
   }
   return null;
@@ -24,7 +24,7 @@ export const getProvider = () => {
 
 export const connectWallet = () => {
   return getEthereum()?.request({
-    method: "eth_requestAccounts",
+    method: 'eth_requestAccounts',
   }) as Promise<string>;
 };
 
@@ -33,14 +33,13 @@ export const getWalletAddress = () => {
 };
 
 export const getChainId = () => {
-  return getEthereum()?.request({ method: "eth_chainId" }) as Promise<string>;
+  return getEthereum()?.request({ method: 'eth_chainId' }) as Promise<string>;
 };
 
 export const getBalance = (address: string) => {
   const provider = getProvider();
   return provider?.getBalance(address);
 };
-
 
 // -------------------readDataFromSmartContract----------------------------
 // export const getName = () => {
@@ -49,7 +48,7 @@ export const getBalance = (address: string) => {
 //   return nameContract.name;
 // };
 // const usdtContract = new ethers.Contract(usdtAddress, usdtAbi, provider);
-    
+
 // const name = await usdtContract.name()
 // const symbol = await usdtContract.symbol()
 // const decimals = await usdtContract.decimals()

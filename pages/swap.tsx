@@ -18,13 +18,7 @@ import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 
 const swap = () => {
-<<<<<<< HEAD
-  const addr_contract = "0x3e1a682E5a80e822dE1137d21791E066a6d8da0d";
 
-  const [address, setAddress] = useState<string | null>(null);
-  const [network, setNetwork] = useState<string | null>(null);
-  const [amountToken1, setAmountToken1] = useState<string | null>(null);
-=======
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
@@ -32,7 +26,6 @@ const swap = () => {
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
   const [amountToken1, setAmountToken1] = useState<number>(0);
->>>>>>> 0993bd53262eeddbaf792241867b54426237dd14
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -70,14 +63,6 @@ const swap = () => {
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-<<<<<<< HEAD
-    const txResponse = await contract
-      .publicMint(ethers.utils.parseEther(amountIn.toString()), ethers.utils.parseEther(amountOutMin.toString()), path, to, deadline)
-
-  }
-
-
-=======
     const path = [token2.address, token1.address]; //An array of token addresses
     const to = wallet.address; // should be a checksummed recipient address
     const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
@@ -89,10 +74,9 @@ const swap = () => {
       deadline,
     );
   };
->>>>>>> 0993bd53262eeddbaf792241867b54426237dd14
 
 
-<<<<<<< HEAD
+
 return (
   <div className="bg-bgtheme py-10 w-auto grid">
     {/* แก้grid for set width */}
@@ -103,7 +87,6 @@ return (
           <div className="">
             <h1 className="px-5 text-textwhite">Swap</h1>
           </div>
-
           <div className="">
             <div className="py-2 flex-column w-auto grid text-textblack ">
               <input className="w-11/12 h-14 rounded-lg justify-self-center"></input>
@@ -137,7 +120,7 @@ return (
               >
                 Swap
               </button>
-=======
+
             <div className="">
               <div className="py-2 flex-column w-auto grid text-textblack ">
                 <select className="d-inline mx-2" color="blue" id="token1-select">
@@ -190,7 +173,6 @@ return (
                 </button>
               </div>
               <div className="py-2"></div>
->>>>>>> 0993bd53262eeddbaf792241867b54426237dd14
             </div>
             <div className="py-2"></div>
           </div>
@@ -201,6 +183,7 @@ return (
     <div className="py-10"></div>
     <div className="py-10"></div>
     <div className="py-10"></div>
+  </div>
   </div>
 )
 }

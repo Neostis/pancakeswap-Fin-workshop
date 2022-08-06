@@ -1,6 +1,8 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { useEffect, useState } from 'react';
+import * as ethers from "ethers";
+import abi_contract from "../ABI_CONTRACT/abi.json";
 // import SwapComponent from "../components/SwapComponent";
 // import ViewSwap from "../view/ViewSwap";
 import {
@@ -11,9 +13,12 @@ import {
   getProvider,
   getWalletAddress,
 } from "../services/wallet-service";
+import path from 'path';
 
 
 const swap = () => {
+const addr_contract = "0x3e1a682E5a80e822dE1137d21791E066a6d8da0d";
+
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
@@ -43,6 +48,25 @@ const swap = () => {
     getEthereum()?.on("chainChanged", handleNetworkChange);
 
   }, []);
+
+  const swapExactTokensForTokensHandle = async(
+    amountIn: number,
+    amountOutMin: number,
+    path: string,
+    to: string,
+    deadline: string ,
+  ) => {
+    const provider = getProvider()!;
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+    const txResponse = await contract
+      .publicMint(ethers.utils.parseEther(amountIn.toString()),  ethers.utils.parseEther(amountOutMin.toString()), path, to, deadline )
+
+  }
+  }
+
+
+
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
       {/* แก้grid for set width */}

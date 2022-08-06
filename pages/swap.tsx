@@ -78,6 +78,16 @@ const swap = () => {
     console.log();
   };
 
+  const getSelectTokens1 = () => {
+    let selectedToken = document.getElementById('list-token1')?.value;
+    console.log("token1: ", selectedToken);
+
+  }
+  const getSelectTokens2 = () => {
+    let selectedToken = document.getElementById('list-token2')?.value;
+    console.log("token2: ", selectedToken);
+
+  }
 
 
 return (
@@ -126,7 +136,7 @@ return (
 
             <div className="">
               <div className="py-2 flex-column w-auto grid text-textblack ">
-                <select className="d-inline mx-2" color="blue" id="token1-select">
+                <select className="d-inline mx-2" color="blue" id="list-token1" onChange={getSelectTokens1}>
                   <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
                   <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
                   <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
@@ -147,7 +157,7 @@ return (
                 </button>
               </div>
               <div className="flex-column w-auto grid text-textblack">
-                <select className="d-inline mx-2" color="blue" id="token2-select">
+                <select className="d-inline mx-2" color="blue" id="list-token2" onChange={getSelectTokens2}>
                   <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
                   <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
                   <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>

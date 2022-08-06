@@ -57,21 +57,24 @@ const swap = () => {
     amountOutMin: number,
     path: string,
     to: string,
-    deadline: string,
+    // deadline: string,
   ) => {
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    const path = [token2.address, token1.address]; //An array of token addresses
-    const to = wallet.address; // should be a checksummed recipient address
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+    // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
+    // const to = signer.getAddress(); // should be a checksummed recipient address
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+
     const txResponse = await contract.swapExactTokensForTokens(
       ethers.utils.parseEther(amountIn.toString()),
       ethers.utils.parseEther(amountOutMin.toString()),
       path,
-      to,
+      signer.getAddress(),
       deadline,
     );
+
+    console.log();
   };
 
   return (
@@ -123,14 +126,13 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                   type="button"
                   onClick={(e) => {
-                    swapExactTokensForTokensHandle(
-                      Number(amountToken1),
+                    swapExactTokensForTokensHandle();
+                    Number(amountToken1),
                       0,
-                      // ETH_TOKENS[0].address.toString() + ',' + ETH_TOKENS[1].address.toString(),
-                      '0xF76d21633506159be58395affBA7173BF66D4E9B, 0x205c473567c7C60C502AfE3B39E9BE872d5Ee2d7',
-                      '0xFfF28ce226130d0005e43960428b1eD81b384e3F',
-                      '10000000000000',
-                    );
+                      '[' + ETH_TOKENS[0].address + ',' + ETH_TOKENS[1].address + ']',
+                      // '0xF76d21633506159be58395affBA7173BF66D4E9B, 0x205c473567c7C60C502AfE3B39E9BE872d5Ee2d7',
+                      '0xFfF28ce226130d0005e43960428b1eD81b384e3F';
+                    // '10000000000000',
                   }}
                 >
                   Swap

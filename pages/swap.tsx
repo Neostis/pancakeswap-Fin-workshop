@@ -10,7 +10,8 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
-} from '../services/wallet-service';
+} from "../services/wallet-service";
+
 
 const swap = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -37,9 +38,10 @@ const swap = () => {
       loadAccountData();
     };
 
-    getEthereum()?.on('accountsChanged', handleAccountChange);
+    getEthereum()?.on("accountsChanged", handleAccountChange);
 
-    getEthereum()?.on('chainChanged', handleNetworkChange);
+    getEthereum()?.on("chainChanged", handleNetworkChange);
+
   }, []);
   return (
     <div className="bg-bgtheme py-10 w-auto grid">

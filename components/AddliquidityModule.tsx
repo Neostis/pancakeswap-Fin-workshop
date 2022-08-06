@@ -1,8 +1,6 @@
 import React from 'react';
-import Popup from '../components/popup';
-
 import { ModuleType } from '../types/module.type';
-
+import Navbar from './Navbar';
 import { useEffect, useState } from 'react';
 // import SwapComponent from "../components/SwapComponent";
 // import ViewSwap from "../view/ViewSwap";
@@ -25,30 +23,12 @@ export default function AddliquidityModule({
   setModule: (module: ModuleType) => void;
   account: string;
 }) {
-  const [tokenPair, setTokenPair] = useState<{}>({
-    token1: {
-      name: 'USD Theter',
-      symbol: 'USDT',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
-      address: '0x07de306FF27a2B630B1141956844eB1552B956B5',
-    },
-    token2: {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
-      address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
-    },
-  });
-
   const [address, setAddress] = useState<string | null>(null);
   const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
   const [addliquidityLoading, setAddliquidityLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
   const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
-
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);
@@ -76,16 +56,6 @@ export default function AddliquidityModule({
   }, []);
 
   // const approveHandler = async () => {
-
-  const [isShown, setIsShown] = useState(false);
-
-  const handleClick = (event: any) => {
-    // 👇️ toggle shown state
-    setIsShown((current) => !current);
-
-    // 👇️ or simply set it to true
-    // setIsShown(true);
-  };
   //   setApproveLoading(true);
   //   try {
   //     await tokenService.approve("DAI").then((tx) => tx?.wait());
@@ -155,81 +125,60 @@ export default function AddliquidityModule({
     }
   };
   return (
-    <div className="bg-bgtheme py-10 flex-column w-auto grid">
-      {/* <div>
-            {getNetworkTokens(network).map((token) => (
-              <div key={token.symbol} className="flex mb-4">
-                <div>
-                  <img
-                    onClick={() => addTokenToWallet(token)}
-                    src={token.imageUrl}
-                    className="w-12 h-12 mr-8 cursor-pointer"
-                  />
-                </div>
-                <div>
-                  <div>
-                    {token.name} ({token.symbol})
-                  </div>
-                  <div>
-                    {tokenBalances[token.symbol] || 0} {token.symbol}
-                  </div>
-                </div>
+    <div className="bg-bgtheme py-10 w-auto grid">
+      liquidity
+      <h1>{address}</h1>
+      <div>
+        {getNetworkTokens(network).map((token) => (
+          <div key={token.symbol} className="flex mb-4">
+            <div>
+              <img
+                onClick={() => addTokenToWallet(token)}
+                src={token.imageUrl}
+                className="w-12 h-12 mr-8 cursor-pointer"
+              />
+            </div>
+            <div>
+              <div>
+                {token.name} ({token.symbol})
               </div>
-            ))}
-          </div> */}
-      {/* <div> */}
-      <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
+              <div>
+                {tokenBalances[token.symbol] || 0} {token.symbol}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="justify-self-center bg-blueWidget rounded-3xl ">
         <div>{address}</div>
-        <div className="rounded-lg  font-bold">
+        <div className="w-96 rounded-lg  font-bold">
           <div>
             <div className="">
-              <h1 className="px-5 text-textwhite h-12">Addquidity</h1>
+              <h1 className="px-5 text-textwhite">Addquidity</h1>
             </div>
 
-            <div className="flex-column w-auto grid">
-              <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
-                <div className="grid grid-cols-5 text-textblack ">
-                  <input className="col-span-4 h-20  rounded-lg "></input>
-                  <div className="grid grid-cols-8 col-span-1">
-                    <img
-                      onClick={handleClick}
-                      src={tokenPair.token1.imageUrl}
-                      className="col-span-3 w-12 h-12 cursor-pointer"
-                    />
-                    <div className="col-span-2">{tokenPair.token1.symbol}</div>˅
-                  </div>
-                  {/* <div>{tokenBalances[tokenPair.token1.symbol] || 0}</div> */}
-                </div>
-                {/* <input className="w-6/12 h-14 rounded-lg justify-self-start "></input> */}
+            <div className="">
+              <div className="py-2 flex-column w-auto grid text-textblack ">
+                <input className="w-11/12 h-14 rounded-lg justify-self-center"></input>
               </div>
-              <div className=" flex-column w-auto grid text-textblack h-12">
-                <button className="">+</button>
+              <div className=" flex-column w-auto grid text-textblack ">
+                <button
+                  className="w-6 h-6 rounded-full justify-self-center
+                       bg-textwhite hover:bg-bluesky outline outline-[#f3991c] absolute"
+                >
+                  ↓
+                </button>
               </div>
-
-              {/* <div className="">{tokenBalances[tokenPair.token2.symbol] || 0}</div> */}
-
-              <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
-                <div className="grid grid-cols-5 text-textblack ">
-                  <input className="col-span-4 h-20  rounded-lg "></input>
-                  <div className="grid grid-cols-8 col-span-1">
-                    <img
-                      onClick={handleClick}
-                      src={tokenPair.token2.imageUrl}
-                      className="col-span-3 w-12 h-12 cursor-pointer"
-                    />
-
-                    <div className="col-span-2">{tokenPair.token2.symbol}</div>
-                    <div className="col-span-2">˅</div>
-                  </div>
-                </div>
+              <div className="flex-column w-auto grid text-textblack">
+                <input className="w-11/12 h-14 rounded-lg justify-self-center"></input>
               </div>
-              <div className="py-10 flex-column w-auto grid text-textblack ">
+              <div className="py-4 flex-column w-auto grid text-textblack ">
                 <button
                   className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton 
-       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                from-blueswapdark  to-blueswapbutton
+       text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                 >
-                  Invalid Pair
+                  Addquidity
                 </button>
               </div>
               <div className="py-2"></div>
@@ -241,8 +190,6 @@ export default function AddliquidityModule({
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
-      {isShown && <div></div>}
-      {isShown && <Popup />}
     </div>
   );
 }

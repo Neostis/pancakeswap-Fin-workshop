@@ -33,6 +33,15 @@ const swap = () => {
     setNetwork(chainId);
   };
 
+  const getSelectTokens1 = () => {
+    setToken1(document.getElementById('list-token1')?.value);
+    console.log('token1: ', document.getElementById('list-token1')?.value);
+  };
+  const getSelectTokens2 = () => {
+    setToken2(document.getElementById('list-token2')?.value);
+    console.log('token2: ', document.getElementById('list-token2')?.value);
+  };
+
   useEffect(() => {
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
@@ -54,23 +63,29 @@ const swap = () => {
 
   const swapExactTokensForTokensHandle = async (
     amountIn: number,
-    amountOutMin: number,
-    path: string,
-    to: string,
+    path1: string,
+    path2: string,
+    // amountOutMin: number,
+    // path: string,
+    // to: string,
     // deadline: string,
   ) => {
+    // const amountIn = 10;
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
     // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
-    // const to = signer.getAddress(); // should be a checksummed recipient address
+    const path = [token1, token2]; //An array of token addresses
+
+    const to = signer.getAddress(); // should be a checksummed recipient address
     const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
 
     const txResponse = await contract.swapExactTokensForTokens(
       ethers.utils.parseEther(amountIn.toString()),
-      ethers.utils.parseEther(amountOutMin.toString()),
+      0,
+      // ethers.utils.parseEther(amountOutMin.toString()),
       path,
-      signer.getAddress(),
+      to,
       deadline,
     );
 
@@ -90,7 +105,7 @@ const swap = () => {
 
             <div className="">
               <div className="py-2 flex-column w-auto grid text-textblack ">
-                <select className="d-inline mx-2" color="blue" id="token1-select">
+                <select className="d-inline mx-2" color="blue" id="list-token1" onChange={getSelectTokens1}>
                   <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
                   <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
                   <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
@@ -111,7 +126,7 @@ const swap = () => {
                 </button>
               </div>
               <div className="flex-column w-auto grid text-textblack">
-                <select className="d-inline mx-2" color="blue" id="token2-select">
+                <select className="d-inline mx-2" color="blue" id="list-token2" onChange={getSelectTokens2}>
                   <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
                   <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
                   <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
@@ -126,13 +141,16 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                   type="button"
                   onClick={(e) => {
-                    swapExactTokensForTokensHandle();
-                    Number(amountToken1),
-                      0,
-                      '[' + ETH_TOKENS[0].address + ',' + ETH_TOKENS[1].address + ']',
+                    swapExactTokensForTokensHandle(
+                      Number(amountToken1),
+                      token1,
+                      token2,
+                      // 0,
+                      // '[' + ETH_TOKENS[0].address + ',' + ETH_TOKENS[1].address + ']',
                       // '0xF76d21633506159be58395affBA7173BF66D4E9B, 0x205c473567c7C60C502AfE3B39E9BE872d5Ee2d7',
-                      '0xFfF28ce226130d0005e43960428b1eD81b384e3F';
-                    // '10000000000000',
+                      // '0xFfF28ce226130d0005e43960428b1eD81b384e3F';
+                      // '10000000000000',);
+                    );
                   }}
                 >
                   Swap

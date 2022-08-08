@@ -12,7 +12,7 @@ import {
 import { getNetworkName, getNetworkCurrency, getNetworkTokens } from '../constants/network-id';
 import { formatEther, formatUnits } from 'ethers/lib/utils';
 import { Token } from '../types/token.type';
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
+import { ETH_TOKENS } from '../constants/tokens';
 
 export default function popup() {
   const [showModal, setShowModal] = useState(true);
@@ -46,6 +46,9 @@ export default function popup() {
   };
 
   useEffect(() => {
+    ETH_TOKENS.map((e) => {
+      console.log(e.name, e.imageUrl);
+    });
     loadAccountData();
     const handleAccountChange = (address: string[]) => {
       loadAccountData();
@@ -66,16 +69,15 @@ export default function popup() {
     // });
     //
   }, []);
-
-  // {/* <button
-  //       className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-  //       type="button"
-  //       onClick={() => setShowModal(true)}
-  //     >
-  //       {/* Open regular modal */}
-  //     </button> */}
   return (
     <>
+      <button
+        className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+        type="button"
+        onClick={() => setShowModal(true)}
+      >
+        {/* Open regular modal */}
+      </button>
       {showModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -84,20 +86,25 @@ export default function popup() {
               <div className="bg-textwhite border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="">
-                  {/* <select className="d-inline mx-2" color="blue" id="list-token1"> */}
-                  {/* ETH_TOKENS.map((e) => {<option value={e.address} > </option> }); */}
-                  <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
-                  <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
-                  <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
-                  {/* </select> */}
-                  {/* <Dropdown className="d-inline mx-2">
+                  <Dropdown className="d-inline mx-2">
                     <Dropdown.Toggle id="dropdown-autoclose-true">Default Dropdown</Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item href="#">Menu Item</Dropdown.Item>
-                      <Dropdown.Item href="#">Menu Item</Dropdown.Item>
-                      <Dropdown.Item href="#">Menu Item</Dropdown.Item>
+                      {/* <Dropdown.Item href="#">afas</Dropdown.Item> */}
+                      {ETH_TOKENS.map((e) => {
+                        return (
+                          <div key={e.address}>
+                            <Dropdown.Item>
+                              <img src={e.imageUrl}></img>
+                              {e.symbol}
+                            </Dropdown.Item>
+                          </div>
+                        );
+                      })}
+
+                      {/* <Dropdown.Item href="#">Menu Item</Dropdown.Item>
+                      <Dropdown.Item href="#">Menu Item</Dropdown.Item> */}
                     </Dropdown.Menu>
-                  </Dropdown> */}
+                  </Dropdown>
                   {/* <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                     onClick={() => setShowModal(false)}

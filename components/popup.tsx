@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
-import * as ethers from "ethers";
+import * as ethers from 'ethers';
 import {
   connectWallet,
   getWalletAddress,
@@ -8,15 +8,11 @@ import {
   getEthereum,
   getBalance,
   getProvider,
-} from "../services/wallet-service";
-import {
-  getNetworkName,
-  getNetworkCurrency,
-  getNetworkTokens,
-} from "../constants/network-id";
-import { formatEther, formatUnits } from "ethers/lib/utils";
-import { Token } from "../types/token.type";
-import { ETH_TOKENS } from "../constants/tokens";
+} from '../services/wallet-service';
+import { getNetworkName, getNetworkCurrency, getNetworkTokens } from '../constants/network-id';
+import { formatEther, formatUnits } from 'ethers/lib/utils';
+import { Token } from '../types/token.type';
+import { ETH_TOKENS } from '../constants/tokens';
 
 export default function popup() {
   const [showModal, setShowModal] = useState(true);
@@ -51,9 +47,9 @@ export default function popup() {
   };
 
   useEffect(() => {
-    ETH_TOKENS.map(e => {
+    ETH_TOKENS.map((e) => {
       console.log(e.name, e.imageUrl);
-    })
+    });
     loadAccountData();
     const handleAccountChange = (address: string[]) => {
       loadAccountData();
@@ -64,11 +60,11 @@ export default function popup() {
       setNetwork(networkId);
     };
 
-    getEthereum()?.on("accountsChanged", handleAccountChange);
+    getEthereum()?.on('accountsChanged', handleAccountChange);
     // window.ethereum.on('accountsChanged', (address: string[]) => {
     //     setAddress(address[0]);
     // });
-    getEthereum()?.on("chainChanged", handleNetworkChange);
+    getEthereum()?.on('chainChanged', handleNetworkChange);
     // window.ethereum.on('chainChanged', (networkId: string) => {
     //     setNetwork(networkId);
     // });
@@ -94,7 +90,7 @@ export default function popup() {
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              {/*content*/}
+            
                   <input placeholder='search token'></input>
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}

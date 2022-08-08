@@ -99,6 +99,7 @@ const swap = () => {
         <div className="w-96 rounded-lg  font-bold">
           <div className="py-2 flex-column w-auto grid text-textblack ">
             <select className="d-inline mx-2" color="blue" id="list-token1" onChange={getSelectTokens1}>
+              {/* ETH_TOKENS.map((e) => {<option value={e.address} > </option> }); */}
               <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
               <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
               <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>

@@ -20,8 +20,8 @@ import { ETH_TOKENS } from "../constants/tokens";
 
 export default function popup() {
   const [showModal, setShowModal] = useState(true);
-  const [address, setAddress] = useState<string| null>(null);
-  const [network, setNetwork] = useState<string| null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(getWalletAddress());
@@ -50,6 +50,9 @@ export default function popup() {
   };
 
   useEffect(() => {
+    ETH_TOKENS.map(e => {
+      console.log(e.name, e.imageUrl);
+    })
     loadAccountData();
     const handleAccountChange = (address: string[]) => {
       loadAccountData();
@@ -90,8 +93,21 @@ export default function popup() {
                   <Dropdown className="d-inline mx-2">
                     <Dropdown.Toggle id="dropdown-autoclose-true">Default Dropdown</Dropdown.Toggle>
                     <Dropdown.Menu>
+                      {/* <Dropdown.Item href="#">afas</Dropdown.Item> */}
+                      {
+                        ETH_TOKENS.map((e) => {
+                          return (
+                            <div key={e.address}>
+
+                              <Dropdown.Item ><img src={e.imageUrl}></img>{e.symbol}</Dropdown.Item>
+                            </div>
+
+                          )
+                        }
+                        )
+                      }
+
                       {/* <Dropdown.Item href="#">Menu Item</Dropdown.Item>
-                      <Dropdown.Item href="#">Menu Item</Dropdown.Item>
                       <Dropdown.Item href="#">Menu Item</Dropdown.Item> */}
                     </Dropdown.Menu>
                   </Dropdown>

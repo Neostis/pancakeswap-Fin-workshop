@@ -1,9 +1,75 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import * as ethers from "ethers";
+import {
+  connectWallet,
+  getWalletAddress,
+  getChainId,
+  getEthereum,
+  getBalance,
+  getProvider,
+} from "../services/wallet-service";
+import {
+  getNetworkName,
+  getNetworkCurrency,
+  getNetworkTokens,
+} from "../constants/network-id";
+import { formatEther, formatUnits } from "ethers/lib/utils";
+import { Token } from "../types/token.type";
+import { ETH_TOKENS } from "../constants/tokens";
 
 export default function popup() {
   const [showModal, setShowModal] = useState(true);
+  const [address, setAddress] = useState<string| null>(null);
+  const [network, setNetwork] = useState<string| null>(null);
+  const loadAccountData = async () => {
+    const addr = getWalletAddress();
+    setAddress(getWalletAddress());
 
+    const chainId = await getChainId();
+    setNetwork(chainId);
+
+    // const bal = await getBalance(addr);
+    // if (bal) {
+    //   setBalance(formatEther(bal));
+    // }
+    const tokenList = getNetworkTokens(chainId);
+
+    // const tokenBalList = await Promise.all(
+    //   tokenList.map((token) =>
+    //     getTokenBalance(token.address, addr).then((res) =>
+    //       formatUnits(res, token.decimals)
+    //     )
+    //   )
+    // );
+
+    // tokenList.forEach((token, i) => {
+    //   tokenBalances[token.symbol] = tokenBalList[i];
+    // });
+    // setTokenBalances({ ...tokenBalances });
+  };
+
+  useEffect(() => {
+    loadAccountData();
+    const handleAccountChange = (address: string[]) => {
+      loadAccountData();
+      setAddress(address[0]);
+    };
+    const handleNetworkChange = (networkId: string) => {
+      loadAccountData();
+      setNetwork(networkId);
+    };
+
+    getEthereum()?.on("accountsChanged", handleAccountChange);
+    // window.ethereum.on('accountsChanged', (address: string[]) => {
+    //     setAddress(address[0]);
+    // });
+    getEthereum()?.on("chainChanged", handleNetworkChange);
+    // window.ethereum.on('chainChanged', (networkId: string) => {
+    //     setNetwork(networkId);
+    // });
+    //
+  }, []);
   return (
     <>
       <button

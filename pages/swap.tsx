@@ -34,17 +34,24 @@ const swap = () => {
 
   const getSelectTokens1 = (e) => {
     // setToken1(document.getElementById('list-token1')?.value);
-    // console.log('token1: ', document.getElementById('list-token1')?.value);\
-    setToken1(e.address);
-
-    console.log(e.address);
+    // console.log('token1: ', document.getElementById('list-token1')?.value);
+    if (e !== null) {
+      if (e.address !== token2) {
+        setToken1(e.address);
+        console.log(e.address);
+      }
+    }
   };
 
   const getSelectTokens2 = (e) => {
     // setToken2(document.getElementById('list-token2')?.value);
     // console.log('token2: ', document.getElementById('list-token2')?.value);
-    setToken2(e.address);
-    console.log(e.address);
+    if (e !== null) {
+      if (e.address !== token1) {
+        setToken2(e.address);
+        console.log(e.address);
+      }
+    }
   };
 
   useEffect(() => {
@@ -128,6 +135,8 @@ const swap = () => {
               }}
               options={option}
               autoFocus
+              placeholder="Select Token 1"
+              isClearable={true}
             />
 
             {/* {ETH_TOKENS.map((e) => {
@@ -165,6 +174,8 @@ const swap = () => {
               }}
               options={option}
               autoFocus
+              placeholder="Select Token 2"
+              isClearable={true}
             />
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center"></span>

@@ -3,6 +3,7 @@ import React from 'react';
 import { ModuleType } from '../types/module.type';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
+import { formatEther } from "ethers/lib/utils";
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
@@ -31,6 +32,8 @@ export default function AddliquidityModule({
   }
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
   const [address, setAddress] = useState<string | null>(null);
+  const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
+  const [balanceOfToken2, setBalanceOfToken2] = useState<string | null>(null);
   const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
   const [addliquidityLoading, setAddliquidityLoading] = useState(false);
@@ -43,23 +46,42 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = (e: any) => {
+  const getSelectTokens1 = async(e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
+        const balances = await getTokenBalance(e.address, address!);
+        setBalanceOfToken1(formatEther(balances));
+        console.log(balances);
+
         setToken1(e.address);
+        
         console.log(e.address);
       }
     }
   };
 
-  const getSelectTokens2 = (e: any) => {
+  const getSelectTokens2 = async(e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
+        const balances = await getTokenBalance(e.address, address!);
+        setBalanceOfToken2(formatEther(balances));
+        console.log(balances);
         setToken2(e.address);
         console.log(e.address);
       }
     }
   };
+
+
+  const getTokenBalance = async (
+    tokenAddress: string,
+    ownerAddress: string
+  ) => {
+    const abi = ["function balanceOf(address owner) view returns (uint256)"];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.balanceOf(ownerAddress);
+  };
+
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -270,16 +292,16 @@ export default function AddliquidityModule({
                 >
                   Approve
                 </button>
-                <div className="py-10 flex-column w-auto grid text-textblack ">
-                  <button
-                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+              <div className="py-10 flex-column w-auto grid text-textblack ">
+                <button
+                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                   from-blueswapdark  to-blueswapbutton 
        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     onClick={handleButton}
-                  >
-                    Supply
-                  </button>
-                </div>
+                >
+                  Supply
+                </button>
+              </div>
                 <ToastContainer
                   position="top-right"
                   autoClose={5000}
@@ -291,18 +313,20 @@ export default function AddliquidityModule({
                   draggable
                   pauseOnHover
                 />
-                <div className="py-2"></div>
-              </div>
+              <div className="py-2"></div>
             </div>
           </div>
         </div>
-        <div className="py-10"></div>
-        <div className="py-10"></div>
-        <div className="py-10"></div>
-        <div className="py-10"></div>
-        {/* {isShown && <div></div>}
-      {isShown && <Popup />} */}
       </div>
+      <div className="py-10"></div>
+      {balanceOfToken1}
+      {balanceOfToken2}
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      {/* {isShown && <div></div>}
+      {isShown && <Popup />} */}
+    </div>
     </div>
   );
 }

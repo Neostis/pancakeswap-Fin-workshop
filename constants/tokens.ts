@@ -25,7 +25,7 @@ export const ETH_TOKENS = [
     symbol: 'USDC',
     decimals: 6,
     imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
-    address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
+    address: '0xF76d21633506159be58395affBA7173BF66D4E9B',
   },
 ];
 

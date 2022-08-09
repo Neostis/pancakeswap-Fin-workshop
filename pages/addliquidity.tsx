@@ -46,7 +46,7 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = async(e: any) => {
+  const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
@@ -54,13 +54,13 @@ export default function AddliquidityModule({
         console.log(balances);
 
         setToken1(e.address);
-        
+
         console.log(e.address);
       }
     }
   };
 
-  const getSelectTokens2 = async(e: any) => {
+  const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
         const balances = await getTokenBalance(e.address, address!);
@@ -108,6 +108,29 @@ export default function AddliquidityModule({
       progress: undefined,
     });
   };
+
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log(token1)
+  //     console.log(token2)
+  //     console.log(amountADesired)
+  //     console.log(amountBDesired)
+  //     if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) {
+  //       console.log("true");
+  //     }
+  //     else {
+  //       console.log("false")
+  //     }
+
+
+  //   }, 3000);
+
+
+  //   return () => clearInterval(interval)
+
+
+  // }, [])
 
   useEffect(() => {
     loadAccountData();
@@ -274,59 +297,72 @@ export default function AddliquidityModule({
                   </div>
                 </div>
               </div>
-              <div className="py-10 flex-column w-auto grid text-textblack ">
-                <button
-                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton 
-       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                  onClick={test}
-                >
-                  Invalid Pair
-                </button>
-              </div>
-              <div className="py-10 flex-column w-auto grid text-textblack ">
-                <button
-                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton 
-       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                >
-                  Approve
-                </button>
-              <div className="py-10 flex-column w-auto grid text-textblack ">
-                <button
-                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton 
-       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                    onClick={handleButton}
-                >
-                  Supply
-                </button>
-              </div>
-                <ToastContainer
-                  position="top-right"
-                  autoClose={5000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                />
-              <div className="py-2"></div>
+
+  
+              {token1 && token2 && amountADesired && amountBDesired ? (
+                 <div className="py-10 flex-column w-auto grid text-textblack ">
+                    <button
+                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                      from-blueswapdark  to-blueswapbutton 
+                      text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                      >
+                      Approve
+                    </button>
+                  <div className="py-10 flex-column w-auto grid text-textblack ">
+                      <button
+                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                        onClick={handleButton}
+                        >
+                        Supply
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+
+                  <div className="py-10 flex-column w-auto grid text-textblack ">
+                    <button
+                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+    from-blueswapdark  to-blueswapbutton 
+text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+onClick={test}
+>
+                      Invalid Pair
+                    </button>
+                  </div>
+
+                 
+                    
+                    )}
+
+
+
+
+
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={5000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                    />
+                    <div className="py-2"></div>
+                  </div>
             </div>
           </div>
         </div>
+        <div className="py-10"></div>
+        {balanceOfToken1}
+        {balanceOfToken2}
+        <div className="py-10"></div>
+        <div className="py-10"></div>
+        <div className="py-10"></div>
+
       </div>
-      <div className="py-10"></div>
-      {balanceOfToken1}
-      {balanceOfToken2}
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      {/* {isShown && <div></div>}
-      {isShown && <Popup />} */}
-    </div>
-    </div>
-  );
-}
+  )
+};

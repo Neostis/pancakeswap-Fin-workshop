@@ -25,22 +25,6 @@ export default function AddliquidityModule({
   setModule: (module: ModuleType) => void;
   account: string;
 }) {
-  const [tokenPair, setTokenPair] = useState<{}>({
-    token1: {
-      name: 'USD Theter',
-      symbol: 'USDT',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
-      address: '0x07de306FF27a2B630B1141956844eB1552B956B5',
-    },
-    token2: {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
-      address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
-    },
-  });
 
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
   const [address, setAddress] = useState<string | null>(null);
@@ -57,7 +41,7 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = (e) => {
+  const getSelectTokens1 = (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
         setToken1(e.address);
@@ -66,7 +50,7 @@ export default function AddliquidityModule({
     }
   };
 
-  const getSelectTokens2 = (e) => {
+  const getSelectTokens2 = (e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
         setToken2(e.address);
@@ -101,14 +85,8 @@ export default function AddliquidityModule({
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
-  // const [isShown, setIsShown] = useState(false);
 
-  // const handleClick = (event: any) => {
-  //   // 👇️ toggle shown state
-  //   setIsShown((current) => !current);
-  // };
-
-  const addLiquidityHandle = async (path1: string, path2: string, amountADesired: number, amountBDesired: number) => {
+  const addLiquidityHandle = async () => {
 
     // tokenA (address)
 
@@ -130,8 +108,7 @@ export default function AddliquidityModule({
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
-    // const path = [token1, token2]; //An array of token addresses
+
 
     const to = signer.getAddress(); // should be a checksummed recipient address
     const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
@@ -145,7 +122,6 @@ export default function AddliquidityModule({
       0,
       to,
       deadline,
-      0,
       // ethers.utils.parseEther(amountOutMin.toString()),
 
 
@@ -267,6 +243,23 @@ export default function AddliquidityModule({
        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                 >
                   Invalid Pair
+                </button>
+              </div>
+              <div className="py-10 flex-column w-auto grid text-textblack ">
+                <button
+                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                  from-blueswapdark  to-blueswapbutton 
+       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                >
+                  Approve
+                </button>
+              <div className="py-10 flex-column w-auto grid text-textblack ">
+                <button
+                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                  from-blueswapdark  to-blueswapbutton 
+       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                >
+                  Supply
                 </button>
               </div>
               <div className="py-2"></div>

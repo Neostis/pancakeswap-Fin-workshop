@@ -111,8 +111,8 @@ export default function AddliquidityModule({
     // to (address)
 
     // deadline (uint256)
-    const amountADesired = 10;
-    const amountBDesired = 10;
+    // const amountADesired = 10;
+    // const amountBDesired = 10;
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);

@@ -3,8 +3,7 @@ import Navbar from '../components/Navbar';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
-// import SwapComponent from "../components/SwapComponent";
-// import ViewSwap from "../view/ViewSwap";
+import Select from 'react-select';
 import {
   connectWallet,
   getBalance,
@@ -22,8 +21,8 @@ const swap = () => {
 
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-  const [token1, setToken1] = useState<string | null>(null);
-  const [token2, setToken2] = useState<string | null>(null);
+  const [token1, setToken1] = useState();
+  const [token2, setToken2] = useState();
   const [amountToken1, setAmountToken1] = useState<number>(0);
 
   const loadAccountData = async () => {
@@ -33,13 +32,26 @@ const swap = () => {
     setNetwork(chainId);
   };
 
-  const getSelectTokens1 = () => {
-    setToken1(document.getElementById('list-token1')?.value);
-    console.log('token1: ', document.getElementById('list-token1')?.value);
+  const getSelectTokens1 = (e) => {
+    // setToken1(document.getElementById('list-token1')?.value);
+    // console.log('token1: ', document.getElementById('list-token1')?.value);
+    if (e !== null) {
+      if (e.address !== token2) {
+        setToken1(e.address);
+        console.log(e.address);
+      }
+    }
   };
-  const getSelectTokens2 = () => {
-    setToken2(document.getElementById('list-token2')?.value);
-    console.log('token2: ', document.getElementById('list-token2')?.value);
+
+  const getSelectTokens2 = (e) => {
+    // setToken2(document.getElementById('list-token2')?.value);
+    // console.log('token2: ', document.getElementById('list-token2')?.value);
+    if (e !== null) {
+      if (e.address !== token1) {
+        setToken2(e.address);
+        console.log(e.address);
+      }
+    }
   };
 
   useEffect(() => {
@@ -91,6 +103,24 @@ const swap = () => {
       console.log();
     };
 
+  // const [selectedOption, setSelectedOption] = useState(null);
+
+  let option = [{ value: '', label: '', address: '' }];
+  ETH_TOKENS.map((e) =>
+    option.push({
+      value: e.symbol,
+      label: (
+        <div>
+          <img src={e.imageUrl} height="30px" width="30px" />
+          {e.symbol}
+        </div>
+      ),
+      address: e.address,
+    }),
+  );
+  option.shift();
+  // console.log(option);
+
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
       {/* แก้grid for set width */}
@@ -98,12 +128,29 @@ const swap = () => {
         <div>{address}</div>
         <div className="w-96 rounded-lg  font-bold">
           <div className="py-2 flex-column w-auto grid text-textblack ">
-            <select className="d-inline mx-2" color="blue" id="list-token1" onChange={getSelectTokens1}>
-              {/* ETH_TOKENS.map((e) => {<option value={e.address} > </option> }); */}
-              <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
-              <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
-              <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
-            </select>
+            <Select
+              defaultValue={token1}
+              onChange={(e) => {
+                getSelectTokens1(e);
+              }}
+              options={option}
+              autoFocus
+              placeholder="Select Token 1"
+              isClearable={true}
+            />
+
+            {/* {ETH_TOKENS.map((e) => {
+              return (
+                <Select
+                  defaultValue={selectedOption}
+                  onChange={(e) => {
+                    test(e);
+                  }}
+                  options={option}
+                  autoFocus
+                />
+              );
+            })} */}
 
             <input
               className="w-11/12 h-14 rounded-lg justify-self-center"
@@ -120,11 +167,16 @@ const swap = () => {
             </button>
           </div>
           <div className="flex-column w-auto grid text-textblack">
-            <select className="d-inline mx-2" color="blue" id="list-token2" onChange={getSelectTokens2}>
-              <option value={ETH_TOKENS[0].address}>{ETH_TOKENS[0].symbol}</option>
-              <option value={ETH_TOKENS[1].address}>{ETH_TOKENS[1].symbol}</option>
-              <option value={ETH_TOKENS[2].address}>{ETH_TOKENS[2].symbol}</option>
-            </select>
+            <Select
+              defaultValue={token2}
+              onChange={(e) => {
+                getSelectTokens2(e);
+              }}
+              options={option}
+              autoFocus
+              placeholder="Select Token 2"
+              isClearable={true}
+            />
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center"></span>
           </div>

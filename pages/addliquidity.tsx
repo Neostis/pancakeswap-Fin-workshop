@@ -35,12 +35,12 @@ export default function AddliquidityModule({
 
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  const [amountToken1, setAmountToken1] = useState<number>(0);
-  const [amountToken2, setAmountToken2] = useState<number>(0);
+  // const [amountToken1, setAmountToken1] = useState<number>(0);
+  // const [amountToken2, setAmountToken2] = useState<number>(0);
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = (e) => {
+  const getSelectTokens1 = (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
         setToken1(e.address);
@@ -49,7 +49,7 @@ export default function AddliquidityModule({
     }
   };
 
-  const getSelectTokens2 = (e) => {
+  const getSelectTokens2 = (e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
         setToken2(e.address);
@@ -66,7 +66,8 @@ export default function AddliquidityModule({
   };
 
   const handleButton = () => {
-    console.log(token1, token2, amountToken1, amountToken2);
+    // console.log(token1, token2, amountADesired, amountBDesired);
+    if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) addLiquidityHandle();
   };
 
   useEffect(() => {
@@ -88,14 +89,7 @@ export default function AddliquidityModule({
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
-  // const [isShown, setIsShown] = useState(false);
-
-  // const handleClick = (event: any) => {
-  //   // 👇️ toggle shown state
-  //   setIsShown((current) => !current);
-  // };
-
-  const addLiquidityHandle = async (path1: string, path2: string, amountADesired: number, amountBDesired: number) => {
+  const addLiquidityHandle = async () => {
     // tokenA (address)
 
     // tokenB (address)
@@ -116,13 +110,11 @@ export default function AddliquidityModule({
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
-    // const path = [token1, token2]; //An array of token addresses
 
     const to = signer.getAddress(); // should be a checksummed recipient address
     const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
 
-    const txResponse = await contract.swapExactTokensForTokens(
+    const txResponse = await contract.addLiquidity(
       token1,
       token2,
       ethers.utils.parseEther(amountADesired.toString()),
@@ -131,7 +123,6 @@ export default function AddliquidityModule({
       0,
       to,
       deadline,
-      0,
       // ethers.utils.parseEther(amountOutMin.toString()),
     );
 
@@ -181,7 +172,7 @@ export default function AddliquidityModule({
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
-        <div>{address}</div>
+        {/* <div>{address}</div> */}
         <div className="rounded-lg  font-bold">
           <div>
             <div className="">
@@ -193,8 +184,8 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   <input
                     className="col-span-4 h-20  rounded-lg "
-                    value={amountToken1}
-                    onChange={(e) => setAmountToken1(e.target.value)}
+                    value={amountADesired}
+                    onChange={(e) => setAmountADesired(e.target.value)}
                   ></input>
 
                   <div className="grid grid-cols-6 col-span-1">
@@ -223,8 +214,8 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   <input
                     className="col-span-4 h-20  rounded-lg "
-                    value={amountToken2}
-                    onChange={(e) => setAmountToken2(e.target.value)}
+                    value={amountBDesired}
+                    onChange={(e) => setAmountBDesired(e.target.value)}
                   ></input>
 
                   <div className="grid grid-cols-6 col-span-1">
@@ -254,17 +245,36 @@ export default function AddliquidityModule({
                   Invalid Pair
                 </button>
               </div>
-              <div className="py-2"></div>
+              <div className="py-10 flex-column w-auto grid text-textblack ">
+                <button
+                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                  from-blueswapdark  to-blueswapbutton 
+       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                >
+                  Approve
+                </button>
+                <div className="py-10 flex-column w-auto grid text-textblack ">
+                  <button
+                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                  from-blueswapdark  to-blueswapbutton 
+       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                    onClick={handleButton}
+                  >
+                    Supply
+                  </button>
+                </div>
+                <div className="py-2"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      {/* {isShown && <div></div>}
+        <div className="py-10"></div>
+        <div className="py-10"></div>
+        <div className="py-10"></div>
+        <div className="py-10"></div>
+        {/* {isShown && <div></div>}
       {isShown && <Popup />} */}
+      </div>
     </div>
   );
 }

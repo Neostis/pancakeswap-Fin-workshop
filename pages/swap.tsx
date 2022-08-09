@@ -23,7 +23,7 @@ const swap = () => {
   const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  const [amountToken1, setAmountToken1] = useState<number>(0);
+  const [amountToken1, setAmountToken1] = useState<number | null>(null);
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -38,7 +38,7 @@ const swap = () => {
     if (e !== null) {
       if (e.address !== token2) {
         setToken1(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
   };
@@ -49,9 +49,15 @@ const swap = () => {
     if (e !== null) {
       if (e.address !== token1) {
         setToken2(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
+  };
+
+  const handleSwap = (amountIn: number, path1: string, path2: string) => {
+    // console.log(amountIn, path1, path2);
+
+    if (amountIn !== null && path1 !== null && path2 !== null) swapExactTokensForTokensHandle(amountIn, path1, path2);
   };
 
   useEffect(() => {
@@ -73,7 +79,7 @@ const swap = () => {
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
-  const swapExactTokensForTokensHandle = async (path1: string, path2: string) =>
+  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
     // amountIn: number,
     // amountOutMin: number,
     // path: string,
@@ -81,7 +87,7 @@ const swap = () => {
     // deadline: string,
 
     {
-      const amountIn = 10;
+      // const amountIn = 10;
       const provider = getProvider()!;
       const signer = provider.getSigner();
       const contract = new ethers.Contract(addr_contract, abi_contract, signer);
@@ -125,7 +131,7 @@ const swap = () => {
     <div className="bg-bgtheme py-10 w-auto grid">
       {/* แก้grid for set width */}
       <div className="justify-self-center bg-blueWidget rounded-3xl ">
-        <div>{address}</div>
+        {/* <div>{address}</div> */}
         <div className="w-96 rounded-lg  font-bold">
           <div className="py-2 flex-column w-auto grid text-textblack ">
             <Select
@@ -187,7 +193,7 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                swapExactTokensForTokensHandle(
+                handleSwap(
                   Number(amountToken1),
                   token1,
                   token2,

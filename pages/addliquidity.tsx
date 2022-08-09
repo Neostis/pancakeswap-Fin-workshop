@@ -3,7 +3,7 @@ import React from 'react';
 import { ModuleType } from '../types/module.type';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
-import { formatEther } from "ethers/lib/utils";
+import { formatEther } from 'ethers/lib/utils';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
@@ -46,7 +46,7 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = async (e: any) => {
+  const getSelectTokens1 = async  (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
@@ -60,28 +60,23 @@ export default function AddliquidityModule({
     }
   };
 
-  const getSelectTokens2 = async (e: any) => {
+  const getSelectTokens2 = async  (e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken2(formatEther(balances));
         console.log(balances);
         setToken2(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
   };
 
-
-  const getTokenBalance = async (
-    tokenAddress: string,
-    ownerAddress: string
-  ) => {
-    const abi = ["function balanceOf(address owner) view returns (uint256)"];
+  const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
+    const abi = ['function balanceOf(address owner) view returns (uint256)'];
     const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
     return contract.balanceOf(ownerAddress);
   };
-
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -92,7 +87,15 @@ export default function AddliquidityModule({
 
   const handleButton = () => {
     // console.log(token1, token2, amountADesired, amountBDesired);
-    if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) {
+
+    if (
+      token1 !== undefined &&
+      token2 !== undefined &&
+      amountADesired !== null &&
+      amountBDesired !== null &&
+      amountADesired > 0 &&
+      amountBDesired > 0
+    ) {
       addLiquidityHandle();
     }
   };
@@ -174,7 +177,7 @@ export default function AddliquidityModule({
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
 
     const to = signer.getAddress(); // should be a checksummed recipient address
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
     const txResponse = await contract.addLiquidity(
       token1,
@@ -185,10 +188,17 @@ export default function AddliquidityModule({
       0,
       to,
       deadline,
-      // ethers.utils.parseEther(amountOutMin.toString()),
     );
 
-    console.log();
+    toast.success('Success!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   let option = [{ value: '', label: '', address: '' }];

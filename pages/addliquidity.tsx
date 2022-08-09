@@ -298,71 +298,71 @@ export default function AddliquidityModule({
                 </div>
               </div>
 
-  
+
               {token1 && token2 && amountADesired && amountBDesired ? (
-                 <div className="py-10 flex-column w-auto grid text-textblack ">
-                    <button
-                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                <div className="py-10 flex-column w-auto grid text-textblack ">
+                  <button
+                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                       from-blueswapdark  to-blueswapbutton 
                       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                      >
-                      Approve
-                    </button>
-                  <div className="py-10 flex-column w-auto grid text-textblack ">
-                      <button
-                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                        from-blueswapdark  to-blueswapbutton 
-                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                        onClick={handleButton}
-                        >
-                        Supply
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-
+                  >
+                    Approve
+                  </button>
                   <div className="py-10 flex-column w-auto grid text-textblack ">
                     <button
                       className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-    from-blueswapdark  to-blueswapbutton 
-text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-onClick={test}
->
-                      Invalid Pair
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                      onClick={handleButton}
+                    >
+                      Supply
                     </button>
                   </div>
+                </div>
+              ) : (
 
-                 
-                    
-                    )}
+                <div className="py-10 flex-column w-auto grid text-textblack ">
+                  <button
+                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+    from-blueswapdark  to-blueswapbutton 
+text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                    onClick={test}
+                  >
+                    Invalid Pair
+                  </button>
+                </div>
+
+
+
+              )}
 
 
 
 
 
-                    <ToastContainer
-                      position="top-right"
-                      autoClose={5000}
-                      hideProgressBar={false}
-                      newestOnTop={false}
-                      closeOnClick
-                      rtl={false}
-                      pauseOnFocusLoss
-                      draggable
-                      pauseOnHover
-                    />
-                    <div className="py-2"></div>
-                  </div>
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+              <div className="py-2"></div>
             </div>
           </div>
         </div>
-        <div className="py-10"></div>
-        {balanceOfToken1}
-        {balanceOfToken2}
-        <div className="py-10"></div>
-        <div className="py-10"></div>
-        <div className="py-10"></div>
-
       </div>
+      <div className="py-10"></div>
+      {balanceOfToken1}
+      {balanceOfToken2}
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+
+    </div>
   )
 };

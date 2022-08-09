@@ -2,6 +2,8 @@ import React from 'react';
 // import Popup from '../components/popup';
 import { ModuleType } from '../types/module.type';
 import { useEffect, useState } from 'react';
+import * as ethers from 'ethers';
+import abi_contract from "../ABI_CONTRACT/abi.json";
 import { Token } from '../types/token.type';
 import {
   connectWallet,
@@ -40,6 +42,7 @@ export default function AddliquidityModule({
     },
   });
 
+  const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
   const [address, setAddress] = useState<string | null>(null);
   const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
@@ -51,6 +54,8 @@ export default function AddliquidityModule({
   const [token2, setToken2] = useState();
   const [amountToken1, setAmountToken1] = useState<number>(0);
   const [amountToken2, setAmountToken2] = useState<number>(0);
+  const [amountADesired, setAmountADesired] = useState<number | null>(null);
+  const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
   const getSelectTokens1 = (e) => {
     if (e !== null) {
@@ -102,6 +107,62 @@ export default function AddliquidityModule({
   //   // 👇️ toggle shown state
   //   setIsShown((current) => !current);
   // };
+
+  const addLiquidityHandle = async (path1: string, path2: string, amountADesired: number, amountBDesired: number) => {
+
+    // tokenA (address)
+
+    // tokenB (address)
+
+    // amountADesired (uint256)
+
+    // amountBDesired (uint256)
+
+    // amountAMin (uint256)
+
+    // amountBMin (uint256)
+
+    // to (address)
+
+    // deadline (uint256)
+    const amountADesired = 10;
+    const amountBDesired = 10;
+    const provider = getProvider()!;
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+    // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
+    // const path = [token1, token2]; //An array of token addresses
+
+    const to = signer.getAddress(); // should be a checksummed recipient address
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+
+    const txResponse = await contract.swapExactTokensForTokens(
+      token1,
+      token2,
+      ethers.utils.parseEther(amountADesired.toString()),
+      ethers.utils.parseEther(amountBDesired.toString()),
+      0,
+      0,
+      to,
+      deadline,
+      0,
+      // ethers.utils.parseEther(amountOutMin.toString()),
+
+
+
+    );
+
+    console.log();
+  };
+
+
+
+
+
+
+
+
+
 
   let option = [{ value: '', label: '', address: '' }];
   ETH_TOKENS.map((e) =>

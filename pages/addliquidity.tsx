@@ -244,11 +244,29 @@ export default function AddliquidityModule({
             <div className="flex-column w-auto grid">
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  <input
-                    className="col-span-4 h-20  rounded-lg "
-                    value={amountADesired}
-                    onChange={(e) => setAmountADesired(e.target.value)}
-                  ></input>
+                  {token1 ? (
+
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      type="number"
+                      value={amountADesired}
+                      onChange={(e) => (Number(e.target.value) > Number(balanceOfToken1) ? (balanceOfToken1) : (setAmountADesired(e.target.value)))}
+                    ></input>
+
+                  )
+
+                    : (
+
+
+                      <input
+                        className="col-span-4 h-20  rounded-lg "
+                        value={"Select ToKen"}
+                        disabled
+                        onChange={0}
+                      ></input>
+                    )
+
+                  }
 
                   <div className="grid grid-cols-6 col-span-1">
                     {/* {here} */}
@@ -274,12 +292,29 @@ export default function AddliquidityModule({
 
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  <input
-                    className="col-span-4 h-20  rounded-lg "
-                    value={amountBDesired}
-                    onChange={(e) => setAmountBDesired(e.target.value)}
-                  ></input>
+                  {token2 ? (
 
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      type="number"
+                      value={amountBDesired}
+                      onChange={(e) => (Number(e.target.value) > Number(balanceOfToken2) ? (balanceOfToken2) : (setAmountBDesired(e.target.value)))}
+                    ></input>
+
+                  )
+
+                    : (
+
+
+                      <input
+                        className="col-span-4 h-20  rounded-lg "
+                        value={"Select ToKen"}
+                        disabled
+                        onChange={0}
+                      ></input>
+                    )
+
+                  }
                   <div className="grid grid-cols-6 col-span-1">
                     <Select
                       defaultValue={token2}
@@ -357,8 +392,20 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         </div>
       </div>
       <div className="py-10"></div>
-      {balanceOfToken1}
-      {balanceOfToken2}
+
+      <div className='flex-column'>
+        <div>
+          {balanceOfToken1}
+        </div>
+        <div>
+          {balanceOfToken2}
+        </div>
+        <div>
+          {amountADesired}
+        </div>
+
+        {amountBDesired}
+      </div>
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>

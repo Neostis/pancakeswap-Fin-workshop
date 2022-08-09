@@ -47,7 +47,7 @@ export default function AddliquidityModule({
     if (e !== null) {
       if (e.address !== token2) {
         setToken1(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
   };
@@ -56,7 +56,7 @@ export default function AddliquidityModule({
     if (e !== null) {
       if (e.address !== token1) {
         setToken2(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
   };
@@ -70,21 +70,27 @@ export default function AddliquidityModule({
 
   const handleButton = () => {
     // console.log(token1, token2, amountADesired, amountBDesired);
-    if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) {
-      addLiquidityHandle();
-    }
-  };
 
-  const test = () => {
-    toast('🦄 Wow so easy!', {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    if (
+      token1 !== undefined &&
+      token2 !== undefined &&
+      amountADesired !== null &&
+      amountBDesired !== null &&
+      amountADesired > 0 &&
+      amountBDesired > 0
+    ) {
+      addLiquidityHandle();
+    } else {
+      toast.error('Something Wrong', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   useEffect(() => {
@@ -129,7 +135,7 @@ export default function AddliquidityModule({
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
 
     const to = signer.getAddress(); // should be a checksummed recipient address
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
     const txResponse = await contract.addLiquidity(
       token1,
@@ -140,10 +146,17 @@ export default function AddliquidityModule({
       0,
       to,
       deadline,
-      // ethers.utils.parseEther(amountOutMin.toString()),
     );
 
-    console.log();
+    toast.success('Success!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   let option = [{ value: '', label: '', address: '' }];
@@ -257,7 +270,7 @@ export default function AddliquidityModule({
                   className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                   from-blueswapdark  to-blueswapbutton 
        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                  onClick={test}
+                  onClick={handleButton}
                 >
                   Invalid Pair
                 </button>

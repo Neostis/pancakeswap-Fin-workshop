@@ -15,8 +15,13 @@ import {
 import path from 'path';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
+import { ToastContainer, toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 
 const swap = () => {
+  if (typeof window !== 'undefined') {
+    injectStyle();
+  }
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
@@ -56,8 +61,21 @@ const swap = () => {
 
   const handleSwap = (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);
+    // console.log(amountIn, typeof amountIn);
 
-    if (amountIn !== null && path1 !== null && path2 !== null) swapExactTokensForTokensHandle(amountIn, path1, path2);
+    if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
+      swapExactTokensForTokensHandle(amountIn, path1, path2);
+    } else {
+      toast.error('Something Wrong', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   useEffect(() => {
@@ -87,15 +105,13 @@ const swap = () => {
     // deadline: string,
 
     {
-      // const amountIn = 10;
       const provider = getProvider()!;
       const signer = provider.getSigner();
       const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-      // const path = [ETH_TOKENS[0].address, ETH_TOKENS[1].address]; //An array of token addresses
       const path = [token1, token2]; //An array of token addresses
 
-      const to = signer.getAddress(); // should be a checksummed recipient address
-      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+      const to = signer.getAddress();
+      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
       const txResponse = await contract.swapExactTokensForTokens(
         ethers.utils.parseEther(amountIn.toString()),
@@ -106,7 +122,15 @@ const swap = () => {
         deadline,
       );
 
-      console.log();
+      toast.success('Swap Success!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     };
 
   // const [selectedOption, setSelectedOption] = useState(null);
@@ -145,19 +169,6 @@ const swap = () => {
               isClearable={true}
             />
 
-            {/* {ETH_TOKENS.map((e) => {
-              return (
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={(e) => {
-                    test(e);
-                  }}
-                  options={option}
-                  autoFocus
-                />
-              );
-            })} */}
-
             <input
               className="w-11/12 h-14 rounded-lg justify-self-center"
               value={amountToken1}
@@ -193,21 +204,23 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                handleSwap(
-                  Number(amountToken1),
-                  token1,
-                  token2,
-                  // 0,
-                  // '[' + ETH_TOKENS[0].address + ',' + ETH_TOKENS[1].address + ']',
-                  // '0xF76d21633506159be58395affBA7173BF66D4E9B, 0x205c473567c7C60C502AfE3B39E9BE872d5Ee2d7',
-                  // '0xFfF28ce226130d0005e43960428b1eD81b384e3F';
-                  // '10000000000000',);
-                );
+                handleSwap(Number(amountToken1), token1, token2);
               }}
             >
               Swap
             </button>
           </div>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <div className="py-2"></div>
         </div>
       </div>

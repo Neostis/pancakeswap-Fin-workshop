@@ -23,23 +23,6 @@ export default function AddliquidityModule({
   setModule: (module: ModuleType) => void;
   account: string;
 }) {
-  const [tokenPair, setTokenPair] = useState<{}>({
-    token1: {
-      name: 'USD Theter',
-      symbol: 'USDT',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
-      address: '0x07de306FF27a2B630B1141956844eB1552B956B5',
-    },
-    token2: {
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-      imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
-      address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
-    },
-  });
-
   const [address, setAddress] = useState<string | null>(null);
   const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
@@ -49,8 +32,8 @@ export default function AddliquidityModule({
 
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  const [amountToken1, setAmountToken1] = useState<number>(0);
-  const [amountToken2, setAmountToken2] = useState<number>(0);
+  const [amountToken1, setAmountToken1] = useState<number | null>(null);
+  const [amountToken2, setAmountToken2] = useState<number | null>(null);
 
   const getSelectTokens1 = (e) => {
     if (e !== null) {
@@ -75,6 +58,10 @@ export default function AddliquidityModule({
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
+  };
+
+  const handleButton = () => {
+    console.log(token1, token2, amountToken1, amountToken2);
   };
 
   useEffect(() => {
@@ -156,8 +143,12 @@ export default function AddliquidityModule({
             <div className="flex-column w-auto grid">
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  <input className="col-span-4 h-20  rounded-lg "></input>
-                  <div className="grid grid-cols-8 col-span-1">
+                  <input
+                    className="col-span-4 h-20  rounded-lg "
+                    value={amountToken1}
+                    onChange={(e) => setAmountToken1(e.target.value)}
+                  ></input>
+                  <div className="grid grid-cols-6 col-span-1">
                     {/* {here} */}
                     <Select
                       defaultValue={token1}
@@ -168,7 +159,7 @@ export default function AddliquidityModule({
                       autoFocus
                       placeholder="Select Token 1"
                       isClearable={true}
-                      className="col-span-3 w-12 h-12 cursor-pointer"
+                      className="col-span-6 w-auto h-auto cursor-pointer"
                     />
                   </div>
                 </div>
@@ -181,9 +172,12 @@ export default function AddliquidityModule({
 
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  <input className="col-span-4 h-20  rounded-lg "></input>
-                  <div className="grid grid-cols-8 col-span-1">
-                    {/* {here} */}
+                  <input
+                    className="col-span-4 h-20  rounded-lg "
+                    value={amountToken2}
+                    onChange={(e) => setAmountToken2(e.target.value)}
+                  ></input>
+                  <div className="grid grid-cols-6 col-span-1">
                     <Select
                       defaultValue={token2}
                       onChange={(e) => {
@@ -193,10 +187,10 @@ export default function AddliquidityModule({
                       autoFocus
                       placeholder="Select Token 2"
                       isClearable={true}
-                      className="col-span-3 w-12 h-12 cursor-pointer"
+                      className="col-span-6 w-auto h-auto cursor-pointer"
                     />
 
-                    <div className="col-span-2">˅</div>
+                    {/* <div className="col-span-2">˅</div> */}
                   </div>
                 </div>
               </div>
@@ -205,6 +199,7 @@ export default function AddliquidityModule({
                   className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                   from-blueswapdark  to-blueswapbutton 
        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                  onClick={handleButton}
                 >
                   Invalid Pair
                 </button>

@@ -4,6 +4,8 @@ import { ModuleType } from '../types/module.type';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
+import { ToastContainer, toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Token } from '../types/token.type';
 import {
   connectWallet,
@@ -13,7 +15,6 @@ import {
   getProvider,
   getWalletAddress,
 } from '../services/wallet-service';
-import { toast } from 'react-toastify';
 import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
 import { ETH_TOKENS } from '../constants/tokens';
 import Select from 'react-select';
@@ -25,6 +26,9 @@ export default function AddliquidityModule({
   setModule: (module: ModuleType) => void;
   account: string;
 }) {
+  if (typeof window !== 'undefined') {
+    injectStyle();
+  }
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
   const [address, setAddress] = useState<string | null>(null);
   const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
@@ -35,8 +39,7 @@ export default function AddliquidityModule({
 
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  // const [amountToken1, setAmountToken1] = useState<number>(0);
-  // const [amountToken2, setAmountToken2] = useState<number>(0);
+
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
@@ -67,7 +70,21 @@ export default function AddliquidityModule({
 
   const handleButton = () => {
     // console.log(token1, token2, amountADesired, amountBDesired);
-    if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) addLiquidityHandle();
+    if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) {
+      addLiquidityHandle();
+    }
+  };
+
+  const test = () => {
+    toast('🦄 Wow so easy!', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   useEffect(() => {
@@ -240,7 +257,7 @@ export default function AddliquidityModule({
                   className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                   from-blueswapdark  to-blueswapbutton 
        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                  onClick={handleButton}
+                  onClick={test}
                 >
                   Invalid Pair
                 </button>
@@ -263,6 +280,17 @@ export default function AddliquidityModule({
                     Supply
                   </button>
                 </div>
+                <ToastContainer
+                  position="top-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                />
                 <div className="py-2"></div>
               </div>
             </div>

@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
-import Select, { ValueContainerProps } from 'react-select';
+import Select from 'react-select';
 import {
   connectWallet,
   getBalance,

@@ -2,8 +2,6 @@ import React from 'react';
 // import Popup from '../components/popup';
 import { ModuleType } from '../types/module.type';
 import { useEffect, useState } from 'react';
-// import SwapComponent from "../components/SwapComponent";
-// import ViewSwap from "../view/ViewSwap";
 import { Token } from '../types/token.type';
 import {
   connectWallet,
@@ -16,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
 import { ETH_TOKENS } from '../constants/tokens';
+import Select from 'react-select';
 
 export default function AddliquidityModule({
   setModule,
@@ -48,6 +47,29 @@ export default function AddliquidityModule({
   const [approveLoading, setApproveLoading] = useState(false);
   const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
 
+  const [token1, setToken1] = useState();
+  const [token2, setToken2] = useState();
+  const [amountToken1, setAmountToken1] = useState<number>(0);
+  const [amountToken2, setAmountToken2] = useState<number>(0);
+
+  const getSelectTokens1 = (e) => {
+    if (e !== null) {
+      if (e.address !== token2) {
+        setToken1(e.address);
+        console.log(e.address);
+      }
+    }
+  };
+
+  const getSelectTokens2 = (e) => {
+    if (e !== null) {
+      if (e.address !== token1) {
+        setToken2(e.address);
+        console.log(e.address);
+      }
+    }
+  };
+
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);
@@ -74,12 +96,27 @@ export default function AddliquidityModule({
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
-  const [isShown, setIsShown] = useState(false);
+  // const [isShown, setIsShown] = useState(false);
 
-  const handleClick = (event: any) => {
-    // 👇️ toggle shown state
-    setIsShown((current) => !current);
-  };
+  // const handleClick = (event: any) => {
+  //   // 👇️ toggle shown state
+  //   setIsShown((current) => !current);
+  // };
+
+  let option = [{ value: '', label: '', address: '' }];
+  ETH_TOKENS.map((e) =>
+    option.push({
+      value: e.symbol,
+      label: (
+        <div>
+          <img src={e.imageUrl} height="30px" width="30px" />
+          {e.symbol}
+        </div>
+      ),
+      address: e.address,
+    }),
+  );
+  option.shift();
 
   const addTokenToWallet = async (token: Token) => {
     try {
@@ -105,6 +142,7 @@ export default function AddliquidityModule({
       console.log(error);
     }
   };
+
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
@@ -121,13 +159,17 @@ export default function AddliquidityModule({
                   <input className="col-span-4 h-20  rounded-lg "></input>
                   <div className="grid grid-cols-8 col-span-1">
                     {/* {here} */}
-                    {}
-                    <img
-                      onClick={handleClick}
-                      src={tokenPair.token1.imageUrl}
+                    <Select
+                      defaultValue={token1}
+                      onChange={(e) => {
+                        getSelectTokens1(e);
+                      }}
+                      options={option}
+                      autoFocus
+                      placeholder="Select Token 1"
+                      isClearable={true}
                       className="col-span-3 w-12 h-12 cursor-pointer"
                     />
-                    <div className="col-span-2">{tokenPair.token1.symbol}</div>
                   </div>
                 </div>
               </div>
@@ -142,12 +184,17 @@ export default function AddliquidityModule({
                   <input className="col-span-4 h-20  rounded-lg "></input>
                   <div className="grid grid-cols-8 col-span-1">
                     {/* {here} */}
-                    <img
-                      onClick={handleClick}
-                      src={tokenPair.token2.imageUrl}
+                    <Select
+                      defaultValue={token2}
+                      onChange={(e) => {
+                        getSelectTokens2(e);
+                      }}
+                      options={option}
+                      autoFocus
+                      placeholder="Select Token 2"
+                      isClearable={true}
                       className="col-span-3 w-12 h-12 cursor-pointer"
                     />
-                    <div className="col-span-2">{tokenPair.token2.symbol}</div>
 
                     <div className="col-span-2">˅</div>
                   </div>
@@ -171,8 +218,8 @@ export default function AddliquidityModule({
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
-      {isShown && <div></div>}
-      {isShown && <Popup />}
+      {/* {isShown && <div></div>}
+      {isShown && <Popup />} */}
     </div>
   );
 }

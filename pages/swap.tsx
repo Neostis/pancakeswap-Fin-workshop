@@ -97,7 +97,7 @@ const swap = () => {
       const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       console.log(allowance, amountIn, path1, path2);
 
-      console.log(getSwapAmountsOut());
+      // console.log(getSwapAmountsOut());
 
       // if (Number(allowance) > amountIn) {
       //   console.log('Allowance');

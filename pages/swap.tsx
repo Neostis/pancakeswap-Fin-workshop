@@ -166,7 +166,7 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 1"
-              isClearable={true}
+              // isClearable
             />
 
             <input
@@ -192,7 +192,7 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 2"
-              isClearable={true}
+              // isClearable
             />
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center"></span>

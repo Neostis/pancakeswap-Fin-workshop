@@ -46,7 +46,7 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const getSelectTokens1 = async  (e: any) => {
+  const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
@@ -60,14 +60,14 @@ export default function AddliquidityModule({
     }
   };
 
-  const getSelectTokens2 = async  (e: any) => {
+  const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
       if (e.address !== token1) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken2(formatEther(balances));
         console.log(balances);
         setToken2(e.address);
-        // console.log(e.address);
+        console.log(e.address);
       }
     }
   };
@@ -112,7 +112,6 @@ export default function AddliquidityModule({
     });
   };
 
-
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     console.log(token1)
@@ -126,12 +125,9 @@ export default function AddliquidityModule({
   //       console.log("false")
   //     }
 
-
   //   }, 3000);
 
-
   //   return () => clearInterval(interval)
-
 
   // }, [])
 
@@ -255,28 +251,24 @@ export default function AddliquidityModule({
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
                   {token1 ? (
-
                     <input
                       className="col-span-4 h-20  rounded-lg "
                       type="number"
                       value={amountADesired}
-                      onChange={(e) => (Number(e.target.value) > Number(balanceOfToken1) ? (balanceOfToken1) : (setAmountADesired(e.target.value)))}
+                      onChange={(e) =>
+                        Number(e.target.value) > Number(balanceOfToken1)
+                          ? balanceOfToken1
+                          : setAmountADesired(e.target.value)
+                      }
                     ></input>
-
-                  )
-
-                    : (
-
-
-                      <input
-                        className="col-span-4 h-20  rounded-lg "
-                        value={"Select ToKen"}
-                        disabled
-                        onChange={0}
-                      ></input>
-                    )
-
-                  }
+                  ) : (
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      value={'Select ToKen'}
+                      disabled
+                      onChange={0}
+                    ></input>
+                  )}
 
                   <div className="grid grid-cols-6 col-span-1">
                     {/* {here} */}
@@ -288,7 +280,7 @@ export default function AddliquidityModule({
                       options={option}
                       autoFocus
                       placeholder="Select Token 1"
-                      isClearable={true}
+                      // isClearable
                       className="col-span-6 w-auto h-auto cursor-pointer"
                     />
                   </div>
@@ -303,28 +295,24 @@ export default function AddliquidityModule({
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
                   {token2 ? (
-
                     <input
                       className="col-span-4 h-20  rounded-lg "
                       type="number"
                       value={amountBDesired}
-                      onChange={(e) => (Number(e.target.value) > Number(balanceOfToken2) ? (balanceOfToken2) : (setAmountBDesired(e.target.value)))}
+                      onChange={(e) =>
+                        Number(e.target.value) > Number(balanceOfToken2)
+                          ? balanceOfToken2
+                          : setAmountBDesired(e.target.value)
+                      }
                     ></input>
-
-                  )
-
-                    : (
-
-
-                      <input
-                        className="col-span-4 h-20  rounded-lg "
-                        value={"Select ToKen"}
-                        disabled
-                        onChange={0}
-                      ></input>
-                    )
-
-                  }
+                  ) : (
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      value={'Select ToKen'}
+                      disabled
+                      onChange={0}
+                    ></input>
+                  )}
                   <div className="grid grid-cols-6 col-span-1">
                     <Select
                       defaultValue={token2}
@@ -334,7 +322,7 @@ export default function AddliquidityModule({
                       options={option}
                       autoFocus
                       placeholder="Select Token 2"
-                      isClearable={true}
+                      // isClearable
                       className="col-span-6 w-auto h-auto cursor-pointer"
                     />
 
@@ -342,7 +330,6 @@ export default function AddliquidityModule({
                   </div>
                 </div>
               </div>
-
 
               {token1 && token2 && amountADesired && amountBDesired ? (
                 <div className="py-10 flex-column w-auto grid text-textblack ">
@@ -365,7 +352,6 @@ export default function AddliquidityModule({
                   </div>
                 </div>
               ) : (
-
                 <div className="py-10 flex-column w-auto grid text-textblack ">
                   <button
                     className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -376,14 +362,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     Invalid Pair
                   </button>
                 </div>
-
-
-
               )}
-
-
-
-
 
               <ToastContainer
                 position="top-right"
@@ -403,23 +382,16 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
       </div>
       <div className="py-10"></div>
 
-      <div className='flex-column'>
-        <div>
-          {balanceOfToken1}
-        </div>
-        <div>
-          {balanceOfToken2}
-        </div>
-        <div>
-          {amountADesired}
-        </div>
+      <div className="flex-column">
+        <div>{balanceOfToken1}</div>
+        <div>{balanceOfToken2}</div>
+        <div>{amountADesired}</div>
 
         {amountBDesired}
       </div>
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
-
     </div>
-  )
-};
+  );
+}

@@ -98,8 +98,7 @@ const swap = () => {
     return contract.allowance(ownerAddress, spenderAddress);
   };
 
-
-  const 
+ 
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);

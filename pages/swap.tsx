@@ -56,13 +56,12 @@ const swap = () => {
     }
   };
 
-  const getSwapAmountsOut = async() =>{
+  const getSwapAmountsOut = async () => {
     const path = [token1, token2]; //An array of token addresses
     const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
     return contract.getAmountsOut(ethers.utils.parseEther(amountToken1.toString(), path));
-  }
+  };
 
-  
   const getSelectTokens2 = (e: any) => {
     // setToken2(document.getElementById('list-token2')?.value);
     // console.log('token2: ', document.getElementById('list-token2')?.value);
@@ -88,7 +87,7 @@ const swap = () => {
 
   const handleSwap = (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);
-    // console.log(amountIn, typeof amountIn);
+    console.log(amountIn, path1, path2);
 
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
       // console.log(amountIn, path1, path2);

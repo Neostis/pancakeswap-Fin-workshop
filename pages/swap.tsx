@@ -73,26 +73,38 @@ const swap = () => {
     }
   };
 
-  const getAmountsToken2 = async (amountIn: number, pathAddress: [string, string]) => {
-    const abi = ['function getAmountsOut(uint256,address[]) view returns (uint256[])'];
-    const contract = new ethers.Contract(amountIn, pathAddress, abi, getProvider()!);
-    return contract.getAmountsOut(amountIn, pathAddress);
-  };
-
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-    const abi = ['function balanceOf(address owner) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.balanceOf(ownerAddress);
+    try {
+      const abi = ['function balanceOf(address owner) view returns (uint256)'];
+      const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+      return contract.balanceOf(ownerAddress);
+    } catch (error) {
+      return 0;
+    }
   };
 
-  const handleSwap = (amountIn: number, path1: string, path2: string) => {
+  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
+    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.allowance(ownerAddress, spenderAddress);
+  };
+
+  const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);
-    console.log(amountIn, path1, path2);
+    // console.log('getAllowance: ' + (await getAllowance(path1, address, addr_contract)));
 
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
-      // console.log(amountIn, path1, path2);
+      const allowance = formatEther(await getAllowance(path1, address, addr_contract));
+      console.log(allowance, amountIn, path1, path2);
 
-      swapExactTokensForTokensHandle(amountIn, path1, path2);
+      console.log(getSwapAmountsOut());
+
+      // if (Number(allowance) > amountIn) {
+      //   console.log('Allowance');
+      //   swapExactTokensForTokensHandle(amountIn, path1, path2);
+      // } else {
+      //   console.log('aprrove');
+      // }
     } else {
       toast.error('Something Wrong', {
         position: 'top-right',
@@ -133,12 +145,14 @@ const swap = () => {
     // deadline: string,
 
     {
+      // console.log(amountIn, path1, path2);
       const provider = getProvider()!;
       const signer = provider.getSigner();
       const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-      const path = [token1, token2]; //An array of token addresses
+      const path = [path1, path2]; //An array of token addresses
 
       const to = signer.getAddress();
+
       const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
       const txResponse = await contract.swapExactTokensForTokens(
@@ -226,7 +240,7 @@ const swap = () => {
               // isClearable
             />
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center text-textwhite"> test</span>
+            <span className="w-11/12 h-14 rounded-lg justify-self-center text-textwhite"> {getSwapAmountsOut}</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button

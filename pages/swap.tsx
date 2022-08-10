@@ -17,6 +17,7 @@ import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
+import { formatEther } from 'ethers/lib/utils';
 
 const swap = () => {
   if (typeof window !== 'undefined') {
@@ -29,6 +30,7 @@ const swap = () => {
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
   const [amountToken1, setAmountToken1] = useState<number | null>(null);
+  const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -37,18 +39,23 @@ const swap = () => {
     setNetwork(chainId);
   };
 
-  const getSelectTokens1 = (e) => {
+  const getSelectTokens1 = async (e: any) => {
     // setToken1(document.getElementById('list-token1')?.value);
     // console.log('token1: ', document.getElementById('list-token1')?.value);
     if (e !== null) {
       if (e.address !== token2) {
+        const balances = await getTokenBalance(e.address, address!);
+        setBalanceOfToken(formatEther(balances));
+        // console.log(balances);
+
         setToken1(e.address);
+
         // console.log(e.address);
       }
     }
   };
 
-  const getSelectTokens2 = (e) => {
+  const getSelectTokens2 = (e: any) => {
     // setToken2(document.getElementById('list-token2')?.value);
     // console.log('token2: ', document.getElementById('list-token2')?.value);
     if (e !== null) {
@@ -59,11 +66,19 @@ const swap = () => {
     }
   };
 
+  const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
+    const abi = ['function balanceOf(address owner) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.balanceOf(ownerAddress);
+  };
+
   const handleSwap = (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);
     // console.log(amountIn, typeof amountIn);
 
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
+      // console.log(amountIn, path1, path2);
+
       swapExactTokensForTokensHandle(amountIn, path1, path2);
     } else {
       toast.error('Something Wrong', {
@@ -171,8 +186,11 @@ const swap = () => {
 
             <input
               className="w-11/12 h-14 rounded-lg justify-self-center"
+              type="number"
               value={amountToken1}
-              onChange={(e) => setAmountToken1(e.target.value)}
+              onChange={(e) =>
+                Number(e.target.value) > Number(balanceOfToken) ? balanceOfToken : setAmountToken1(e.target.value)
+              }
             ></input>
           </div>
           <div className=" flex-column w-auto grid text-textblack ">

@@ -30,8 +30,9 @@ const swap = () => {
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
   const [amountToken1, setAmountToken1] = useState<number | null>(null);
-  const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
-  const [amountToken2, setAmountToken2] = useState<number | null>(null);
+  // const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
+  const [amountIn, setAmountIn] = useState<number | null>(null);
+  const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -46,7 +47,7 @@ const swap = () => {
     if (e !== null) {
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken(formatEther(balances));
+        setBalanceOfToken1(formatEther(balances));
         // console.log(balances);
 
         setToken1(e.address);
@@ -80,9 +81,13 @@ const swap = () => {
   };
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-    const abi = ['function balanceOf(address owner) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.balanceOf(ownerAddress);
+    try {
+      const abi = ['function balanceOf(address owner) view returns (uint256)'];
+      const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+      return contract.balanceOf(ownerAddress);
+    } catch (error) {
+      return 0;
+    }
   };
 
   const handleSwap = (amountIn: number, path1: string, path2: string) => {
@@ -197,14 +202,25 @@ const swap = () => {
               // isClearable
             />
 
-            <input
-              className="w-11/12 h-14 rounded-lg justify-self-center"
-              type="number"
-              value={amountToken1}
-              onChange={(e) =>
-                Number(e.target.value) > Number(balanceOfToken) ? balanceOfToken : setAmountToken1(e.target.value)
-              }
-            ></input>
+           {token1 ? (
+                    <input
+                      className="col-span-4 h-auto rounded-lg "
+                      type="number"
+                      value={amountIn}
+                      onChange={(e) =>
+                        (Number(e.target.value) > Number(balanceOfToken1)) && (!isNaN(e.target.value))
+                          ? setAmountIn(balanceOfToken1)
+                          : setAmountIn((e.target.value))
+                      }
+                    ></input>
+                  ) : (
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      value={'Select Token'}
+                      disabled
+                      onChange={0}
+                    ></input>
+                  )}
           </div>
           <div className=" flex-column w-auto grid text-textblack ">
             <button
@@ -235,7 +251,7 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                handleSwap(Number(amountToken1), token1, token2);
+                handleSwap(Number(amountIn), token1, token2);
               }}
             >
               Swap

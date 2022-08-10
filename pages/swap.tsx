@@ -105,6 +105,8 @@ const swap = () => {
     console.log(amountIn, path1, path2);
 
 
+
+<<<<<<< HEAD
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
         const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {

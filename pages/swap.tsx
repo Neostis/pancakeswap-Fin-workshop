@@ -106,7 +106,6 @@ const swap = () => {
 
 
 
-<<<<<<< HEAD
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
         const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
@@ -223,7 +222,7 @@ const swap = () => {
 
             {token1 ? (
               <input
-                className="col-span-4 h-auto rounded-lg "
+              className="w-11/12 h-14 rounded-lg justify-self-center"
                 type="number"
                 value={amountIn}
                 onChange={(e) =>
@@ -234,10 +233,10 @@ const swap = () => {
               ></input>
             ) : (
               <input
-                className="col-span-4 h-20  rounded-lg "
+              className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
                 value={'Select Token'}
                 disabled
-                onChange={0}
+                // onChange={0}
               ></input>
             )}
           </div>

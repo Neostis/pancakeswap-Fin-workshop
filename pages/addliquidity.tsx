@@ -34,7 +34,8 @@ export default function AddliquidityModule({
   const [address, setAddress] = useState<string | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
   const [balanceOfToken2, setBalanceOfToken2] = useState<string | null>(null);
-  const [tokenAllowances, setTokenAllowances] = useState<string | null>(null);
+  const [tokenAllowance1, setTokenAllowance1] = useState<string | null>(null);
+  const [tokenAllowance2, setTokenAllowance2] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
   const [addliquidityLoading, setAddliquidityLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
@@ -52,7 +53,7 @@ export default function AddliquidityModule({
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken1(formatEther(balances));
         console.log(balances);
-
+        setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken1(e.address);
 
         console.log(e.address);
@@ -66,11 +67,24 @@ export default function AddliquidityModule({
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken2(formatEther(balances));
         console.log(balances);
+        setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken2(e.address);
         console.log(e.address);
       }
     }
   };
+
+  // const onChangehandle = async (value: any) => {
+  //   if (Number(value) >= Number(balanceOfToken1)) {
+  //     setAmountADesired(value)
+  //   }
+  //   else if (Number(balanceOfToken1) === 0) {
+  //     setAmountADesired(0)
+  //   }
+  //   else {
+  //     setAmountADesired(balanceOfToken1)
+  //   }
+  // }
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
     try {
@@ -80,6 +94,11 @@ export default function AddliquidityModule({
     } catch (error) {
       return 0;
     }
+  };
+  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
+    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.allowance(ownerAddress, spenderAddress);
   };
 
   const loadAccountData = async () => {
@@ -115,25 +134,6 @@ export default function AddliquidityModule({
       progress: undefined,
     });
   };
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     console.log(token1)
-  //     console.log(token2)
-  //     console.log(amountADesired)
-  //     console.log(amountBDesired)
-  //     if (token1 !== null && token2 !== null && amountADesired !== null && amountBDesired !== null) {
-  //       console.log("true");
-  //     }
-  //     else {
-  //       console.log("false")
-  //     }
-
-  //   }, 3000);
-
-  //   return () => clearInterval(interval)
-
-  // }, [])
 
   useEffect(() => {
     loadAccountData();
@@ -260,9 +260,9 @@ export default function AddliquidityModule({
                       type="number"
                       value={amountADesired}
                       onChange={(e) =>
-                        Number(e.target.value) > Number(balanceOfToken1)
-                          ? balanceOfToken1
-                          : setAmountADesired(e.target.value)
+                        (Number(e.target.value) > Number(balanceOfToken1)) && (!isNaN(e.target.value))
+                          ? setAmountADesired(balanceOfToken1)
+                          : setAmountADesired((e.target.value))
                       }
                     ></input>
                   ) : (
@@ -304,8 +304,8 @@ export default function AddliquidityModule({
                       type="number"
                       value={amountBDesired}
                       onChange={(e) =>
-                        Number(e.target.value) > Number(balanceOfToken2)
-                          ? balanceOfToken2
+                        (Number(e.target.value) > Number(balanceOfToken2)) && (!isNaN(e.target.value))
+                          ? setAmountBDesired(balanceOfToken2)
                           : setAmountBDesired(e.target.value)
                       }
                     ></input>
@@ -390,8 +390,9 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         <div>{balanceOfToken1}</div>
         <div>{balanceOfToken2}</div>
         <div>{amountADesired}</div>
-
-        {amountBDesired}
+        <div>{amountBDesired}</div>
+        <div>tokenAllowance1:{tokenAllowance1}</div>
+        <div>tokenAllowance2:{tokenAllowance2}</div>
       </div>
       <div className="py-10"></div>
       <div className="py-10"></div>

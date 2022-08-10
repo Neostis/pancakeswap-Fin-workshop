@@ -98,6 +98,28 @@ const swap = () => {
     return contract.allowance(ownerAddress, spenderAddress);
   };
 
+  const callApprove = async(tokenAddress: string, amount: number, spender: string) =>{
+    const provider = getProvider()!;
+    const signer = provider.getSigner();
+    // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+    // const path = [path1, path2]; //An array of token addresses
+
+    // const to = signer.getAddress();
+    // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+
+    // const txResponse = await contract.swapExactTokensForTokens(
+    //   ethers.utils.parseEther(amountIn.toString()),
+    //   0,
+    //   // ethers.utils.parseEther(amountOutMin.toString()),
+    //   path,
+    //   to,
+    //   deadline,
+    // );
+    const abi = ['function approve(uint256 amount, address spender) view returns (bool)'];
+    const contract = new ethers.Contract(tokenAddress, abi, signer);
+    const txResponse = await contract.allowance(ethers.utils.parseEther(amount.toString()), spender);
+
+  }
  
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {

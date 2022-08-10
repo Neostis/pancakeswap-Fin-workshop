@@ -73,9 +73,13 @@ export default function AddliquidityModule({
   };
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-    const abi = ['function balanceOf(address owner) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.balanceOf(ownerAddress);
+    try {
+      const abi = ['function balanceOf(address owner) view returns (uint256)'];
+      const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+      return contract.balanceOf(ownerAddress);
+    } catch (error) {
+      return 0;
+    }
   };
 
   const loadAccountData = async () => {
@@ -202,9 +206,9 @@ export default function AddliquidityModule({
     option.push({
       value: e.symbol,
       label: (
-        <div>
-          <img src={e.imageUrl} height="30px" width="30px" />
-          {e.symbol}
+        <div className="flex space-x-px">
+          <img src={e.imageUrl} height="25px" width="25px" />
+          <span className="w-auto h-auto">{e.symbol}</span>
         </div>
       ),
       address: e.address,
@@ -252,7 +256,7 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   {token1 ? (
                     <input
-                      className="col-span-4 h-20  rounded-lg "
+                      className="col-span-4 h-auto rounded-lg "
                       type="number"
                       value={amountADesired}
                       onChange={(e) =>
@@ -264,7 +268,7 @@ export default function AddliquidityModule({
                   ) : (
                     <input
                       className="col-span-4 h-20  rounded-lg "
-                      value={'Select ToKen'}
+                      value={'Select Token'}
                       disabled
                       onChange={0}
                     ></input>
@@ -296,7 +300,7 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   {token2 ? (
                     <input
-                      className="col-span-4 h-20  rounded-lg "
+                      className="col-span-4 h-auto  rounded-lg "
                       type="number"
                       value={amountBDesired}
                       onChange={(e) =>

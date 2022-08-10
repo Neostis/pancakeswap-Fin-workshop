@@ -31,6 +31,7 @@ const swap = () => {
   const [token2, setToken2] = useState();
   const [amountToken1, setAmountToken1] = useState<number | null>(null);
   const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
+  const [amountToken2, setAmountToken2] = useState<number | null>(null);
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -64,6 +65,12 @@ const swap = () => {
         // console.log(e.address);
       }
     }
+  };
+
+  const getAmountsToken2 = async (amountIn: number, pathAddress: [string, string]) => {
+    const abi = ['function getAmountsOut(uint256,address[]) view returns (uint256[])'];
+    const contract = new ethers.Contract(amountIn, pathAddress, abi, getProvider()!);
+    return contract.getAmountsOut(amountIn, pathAddress);
   };
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
@@ -155,9 +162,9 @@ const swap = () => {
     option.push({
       value: e.symbol,
       label: (
-        <div>
+        <div className="flex space-x-px">
           <img src={e.imageUrl} height="30px" width="30px" />
-          {e.symbol}
+          {'     '} {e.symbol}
         </div>
       ),
       address: e.address,
@@ -213,7 +220,7 @@ const swap = () => {
               // isClearable
             />
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center"></span>
+            <span className="w-11/12 h-14 rounded-lg justify-self-center text-textwhite"> test</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button

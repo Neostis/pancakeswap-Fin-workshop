@@ -41,6 +41,19 @@ export const getBalance = (address: string) => {
   return provider?.getBalance(address);
 };
 
+export const changeNetwork = async () => {
+  if (window.ethereum) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x4' }],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+
 // -------------------readDataFromSmartContract----------------------------
 // export const getName = () => {
 //   const provider = new ethers.providers.Web3Provider(getEthereum())

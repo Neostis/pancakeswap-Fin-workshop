@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import Select from 'react-select';
@@ -11,6 +11,7 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
+  // changeNetwork,
 } from '../services/wallet-service';
 import path from 'path';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
@@ -29,10 +30,15 @@ const swap = () => {
   const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  const [amountToken1, setAmountToken1] = useState<number | null>(null);
   // const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
+
+  const selectRef: any = useRef(null);
+
+  const onClear = () => {
+    selectRef.current = null;
+  };
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -41,18 +47,109 @@ const swap = () => {
     setNetwork(chainId);
   };
 
+  // const checkNetwork = async () => {
+  //   await changeNetwork();
+  // };
+
+  const defaultValue = () => {
+    setToken1(undefined);
+    setToken2(undefined);
+    setAmountIn(null);
+    setAmountIn(null);
+    onClear();
+  };
+
+  // const setupPage = async () => {
+  //   await changeNetwork();
+  //   if ((await getChainId()) == '0x4') {
+
+  //     toast.success('network have changed!', {
+  //       position: 'top-right',
+  //       autoClose: 3000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   } else {
+  //     await defaultValue();
+  //     toast.error('network not change', {
+  //       position: 'top-right',
+  //       autoClose: 3000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   }
+  // };
+
+  const changeNetwork = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x4' }],
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
   const getSelectTokens1 = async (e: any) => {
     // setToken1(document.getElementById('list-token1')?.value);
     // console.log('token1: ', document.getElementById('list-token1')?.value);
     if (e !== null) {
-      if (e.address !== token2) {
-        const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken1(formatEther(balances));
-        // console.log(balances);
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+        if (e.address !== token2) {
+          // if ()
+          const balances = await getTokenBalance(e.address, address!);
+          setBalanceOfToken1(formatEther(balances));
+          // console.log(balances);
 
-        setToken1(e.address);
+          setToken1(e.address);
 
-        // console.log(e.address);
+          // console.log(e.address);
+        }
+      } else {
+        /* *|CURSOR_MARCADOR|* */
+        // console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          if (e.address !== token2) {
+            // if ()
+            const balances = await getTokenBalance(e.address, address!);
+            setBalanceOfToken1(formatEther(balances));
+            // console.log(balances);
+
+            setToken1(e.address);
+
+            // console.log(e.address);
+          }
+        } else {
+          await defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       }
     }
   };
@@ -147,14 +244,19 @@ const swap = () => {
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
       setAddress(addresses[0]);
-
+      defaultValue();
       loadAccountData();
     };
 
     const handleNetworkChange = (networkId: string) => {
+      console.log('handle change ' + networkId);
       setNetwork(networkId);
 
       loadAccountData();
+      if (networkId === '0x4') {
+      } else {
+        defaultValue();
+      }
     };
 
     getEthereum()?.on('accountsChanged', handleAccountChange);
@@ -231,6 +333,10 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 1"
+              // ref={selectRef}
+              // clearValue={(e) => {
+              //   onClear();
+              // }}
               // isClearable
             />
 

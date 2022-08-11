@@ -47,6 +47,15 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
+  const defaultValue = () => {
+    setBalanceOfToken1(null);
+    setBalanceOfToken2(null);
+    setToken1(undefined);
+    setToken2(undefined);
+    setAmountADesired(null);
+    setAmountBDesired(null);
+  };
+
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       if (e.address !== token2) {

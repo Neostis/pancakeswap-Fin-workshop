@@ -20,19 +20,6 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [network, setNetwork] = useState<string | null>(null);
 
-  const changeNetwork = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x4' }],
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);
@@ -41,7 +28,6 @@ function Navbar() {
   };
 
   useEffect(() => {
-    changeNetwork();
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
       setAddress(addresses[0]);
@@ -50,8 +36,7 @@ function Navbar() {
     };
 
     const handleNetworkChange = (networkId: string) => {
-      changeNetwork();
-      // setNetwork(networkId);
+      setNetwork(networkId);
 
       loadAccountData();
     };

@@ -260,9 +260,9 @@ export default function AddliquidityModule({
                       type="number"
                       value={amountADesired}
                       onChange={(e) =>
-                        (Number(e.target.value) > Number(balanceOfToken1)) && (!isNaN(e.target.value))
+                        Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
                           ? setAmountADesired(balanceOfToken1)
-                          : setAmountADesired((e.target.value))
+                          : setAmountADesired(e.target.value)
                       }
                     ></input>
                   ) : (
@@ -304,7 +304,7 @@ export default function AddliquidityModule({
                       type="number"
                       value={amountBDesired}
                       onChange={(e) =>
-                        (Number(e.target.value) > Number(balanceOfToken2)) && (!isNaN(e.target.value))
+                        Number(e.target.value) > Number(balanceOfToken2) && !isNaN(e.target.value)
                           ? setAmountBDesired(balanceOfToken2)
                           : setAmountBDesired(e.target.value)
                       }

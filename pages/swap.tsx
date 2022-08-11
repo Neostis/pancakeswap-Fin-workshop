@@ -57,8 +57,6 @@ const swap = () => {
     }
   };
 
-
-
   const getSwapAmountsOut = async () => {
     const path = [token1, token2]; //An array of token addresses
     const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
@@ -98,23 +96,17 @@ const swap = () => {
     return contract.allowance(ownerAddress, spenderAddress);
   };
 
- 
-
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     // console.log(amountIn, path1, path2);
     console.log(amountIn, path1, path2);
 
-
-
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
-        const allowance = formatEther(await getAllowance(path1, address, addr_contract));
+      const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
-
-        console.log("Allowance")
+        console.log('Allowance');
         swapExactTokensForTokensHandle(amountIn, path1, path2);
-      }
-      else {
-        console.log("aprrove")
+      } else {
+        console.log('aprrove');
       }
     } else {
       toast.error('Something Wrong', {
@@ -155,34 +147,34 @@ const swap = () => {
     // to: string,
     // deadline: string,
 
-  {
-    const provider = getProvider()!;
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    const path = [path1, path2]; //An array of token addresses
+    {
+      const provider = getProvider()!;
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+      const path = [path1, path2]; //An array of token addresses
 
-    const to = signer.getAddress();
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+      const to = signer.getAddress();
+      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-    const txResponse = await contract.swapExactTokensForTokens(
-      ethers.utils.parseEther(amountIn.toString()),
-      0,
-      // ethers.utils.parseEther(amountOutMin.toString()),
-      path,
-      to,
-      deadline,
-    );
+      const txResponse = await contract.swapExactTokensForTokens(
+        ethers.utils.parseEther(amountIn.toString()),
+        0,
+        // ethers.utils.parseEther(amountOutMin.toString()),
+        path,
+        to,
+        deadline,
+      );
 
-    toast.success('Swap Success!', {
-      position: 'top-right',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
+      toast.success('Swap Success!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    };
 
   // const [selectedOption, setSelectedOption] = useState(null);
 
@@ -217,23 +209,23 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 1"
-            // isClearable
+              // isClearable
             />
 
             {token1 ? (
               <input
-              className="w-11/12 h-14 rounded-lg justify-self-center"
+                className="w-11/12 h-14 rounded-lg justify-self-center"
                 type="number"
                 value={amountIn}
                 onChange={(e) =>
-                  (Number(e.target.value) > Number(balanceOfToken1)) && (!isNaN(e.target.value))
+                  Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
                     ? setAmountIn(balanceOfToken1)
-                    : setAmountIn((e.target.value))
+                    : setAmountIn(e.target.value)
                 }
               ></input>
             ) : (
               <input
-              className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
+                className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
                 value={'Select Token'}
                 disabled
                 // onChange={0}
@@ -257,7 +249,7 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 2"
-            // isClearable
+              // isClearable
             />
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center text-textwhite"> {getSwapAmountsOut}</span>

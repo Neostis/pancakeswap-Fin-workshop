@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
+import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import Select from 'react-select';
 import {
   connectWallet,
@@ -26,6 +27,7 @@ const swap = () => {
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
+  const [isApprove, setIsApprove] = useState<boolean>(false);
   const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
@@ -96,26 +98,16 @@ const swap = () => {
     return contract.allowance(ownerAddress, spenderAddress);
   };
 
-  const callApprove = async (tokenAddress: string, amount: number, spender: string) => {
+  const callApprove = async (tokenAddress: string, spender: string) => {
+    console.log(tokenAddress, spender)
     const provider = getProvider()!;
     const signer = provider.getSigner();
-    // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    // const path = [path1, path2]; //An array of token addresses
 
-    // const to = signer.getAddress();
-    // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+    // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
+    const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
+    const txResponse = await contract.approve(spender, '115792089237316195423570985008687907853269984665640564039457584007913129639935')
+    // .then((r)=>{setIsApprove(true)})
 
-    // const txResponse = await contract.swapExactTokensForTokens(
-    //   ethers.utils.parseEther(amountIn.toString()),
-    //   0,
-    //   // ethers.utils.parseEther(amountOutMin.toString()),
-    //   path,
-    //   to,
-    //   deadline,
-    // );
-    const abi = ['function approve(uint256 amount, address spender) view returns (bool)'];
-    const contract = new ethers.Contract(tokenAddress, abi, signer);
-    const txResponse = await contract.allowance(ethers.utils.parseEther(amount.toString()), spender);
   };
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
@@ -129,6 +121,7 @@ const swap = () => {
         swapExactTokensForTokensHandle(amountIn, path1, path2);
       } else {
         console.log('aprrove');
+        callApprove(path1, addr_contract)
       }
     } else {
       toast.error('Something Wrong', {

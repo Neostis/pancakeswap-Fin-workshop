@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
@@ -36,12 +36,6 @@ const swap = () => {
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
 
-  const selectRef: any = useRef(null);
-
-  const onClear = () => {
-    selectRef.current = null;
-  };
-
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);
@@ -58,7 +52,6 @@ const swap = () => {
     setToken2(undefined);
     setAmountIn(null);
     setAmountIn(null);
-    onClear();
   };
 
   // const setupPage = async () => {
@@ -100,6 +93,10 @@ const swap = () => {
       }
     }
   };
+  const getToken1 = async () => {
+    return token1;
+  };
+
   const getSelectTokens1 = async (e: any) => {
     // setToken1(document.getElementById('list-token1')?.value);
     // console.log('token1: ', document.getElementById('list-token1')?.value);
@@ -162,13 +159,44 @@ const swap = () => {
     return contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString(), path));
   };
 
-  const getSelectTokens2 = (e: any) => {
-    // setToken2(document.getElementById('list-token2')?.value);
-    // console.log('token2: ', document.getElementById('list-token2')?.value);
+  const getSelectTokens2 = async (e: any) => {
+    // setToken1(document.getElementById('list-token1')?.value);
+    // console.log('token1: ', document.getElementById('list-token1')?.value);
     if (e !== null) {
-      if (e.address !== token1) {
-        setToken2(e.address);
-        // console.log(e.address);
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+        if (e.address !== token2) {
+          setToken2(e.address);
+        }
+      } else {
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          if (e.address !== token1) {
+            setToken2(e.address);
+
+            // console.log(e.address);
+          }
+        } else {
+          await defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       }
     }
   };
@@ -196,15 +224,17 @@ const swap = () => {
   };
 
   const callApprove = async (tokenAddress: string, spender: string) => {
-    console.log(tokenAddress, spender)
+    console.log(tokenAddress, spender);
     const provider = getProvider()!;
     const signer = provider.getSigner();
 
     // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
     const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
-    const txResponse = await contract.approve(spender, '115792089237316195423570985008687907853269984665640564039457584007913129639935')
+    const txResponse = await contract.approve(
+      spender,
+      '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    );
     // .then((r)=>{setIsApprove(true)})
-
   };
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
@@ -218,7 +248,7 @@ const swap = () => {
         swapExactTokensForTokensHandle(amountIn, path1, path2);
       } else {
         console.log('aprrove');
-        callApprove(path1, addr_contract)
+        callApprove(path1, addr_contract);
       }
     } else {
       toast.error('Something Wrong', {
@@ -326,9 +356,8 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 1"
-              // ref={selectRef}
-              // clearValue={(e) => {
-              //   onClear();
+              // value={(e: any) => {
+              //   getToken1();
               // }}
               // isClearable
             />
@@ -400,6 +429,8 @@ const swap = () => {
             pauseOnHover
           />
           <div className="py-2"></div>
+          {/* {test} */}
+          <div>{token1}</div>
         </div>
       </div>
       <div className="py-10"></div>

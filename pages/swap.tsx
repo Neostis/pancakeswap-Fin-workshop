@@ -35,6 +35,7 @@ const swap = () => {
   // const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
+  const [amountOut, setAmountOut] = useState<number | null>(null);
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -156,7 +157,17 @@ const swap = () => {
   const getSwapAmountsOut = async () => {
     const path = [token1, token2]; //An array of token addresses
     const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
-    return contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString(), path));
+    // console.log(amountIn);
+
+    const a = Number(
+      ethers.utils.formatEther((await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1]),
+    );
+    setAmountOut(a);
+    console.log(amountOut);
+
+    // return ethers.utils.formatEther(
+    //   (await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1],
+    // );
   };
 
   const getSelectTokens2 = async (e: any) => {
@@ -201,12 +212,6 @@ const swap = () => {
     }
   };
 
-  const getAmountsToken2 = async (amountIn: number, pathAddress: [string, string]) => {
-    const abi = ['function getAmountsOut(uint256,address[]) view returns (uint256[])'];
-    const contract = new ethers.Contract(amountIn, pathAddress, abi, getProvider()!);
-    return contract.getAmountsOut(amountIn, pathAddress);
-  };
-
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
     try {
       const abi = ['function balanceOf(address owner) view returns (uint256)'];
@@ -241,6 +246,7 @@ const swap = () => {
     // console.log(amountIn, path1, path2);
     console.log(amountIn, path1, path2);
 
+    getSwapAmountsOut();
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
       const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
@@ -332,7 +338,7 @@ const swap = () => {
       label: (
         <div className="flex space-x-px">
           <img src={e.imageUrl} height="30px" width="30px" />
-          {'     '} {e.symbol}
+          {e.symbol}
         </div>
       ),
       address: e.address,
@@ -402,7 +408,13 @@ const swap = () => {
               // isClearable
             />
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center text-textwhite"> {getSwapAmountsOut}</span>
+            {/* {token1 && token2 && amountIn ? (
+              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
+            ) : (
+              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {}</span>
+            )} */}
+
+            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button
@@ -429,8 +441,6 @@ const swap = () => {
             pauseOnHover
           />
           <div className="py-2"></div>
-          {/* {test} */}
-          <div>{token1}</div>
         </div>
       </div>
       <div className="py-10"></div>

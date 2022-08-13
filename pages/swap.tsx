@@ -5,6 +5,7 @@ import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import Select from 'react-select';
+import detectEthereumProvider from '@metamask/detect-provider';
 import {
   connectWallet,
   getBalance,
@@ -23,8 +24,35 @@ import { formatEther } from 'ethers/lib/utils';
 
 const swap = () => {
   if (typeof window !== 'undefined') {
+    let tempWindow = window.ethereum;
+
     injectStyle();
+    if (typeof tempWindow == 'undefined') {
+      toast.error('Not have Metamask', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
+
+  // const provider = detectEthereumProvider();
+  // if (typeof window.ethereum !== typeof provider) {
+  //   toast.error('Not have Metamask', {
+  //     position: 'top-right',
+  //     autoClose: 2500,
+  //     hideProgressBar: false,
+  //     closeOnClick: true,
+  //     pauseOnHover: true,
+  //     draggable: true,
+  //     progress: undefined,
+  //   });
+  // }
+
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
@@ -44,6 +72,15 @@ const swap = () => {
     setNetwork(chainId);
   };
 
+  // const provider = await detectEthereumProvider();
+
+  // if (provider) {
+  //   // From now on, this should always be true:
+  //   // provider === window.ethereum
+  //   startApp(provider); // initialize your app
+  // } else {
+  //   console.log('Please install MetaMask!');
+  // }
   // const checkNetwork = async () => {
   //   await changeNetwork();
   // };
@@ -61,7 +98,7 @@ const swap = () => {
 
   //     toast.success('network have changed!', {
   //       position: 'top-right',
-  //       autoClose: 3000,
+  //       autoClose: 2500,
   //       hideProgressBar: false,
   //       closeOnClick: true,
   //       pauseOnHover: true,
@@ -72,7 +109,7 @@ const swap = () => {
   //     await defaultValue();
   //     toast.error('network not change', {
   //       position: 'top-right',
-  //       autoClose: 3000,
+  //       autoClose: 2500,
   //       hideProgressBar: false,
   //       closeOnClick: true,
   //       pauseOnHover: true,
@@ -121,7 +158,7 @@ const swap = () => {
         if ((await getChainId()) == '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
-            autoClose: 3000,
+            autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -142,7 +179,7 @@ const swap = () => {
           await defaultValue();
           toast.error('network not change', {
             position: 'top-right',
-            autoClose: 3000,
+            autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -184,7 +221,7 @@ const swap = () => {
         if ((await getChainId()) == '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
-            autoClose: 3000,
+            autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -200,7 +237,7 @@ const swap = () => {
           await defaultValue();
           toast.error('network not change', {
             position: 'top-right',
-            autoClose: 3000,
+            autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -259,7 +296,7 @@ const swap = () => {
     } else {
       toast.error('Something Wrong', {
         position: 'top-right',
-        autoClose: 3000,
+        autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -320,7 +357,7 @@ const swap = () => {
 
       toast.success('Swap Success!', {
         position: 'top-right',
-        autoClose: 3000,
+        autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -439,6 +476,7 @@ const swap = () => {
             pauseOnFocusLoss
             draggable
             pauseOnHover
+            limit={1}
           />
           <div className="py-2"></div>
         </div>

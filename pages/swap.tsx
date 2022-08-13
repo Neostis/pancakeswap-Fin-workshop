@@ -5,7 +5,6 @@ import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import Select from 'react-select';
-import detectEthereumProvider from '@metamask/detect-provider';
 import {
   connectWallet,
   getBalance,
@@ -40,19 +39,6 @@ const swap = () => {
     }
   }
 
-  // const provider = detectEthereumProvider();
-  // if (typeof window.ethereum !== typeof provider) {
-  //   toast.error('Not have Metamask', {
-  //     position: 'top-right',
-  //     autoClose: 2500,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //   });
-  // }
-
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
@@ -71,19 +57,6 @@ const swap = () => {
     const chainId = await getChainId();
     setNetwork(chainId);
   };
-
-  // const provider = await detectEthereumProvider();
-
-  // if (provider) {
-  //   // From now on, this should always be true:
-  //   // provider === window.ethereum
-  //   startApp(provider); // initialize your app
-  // } else {
-  //   console.log('Please install MetaMask!');
-  // }
-  // const checkNetwork = async () => {
-  //   await changeNetwork();
-  // };
 
   const defaultValue = () => {
     setToken1(undefined);
@@ -200,7 +173,6 @@ const swap = () => {
       ethers.utils.formatEther((await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1]),
     );
     setAmountOut(a);
-    console.log(amountOut);
 
     // return ethers.utils.formatEther(
     //   (await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1],
@@ -445,11 +417,11 @@ const swap = () => {
               // isClearable
             />
 
-            {/* {token1 && token2 && amountIn ? (
+            {token1 && token2 && amountIn ? (
               <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
             ) : (
-              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {}</span>
-            )} */}
+              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
+            )}
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
           </div>

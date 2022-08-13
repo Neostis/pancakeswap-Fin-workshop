@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import * as ethers from 'ethers';
 import { formatEther } from 'ethers/lib/utils';
 import abi_contract from '../ABI_CONTRACT/abi.json';
+import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Token } from '../types/token.type';
@@ -28,7 +29,20 @@ export default function AddliquidityModule({
   account: string;
 }) {
   if (typeof window !== 'undefined') {
+    let tempWindow = window.ethereum;
+
     injectStyle();
+    if (typeof tempWindow == 'undefined') {
+      toast.error('Not have Metamask', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
   const [address, setAddress] = useState<string | null>(null);
@@ -55,6 +69,30 @@ export default function AddliquidityModule({
     setAmountADesired(null);
     setAmountBDesired(null);
   };
+  const loadAccountData = async () => {
+    const addr = getWalletAddress();
+    setAddress(addr);
+    const chainId = await getChainId();
+    setNetwork(chainId);
+  };
+  useEffect(() => {
+    loadAccountData();
+    const handleAccountChange = (addresses: string[]) => {
+      setAddress(addresses[0]);
+
+      loadAccountData();
+    };
+
+    const handleNetworkChange = (networkId: string) => {
+      setNetwork(networkId);
+
+      loadAccountData();
+    };
+
+    getEthereum()?.on('accountsChanged', handleAccountChange);
+
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+  }, []);
 
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
@@ -83,17 +121,21 @@ export default function AddliquidityModule({
     }
   };
 
-  // const onChangehandle = async (value: any) => {
-  //   if (Number(value) >= Number(balanceOfToken1)) {
-  //     setAmountADesired(value)
-  //   }
-  //   else if (Number(balanceOfToken1) === 0) {
-  //     setAmountADesired(0)
-  //   }
-  //   else {
-  //     setAmountADesired(balanceOfToken1)
-  //   }
-  // }
+  const changeNetwork = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x4' }],
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+  const getToken1 = async () => {
+    return token1;
+  };
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
     try {
@@ -103,18 +145,6 @@ export default function AddliquidityModule({
     } catch (error) {
       return 0;
     }
-  };
-  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
-    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.allowance(ownerAddress, spenderAddress);
-  };
-
-  const loadAccountData = async () => {
-    const addr = getWalletAddress();
-    setAddress(addr);
-    const chainId = await getChainId();
-    setNetwork(chainId);
   };
 
   const handleButton = () => {
@@ -144,24 +174,25 @@ export default function AddliquidityModule({
     });
   };
 
-  useEffect(() => {
-    loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
+  const callApprove = async (tokenAddress: string, spender: string) => {
+    console.log(tokenAddress, spender);
+    const provider = getProvider()!;
+    const signer = provider.getSigner();
 
-      loadAccountData();
-    };
+    // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
+    const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
+    const txResponse = await contract.approve(
+      spender,
+      '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    );
+    // .then((r)=>{setIsApprove(true)})
+  };
 
-    const handleNetworkChange = (networkId: string) => {
-      setNetwork(networkId);
-
-      loadAccountData();
-    };
-
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-  }, []);
+  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
+    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.allowance(ownerAddress, spenderAddress);
+  };
 
   const addLiquidityHandle = async () => {
     // tokenA (address)
@@ -179,8 +210,7 @@ export default function AddliquidityModule({
     // to (address)
 
     // deadline (uint256)
-    // const amountADesired = 10;
-    // const amountBDesired = 10;
+
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
@@ -379,7 +409,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
 
               <ToastContainer
                 position="top-right"
-                autoClose={5000}
+                autoClose={2500}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick
@@ -387,6 +417,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
+                limit={1}
               />
               <div className="py-2"></div>
             </div>

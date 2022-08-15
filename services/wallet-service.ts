@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import abi from '../ABI_CONTRACT/abi.json';
-
+import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 declare global {
   interface Window {
     ethereum: any; // TODO: find the type
@@ -52,6 +52,36 @@ export const changeNetwork = async () => {
       console.error(error);
     }
   }
+};
+
+export const callApprove = async (tokenAddress: string, spender: string) => {
+  console.log(tokenAddress, spender);
+  const provider = getProvider()!;
+  const signer = provider.getSigner();
+
+  // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
+  const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
+  const txResponse = await contract.approve(
+    spender,
+    '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+  );
+  // .then((r)=>{setIsApprove(true)})
+};
+
+export const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
+  try {
+    const abi = ['function balanceOf(address owner) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.balanceOf(ownerAddress);
+  } catch (error) {
+    return 0;
+  }
+};
+
+export const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
+  const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
+  const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+  return contract.allowance(ownerAddress, spenderAddress);
 };
 
 // -------------------readDataFromSmartContract----------------------------

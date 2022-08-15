@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
@@ -12,9 +12,11 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
-  // changeNetwork,
+  changeNetwork,
+  callApprove,
+  getAllowance,
+  getTokenBalance,
 } from '../services/wallet-service';
-import path from 'path';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
@@ -46,10 +48,27 @@ const swap = () => {
   const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
-  // const [balanceOfToken, setBalanceOfToken] = useState<string | null>(null);
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
-  const [amountOut, setAmountOut] = useState<number | null>(null);
+  const amountOut = useRef(0);
+  const [testOut, setTestOut] = useState<number | null>(null);
+
+  // const [amountOut, setAmountOut] = useState<number | null>(null);
+
+  let option = [{ value: '', label: '', address: '' }];
+  ETH_TOKENS.map((e) =>
+    option.push({
+      value: e.symbol,
+      label: (
+        <div className="flex space-x-px">
+          <img src={e.imageUrl} height="30px" width="30px" />
+          {e.symbol}
+        </div>
+      ),
+      address: e.address,
+    }),
+  );
+  option.shift();
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -64,198 +83,118 @@ const swap = () => {
     setAmountIn(null);
     setAmountIn(null);
   };
+  const getSwapAmountsOut = async (token1: any, token2: any) => {
+    const path = [token1, token2]; //An array of token addresses
+    const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
 
-  // const setupPage = async () => {
-  //   await changeNetwork();
-  //   if ((await getChainId()) == '0x4') {
+    if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
+      const a = Number(
+        ethers.utils.formatEther((await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1]),
+      );
+      console.log('a: ' + a);
+      //ได้
+      setTestOut(a);
 
-  //     toast.success('network have changed!', {
-  //       position: 'top-right',
-  //       autoClose: 2500,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   } else {
-  //     await defaultValue();
-  //     toast.error('network not change', {
-  //       position: 'top-right',
-  //       autoClose: 2500,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   }
-  // };
+      //แตก
+      return a;
+    }
+    return 0;
 
-  const changeNetwork = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x4' }],
-        });
-      } catch (error) {
-        console.error(error);
+    // setAmountOut(a);
+  };
+
+  const checkHandle = async () => {
+    // address
+    if (getWalletAddress() == null) {
+      await connectWallet();
+      defaultValue();
+
+      // network
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      }
+    } else {
+      // network
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          await defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       }
     }
-  };
-  const getToken1 = async () => {
-    return token1;
   };
 
   const getSelectTokens1 = async (e: any) => {
-    // setToken1(document.getElementById('list-token1')?.value);
-    // console.log('token1: ', document.getElementById('list-token1')?.value);
     if (e !== null) {
-      if ((await getChainId()) == '0x4') {
-        console.log('is 0x4');
-        if (e.address !== token2) {
-          // if ()
-          const balances = await getTokenBalance(e.address, address!);
-          setBalanceOfToken1(formatEther(balances));
-          // console.log(balances);
-
-          setToken1(e.address);
-
-          // console.log(e.address);
-        }
-      } else {
-        /* *|CURSOR_MARCADOR|* */
-        // console.log('change');
-        await changeNetwork();
-        if ((await getChainId()) == '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          if (e.address !== token2) {
-            // if ()
-            const balances = await getTokenBalance(e.address, address!);
-            setBalanceOfToken1(formatEther(balances));
-            // console.log(balances);
-
-            setToken1(e.address);
-
-            // console.log(e.address);
-          }
-        } else {
-          await defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
+      checkHandle();
+      if (e.address !== token1) {
+        setToken1(e.address);
       }
     }
-  };
-
-  const getSwapAmountsOut = async () => {
-    const path = [token1, token2]; //An array of token addresses
-    const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
-    // console.log(amountIn);
-
-    const a = Number(
-      ethers.utils.formatEther((await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1]),
-    );
-    setAmountOut(a);
-
-    // return ethers.utils.formatEther(
-    //   (await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1],
-    // );
   };
 
   const getSelectTokens2 = async (e: any) => {
-    // setToken1(document.getElementById('list-token1')?.value);
-    // console.log('token1: ', document.getElementById('list-token1')?.value);
     if (e !== null) {
-      if ((await getChainId()) == '0x4') {
-        console.log('is 0x4');
-        if (e.address !== token2) {
-          setToken2(e.address);
-        }
-      } else {
-        await changeNetwork();
-        if ((await getChainId()) == '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          if (e.address !== token1) {
-            setToken2(e.address);
-
-            // console.log(e.address);
-          }
-        } else {
-          await defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
+      checkHandle();
+      if (e.address !== token2) {
+        setToken2(e.address);
       }
     }
   };
 
-  const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-    try {
-      const abi = ['function balanceOf(address owner) view returns (uint256)'];
-      const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-      return contract.balanceOf(ownerAddress);
-    } catch (error) {
-      return 0;
-    }
-  };
-
-  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
-    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.allowance(ownerAddress, spenderAddress);
-  };
-
-  const callApprove = async (tokenAddress: string, spender: string) => {
-    console.log(tokenAddress, spender);
-    const provider = getProvider()!;
-    const signer = provider.getSigner();
-
-    // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
-    const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
-    const txResponse = await contract.approve(
-      spender,
-      '115792089237316195423570985008687907853269984665640564039457584007913129639935',
-    );
-    // .then((r)=>{setIsApprove(true)})
-  };
-
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
-    // console.log(amountIn, path1, path2);
     console.log(amountIn, path1, path2);
 
-    getSwapAmountsOut();
+    getSwapAmountsOut(token1, token2);
+
+    // setTestOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
       const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
@@ -278,7 +217,25 @@ const swap = () => {
     }
   };
 
+  const onChangehandle = async (e: any) => {
+    // e.prevent;
+
+    if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
+      setAmountIn(Number(balanceOfToken1));
+
+      // setAmountOut(await getSwapAmountsOut());
+    } else {
+      setAmountIn(e);
+      // setAmountOut(await getSwapAmountsOut());
+    }
+    // Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
+    //                 ? setAmountIn(balanceOfToken1)
+    //                 : setAmountIn(e.target.value)
+  };
+
   useEffect(() => {
+    // console.log(option);
+
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
       setAddress(addresses[0]);
@@ -300,6 +257,10 @@ const swap = () => {
     getEthereum()?.on('accountsChanged', handleAccountChange);
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
+
+    // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
+    amountOut.current = Number(getSwapAmountsOut(token1, token2));
+    // }
   }, []);
 
   const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
@@ -338,24 +299,6 @@ const swap = () => {
       });
     };
 
-  // const [selectedOption, setSelectedOption] = useState(null);
-
-  let option = [{ value: '', label: '', address: '' }];
-  ETH_TOKENS.map((e) =>
-    option.push({
-      value: e.symbol,
-      label: (
-        <div className="flex space-x-px">
-          <img src={e.imageUrl} height="30px" width="30px" />
-          {e.symbol}
-        </div>
-      ),
-      address: e.address,
-    }),
-  );
-  option.shift();
-  // console.log(option);
-
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
       {/* แก้grid for set width */}
@@ -374,7 +317,7 @@ const swap = () => {
               // value={(e: any) => {
               //   getToken1();
               // }}
-              // isClearable
+              isClearable
             />
 
             {token1 ? (
@@ -382,11 +325,9 @@ const swap = () => {
                 className="w-11/12 h-14 rounded-lg justify-self-center"
                 type="number"
                 value={amountIn}
-                onChange={(e) =>
-                  Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
-                    ? setAmountIn(balanceOfToken1)
-                    : setAmountIn(e.target.value)
-                }
+                onChange={(e) => {
+                  onChangehandle(e.target.value);
+                }}
               ></input>
             ) : (
               <input
@@ -414,16 +355,23 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 2"
-              // isClearable
+              isClearable
             />
 
-            {token1 && token2 && amountIn ? (
-              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
+            {/* {token1 && token2 && amountIn ? (
+              // <input
+              //   className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
+              //   value={}
+              //   disabled
+              //   // onChange={0}
+              // ></input>
+              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite">{amountOut.current}</span>
             ) : (
-              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
-            )}
+              // <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {getSwapAmountsOut}</span>
+              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> 0</span>
+            )} */}
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOut}</span>
+            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {testOut}</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button

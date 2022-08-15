@@ -1,7 +1,7 @@
 import React from 'react';
 // import Popup from '../components/popup';
 import { ModuleType } from '../types/module.type';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
 import { formatEther } from 'ethers/lib/utils';
 import abi_contract from '../ABI_CONTRACT/abi.json';
@@ -16,6 +16,9 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
+  getAllowance,
+  changeNetwork,
+  callApprove,
 } from '../services/wallet-service';
 import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
 import { ETH_TOKENS } from '../constants/tokens';
@@ -61,6 +64,9 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
+  // const [approve, setApprove] = useState<string | null>(null);
+  // const [liquidity, setLiquidity] = useState<string | null>(null);
+
   const defaultValue = () => {
     setBalanceOfToken1(null);
     setBalanceOfToken2(null);
@@ -69,12 +75,14 @@ export default function AddliquidityModule({
     setAmountADesired(null);
     setAmountBDesired(null);
   };
+
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
   };
+
   useEffect(() => {
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
@@ -94,8 +102,77 @@ export default function AddliquidityModule({
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
+  const checkHandle = async () => {
+    // address
+    if (getWalletAddress() == null) {
+      await connectWallet();
+      defaultValue();
+
+      // network
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      }
+    } else {
+      // network
+      if ((await getChainId()) == '0x4') {
+        console.log('is 0x4');
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) == '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          await defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      }
+    }
+  };
+
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
+      checkHandle();
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken1(formatEther(balances));
@@ -110,6 +187,7 @@ export default function AddliquidityModule({
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
+      checkHandle();
       if (e.address !== token1) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken2(formatEther(balances));
@@ -119,22 +197,6 @@ export default function AddliquidityModule({
         console.log(e.address);
       }
     }
-  };
-
-  const changeNetwork = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x4' }],
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-  const getToken1 = async () => {
-    return token1;
   };
 
   const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
@@ -160,38 +222,6 @@ export default function AddliquidityModule({
     ) {
       addLiquidityHandle();
     }
-  };
-
-  const test = () => {
-    toast('🦄 Wow so easy!', {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-
-  const callApprove = async (tokenAddress: string, spender: string) => {
-    console.log(tokenAddress, spender);
-    const provider = getProvider()!;
-    const signer = provider.getSigner();
-
-    // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
-    const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
-    const txResponse = await contract.approve(
-      spender,
-      '115792089237316195423570985008687907853269984665640564039457584007913129639935',
-    );
-    // .then((r)=>{setIsApprove(true)})
-  };
-
-  const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
-    const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.allowance(ownerAddress, spenderAddress);
   };
 
   const addLiquidityHandle = async () => {
@@ -400,7 +430,7 @@ export default function AddliquidityModule({
                     className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
     from-blueswapdark  to-blueswapbutton 
 text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                    onClick={test}
+                    // onClick={}
                   >
                     Invalid Pair
                   </button>

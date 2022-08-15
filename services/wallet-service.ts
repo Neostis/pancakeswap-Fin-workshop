@@ -54,6 +54,16 @@ export const changeNetwork = async () => {
   }
 };
 
+export const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
+  try {
+    const abi = ['function balanceOf(address owner) view returns (uint256)'];
+    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
+    return contract.balanceOf(ownerAddress);
+  } catch (error) {
+    return 0;
+  }
+};
+
 export const callApprove = async (tokenAddress: string, spender: string) => {
   console.log(tokenAddress, spender);
   const provider = getProvider()!;
@@ -67,17 +77,6 @@ export const callApprove = async (tokenAddress: string, spender: string) => {
   );
   // .then((r)=>{setIsApprove(true)})
 };
-
-export const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-  try {
-    const abi = ['function balanceOf(address owner) view returns (uint256)'];
-    const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.balanceOf(ownerAddress);
-  } catch (error) {
-    return 0;
-  }
-};
-
 export const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {
   const abi = ['function allowance(address owner, address spender) view returns (uint256)'];
   const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);

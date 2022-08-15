@@ -64,6 +64,8 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
+  const [supplyButton, setSupplyButton] = useState(false);
+
   // const [approve, setApprove] = useState<string | null>(null);
   // const [liquidity, setLiquidity] = useState<string | null>(null);
 
@@ -208,23 +210,7 @@ export default function AddliquidityModule({
       return 0;
     }
   };
-
-  const handleButton = () => {
-    // console.log(token1, token2, amountADesired, amountBDesired);
-
-    if (
-      token1 !== undefined &&
-      token2 !== undefined &&
-      amountADesired !== null &&
-      amountBDesired !== null &&
-      amountADesired > 0 &&
-      amountBDesired > 0
-    ) {
-      addLiquidityHandle();
-    }
-  };
-
-  const addLiquidityHandle = async () => {
+  const addLiquidity = async () => {
     // tokenA (address)
 
     // tokenB (address)
@@ -268,6 +254,63 @@ export default function AddliquidityModule({
       draggable: true,
       progress: undefined,
     });
+  };
+  const handleAddLiquidity = async () => {
+    // console.log(token1, token2, amountADesired, amountBDesired);
+
+    if (
+      token1 !== undefined &&
+      token2 !== undefined &&
+      amountADesired !== null &&
+      amountBDesired !== null &&
+      amountADesired > 0 &&
+      amountBDesired > 0
+    ) {
+      // const allowance = formatEther(await getAllowance(token1, address, addr_contract));
+      // const allowance2 = formatEther(await getAllowance(token2, address, addr_contract));
+
+      // if (Number(allowance) > amountADesired && Number(allowance2) > amountBDesired) {
+      //   console.log('Allowance All');
+
+      //   addLiquidity();
+      // } else if (Number(allowance) < amountADesired) {
+      //   console.log('approve A');
+      //   callApprove(token1, addr_contract);
+
+      //   if (Number(allowance) < amountBDesired) {
+      //     console.log('approve B');
+      //     callApprove(token2, addr_contract);
+      //   }
+      // }
+
+      addLiquidity();
+    }
+  };
+
+  const handleApprove = async () => {
+    if (
+      token1 !== undefined &&
+      token2 !== undefined &&
+      amountADesired !== null &&
+      amountBDesired !== null &&
+      amountADesired > 0 &&
+      amountBDesired > 0
+    ) {
+      const allowance = formatEther(await getAllowance(token1, address, addr_contract));
+      const allowance2 = formatEther(await getAllowance(token2, address, addr_contract));
+
+      console.log(token1, token2);
+
+      if (Number(allowance) < amountADesired) {
+        console.log('approve A');
+        await callApprove(token1, addr_contract);
+      }
+      if (Number(allowance2) < amountBDesired) {
+        console.log('approve B');
+        await callApprove(token2, addr_contract);
+      }
+      setSupplyButton(true);
+    }
   };
 
   let option = [{ value: '', label: '', address: '' }];
@@ -325,7 +368,7 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   {token1 ? (
                     <input
-                      className="col-span-4 h-auto rounded-lg "
+                      className="col-span-4 h-20 rounded-lg "
                       type="number"
                       value={amountADesired}
                       onChange={(e) =>
@@ -354,7 +397,7 @@ export default function AddliquidityModule({
                       autoFocus
                       placeholder="Select Token 1"
                       // isClearable
-                      className="col-span-6 w-auto h-auto cursor-pointer"
+                      className="col-span-6 w-auto h-auto  cursor-pointer"
                     />
                   </div>
                 </div>
@@ -369,7 +412,7 @@ export default function AddliquidityModule({
                 <div className="grid grid-cols-5 text-textblack ">
                   {token2 ? (
                     <input
-                      className="col-span-4 h-auto  rounded-lg "
+                      className="col-span-4 h-20  rounded-lg "
                       type="number"
                       value={amountBDesired}
                       onChange={(e) =>
@@ -410,18 +453,30 @@ export default function AddliquidityModule({
                     className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                       from-blueswapdark  to-blueswapbutton 
                       text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                    onClick={handleApprove}
                   >
                     Approve
                   </button>
                   <div className="py-10 flex-column w-auto grid text-textblack ">
-                    <button
-                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                    {supplyButton ? (
+                      <button
+                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 
                         text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                      onClick={handleButton}
-                    >
-                      Supply
-                    </button>
+                        onClick={handleAddLiquidity}
+                      >
+                        Supply
+                      </button>
+                    ) : (
+                      <button
+                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                        disabled
+                      >
+                        Supply
+                      </button>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -470,3 +525,4 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
     </div>
   );
 }
+//

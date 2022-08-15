@@ -217,7 +217,7 @@ const swap = () => {
     }
   };
 
-  const onChangehandle = async (e: any) => {
+  const onChangeHandle = async (e: any) => {
     // e.prevent;
 
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
@@ -326,7 +326,7 @@ const swap = () => {
                 type="number"
                 value={amountIn}
                 onChange={(e) => {
-                  onChangehandle(e.target.value);
+                  onChangeHandle(e.target.value);
                 }}
               ></input>
             ) : (

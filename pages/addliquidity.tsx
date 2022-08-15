@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
 import { formatEther } from 'ethers/lib/utils';
 import abi_contract from '../ABI_CONTRACT/abi.json';
-import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
+// import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Token } from '../types/token.type';
@@ -20,7 +20,7 @@ import {
   changeNetwork,
   callApprove,
 } from '../services/wallet-service';
-import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
+// import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
 import { ETH_TOKENS } from '../constants/tokens';
 import Select from 'react-select';
 
@@ -63,8 +63,6 @@ export default function AddliquidityModule({
 
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
-
-  const [supplyButton, setSupplyButton] = useState(false);
 
   // const [approve, setApprove] = useState<string | null>(null);
   // const [liquidity, setLiquidity] = useState<string | null>(null);
@@ -210,6 +208,7 @@ export default function AddliquidityModule({
       return 0;
     }
   };
+
   const addLiquidity = async () => {
     // tokenA (address)
 
@@ -255,6 +254,7 @@ export default function AddliquidityModule({
       progress: undefined,
     });
   };
+
   const handleAddLiquidity = async () => {
     // console.log(token1, token2, amountADesired, amountBDesired);
 
@@ -296,20 +296,21 @@ export default function AddliquidityModule({
       amountADesired > 0 &&
       amountBDesired > 0
     ) {
-      const allowance = formatEther(await getAllowance(token1, address, addr_contract));
-      const allowance2 = formatEther(await getAllowance(token2, address, addr_contract));
+      const allowance = formatEther(await getAllowance(token1, address!, addr_contract));
+      const allowance2 = formatEther(await getAllowance(token2, address!, addr_contract));
 
-      console.log(token1, token2);
+      // console.log(token1, token2);
 
       if (Number(allowance) < amountADesired) {
         console.log('approve A');
         await callApprove(token1, addr_contract);
+        setTokenAllowance1(formatEther(await getAllowance(token1, address!, addr_contract)));
       }
       if (Number(allowance2) < amountBDesired) {
         console.log('approve B');
         await callApprove(token2, addr_contract);
+        setTokenAllowance2(formatEther(await getAllowance(token2, address!, addr_contract)));
       }
-      setSupplyButton(true);
     }
   };
 
@@ -353,6 +354,36 @@ export default function AddliquidityModule({
     }
   };
 
+  const onChangeToken1Handle = async (e: any) => {
+    // e.prevent;
+
+    if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
+      setAmountADesired(Number(balanceOfToken1));
+
+      // setAmountOut(await getSwapAmountsOut());
+    } else if (Number(balanceOfToken1) === 0) {
+      setAmountADesired(0);
+    } else {
+      setAmountADesired(e);
+      // setAmountOut(await getSwapAmountsOut());
+    }
+  };
+
+  const onChangeToken2Handle = async (e: any) => {
+    // e.prevent;
+
+    if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
+      setAmountBDesired(Number(balanceOfToken1));
+
+      // setAmountOut(await getSwapAmountsOut());
+    } else if (Number(balanceOfToken1) === 0) {
+      setAmountBDesired(0);
+    } else {
+      setAmountBDesired(e);
+      // setAmountOut(await getSwapAmountsOut());
+    }
+  };
+
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
@@ -371,10 +402,12 @@ export default function AddliquidityModule({
                       className="col-span-4 h-20 rounded-lg "
                       type="number"
                       value={amountADesired}
-                      onChange={(e) =>
-                        Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
-                          ? setAmountADesired(balanceOfToken1)
-                          : setAmountADesired(e.target.value)
+                      onChange={
+                        (e) => onChangeToken1Handle(Number(e.target.value))
+
+                        // Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
+                        //   ? setAmountADesired(balanceOfToken1)
+                        //   : setAmountADesired(e.target.value)
                       }
                     ></input>
                   ) : (
@@ -415,10 +448,13 @@ export default function AddliquidityModule({
                       className="col-span-4 h-20  rounded-lg "
                       type="number"
                       value={amountBDesired}
-                      onChange={(e) =>
-                        Number(e.target.value) > Number(balanceOfToken2) && !isNaN(e.target.value)
-                          ? setAmountBDesired(balanceOfToken2)
-                          : setAmountBDesired(e.target.value)
+                      onChange={
+                        (e) => {
+                          onChangeToken2Handle(Number(e.target.value));
+                        }
+                        // Number(e.target.value) > Number(balanceOfToken2) && !isNaN(e.target.value)
+                        //   ? setAmountBDesired(balanceOfToken2)
+                        //   : setAmountBDesired(e.target.value)
                       }
                     ></input>
                   ) : (
@@ -449,20 +485,32 @@ export default function AddliquidityModule({
 
               {token1 && token2 && amountADesired && amountBDesired ? (
                 <div className="py-10 flex-column w-auto grid text-textblack ">
-                  <button
-                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                      from-blueswapdark  to-blueswapbutton 
-                      text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                    onClick={handleApprove}
-                  >
-                    Approve
-                  </button>
+                  {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                    <button
+                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                     from-blueswapdark  to-blueswapbutton 
+                     text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                      disabled
+                    >
+                      Approve
+                    </button>
+                  ) : (
+                    <button
+                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                      from-blueswapdark  to-blueswapbutton
+              text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                      onClick={handleApprove}
+                    >
+                      Approve
+                    </button>
+                  )}
+
                   <div className="py-10 flex-column w-auto grid text-textblack ">
-                    {supplyButton ? (
+                    {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
                       <button
                         className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 
-                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                         onClick={handleAddLiquidity}
                       >
                         Supply
@@ -520,9 +568,11 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         <div>tokenAllowance2:{tokenAllowance2}</div>
       </div>
       <div className="py-10"></div>
+      {/* <div className="py-4 flex-column w-auto grid text-textblack "> */}
+
+      {/* <div> */}
       <div className="py-10"></div>
       <div className="py-10"></div>
     </div>
   );
 }
-//

@@ -14,6 +14,7 @@ module.exports = {
       'textwhite': '#FFFFFF',
       'textblack': '#0C1831',
       'textinvalid' : '#717171',
+      'textvalid' : '#FFFFFF',
       'redbg': "#D70000",
       'textblue': '#2F308C',
       'bluebg': '#061F61',
@@ -25,6 +26,7 @@ module.exports = {
       'blueswapdark' : '#002360',
       'bgtheme': '#507DAC',
       'roundedbuttonswap' : '#2A5295',
+      'blueswapbuttonOn' : '#0C2F6B',
       
     }
     

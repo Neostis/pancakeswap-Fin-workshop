@@ -88,15 +88,20 @@ const swap = () => {
     const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
 
     if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-      const a = Number(
-        ethers.utils.formatEther((await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1]),
-      );
-      console.log('a: ' + a);
-      //ได้
-      setTestOut(a);
+      if (amountIn > 0) {
+        const a = Number(
+          ethers.utils.formatEther(
+            (await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1],
+          ),
+        );
+        //ได้
+        setTestOut(a);
 
-      //แตก
-      return a;
+        //แตก
+        return a;
+      } else {
+        setTestOut(0);
+      }
     }
     return 0;
 
@@ -175,6 +180,8 @@ const swap = () => {
     if (e !== null) {
       checkHandle();
       if (e.address !== token1) {
+        const balances = await getTokenBalance(e.address, address!);
+        setBalanceOfToken1(formatEther(balances));
         setToken1(e.address);
       }
     }
@@ -217,20 +224,19 @@ const swap = () => {
     }
   };
 
-  const onChangeHandle = async (e: any) => {
+  const onChangeToken1Handle = async (e: any) => {
     // e.prevent;
 
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountIn(Number(balanceOfToken1));
 
       // setAmountOut(await getSwapAmountsOut());
+    } else if (Number(balanceOfToken1) === 0) {
+      setAmountIn(0);
     } else {
       setAmountIn(e);
       // setAmountOut(await getSwapAmountsOut());
     }
-    // Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
-    //                 ? setAmountIn(balanceOfToken1)
-    //                 : setAmountIn(e.target.value)
   };
 
   useEffect(() => {
@@ -326,7 +332,7 @@ const swap = () => {
                 type="number"
                 value={amountIn}
                 onChange={(e) => {
-                  onChangeHandle(e.target.value);
+                  onChangeToken1Handle(Number(e.target.value));
                 }}
               ></input>
             ) : (

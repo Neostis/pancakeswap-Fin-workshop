@@ -24,6 +24,12 @@ import {
 import { ETH_TOKENS } from '../constants/tokens';
 import Select from 'react-select';
 
+type Keyop = {
+  value: any;
+  label: any;
+  address: any;
+};
+
 export default function AddliquidityModule({
   setModule,
   account,
@@ -64,6 +70,9 @@ export default function AddliquidityModule({
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
+  const [token1List, setToken1List] = useState<Keyop[]>([]);
+  const [token2List, setToken2List] = useState<Keyop[]>([]);
+
   // const [approve, setApprove] = useState<string | null>(null);
   // const [liquidity, setLiquidity] = useState<string | null>(null);
 
@@ -78,6 +87,21 @@ export default function AddliquidityModule({
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
+    let option: Keyop[] = [];
+    ETH_TOKENS.map((e) => {
+      option.push({
+        value: e.symbol,
+        label: (
+          <div className="flex space-x-px">
+            <img src={e.imageUrl} height="30px" width="30px" />
+            {e.symbol}
+          </div>
+        ),
+        address: e.address,
+      });
+    });
+    setToken1List(option);
+    setToken2List(option);
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
@@ -181,7 +205,24 @@ export default function AddliquidityModule({
         setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken1(e.address);
 
-        console.log(e.address);
+        let option: Keyop[] = [];
+
+        ETH_TOKENS.filter((event) => {
+          if (event.address !== e.address) {
+            option.push({
+              value: event.symbol,
+              label: (
+                <div className="flex space-x-px">
+                  <img src={event.imageUrl} height="30px" width="30px" />
+                  {event.symbol}
+                </div>
+              ),
+              address: event.address,
+            });
+          }
+        });
+
+        setToken2List(option);
       }
     }
   };
@@ -195,7 +236,23 @@ export default function AddliquidityModule({
         // console.log(balances);
         setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken2(e.address);
-        // console.log(e.address);
+        let option: Keyop[] = [];
+        ETH_TOKENS.filter((event) => {
+          if (event.address !== e.address) {
+            option.push({
+              value: event.symbol,
+              label: (
+                <div className="flex space-x-px">
+                  <img src={event.imageUrl} height="30px" width="30px" />
+                  {event.symbol}
+                </div>
+              ),
+              address: event.address,
+            });
+          }
+        });
+
+        setToken1List(option);
       }
     }
   };
@@ -422,7 +479,7 @@ export default function AddliquidityModule({
                       onChange={(e) => {
                         getSelectTokens1(e);
                       }}
-                      options={option}
+                      options={token1List}
                       autoFocus
                       placeholder="Select Token 1"
                       // isClearable
@@ -454,12 +511,7 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input
-                      className="col-span-4 h-20  rounded-lg "
-                      value={'Select ToKen'}
-                      disabled
-                      onChange={0}
-                    ></input>
+                    <input className="col-span-4 h-20  rounded-lg " value={'Select ToKen'} disabled></input>
                   )}
                   <div className="grid grid-cols-6 col-span-1">
                     <Select
@@ -467,7 +519,7 @@ export default function AddliquidityModule({
                       onChange={(e) => {
                         getSelectTokens2(e);
                       }}
-                      options={option}
+                      options={token2List}
                       autoFocus
                       placeholder="Select Token 2"
                       // isClearable

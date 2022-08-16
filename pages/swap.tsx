@@ -308,7 +308,7 @@ const swap = () => {
       // setAmountOut(await getSwapAmountsOut());
     } 
     if (token2 !== null) {
-      const amountOut = await getSwapAmountsOut(amountIn, token1, token2);
+      const amountOut = await getSwapAmountsOut(e, token1, token2);
       setTestOut(amountOut);
 
     }

@@ -17,6 +17,11 @@ import {
   getAllowance,
   getTokenBalance,
 } from '../services/wallet-service';
+import {
+  getSwapAmountsOut,
+} from "../services/router-service";
+
+
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
@@ -50,7 +55,7 @@ const swap = () => {
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
   const amountOut = useRef(0);
-  const [testOut, setTestOut] = useState<number | null>(null);
+  const [testOut, setTestOut] = useState<string | null>(null);
 
   // const [amountOut, setAmountOut] = useState<number | null>(null);
 
@@ -69,57 +74,107 @@ const swap = () => {
   );
   option.shift();
 
+
   const loadAccountData = async () => {
     const addr = getWalletAddress();
+    if (getWalletAddress() === null) {
+      await connectWallet();
+      // console.log(addr)
+    }
+
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
   };
 
+  useEffect(() => {
+    // console.log(option);
+
+    loadAccountData();
+    const handleAccountChange = (addresses: string[]) => {
+      setAddress(addresses[0]);
+      defaultValue();
+      loadAccountData();
+    };
+
+    const handleNetworkChange = (networkId: string) => {
+      console.log('handle change ' + networkId);
+      setNetwork(networkId);
+
+      loadAccountData();
+      if (networkId === '0x4') {
+      } else {
+        defaultValue();
+      }
+    };
+
+    getEthereum()?.on('accountsChanged', handleAccountChange);
+
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+
+    // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
+    amountOut.current = Number(getSwapAmountsOut(amountIn, token1, token2));
+    // }
+  }, []);
   const defaultValue = () => {
     setToken1(undefined);
     setToken2(undefined);
     setAmountIn(null);
     setAmountIn(null);
   };
-  const getSwapAmountsOut = async (token1: any, token2: any) => {
-    const path = [token1, token2]; //An array of token addresses
-    const contract = new ethers.Contract(addr_contract, abi_contract, getProvider()!);
 
-    if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-      if (amountIn > 0) {
-        const a = Number(
-          ethers.utils.formatEther(
-            (await contract.getAmountsOut(ethers.utils.parseEther(amountIn.toString()), path))[1],
-          ),
-        );
-        //ได้
-        setTestOut(a.toFixed(6));
 
-        // //แตก
-        // return a;
-      } else {
-        setTestOut(0);
-      }
-    }
-    // return 0;
+  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
+  // amountIn: number,
+  // amountOutMin: number,
+  // path: string,
+  // to: string,
+  // deadline: string,
 
-    // setAmountOut(a);
+  {
+    const provider = getProvider()!;
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+    const path = [path1, path2]; //An array of token addresses
+
+    const to = signer.getAddress();
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+
+    const txResponse = await contract.swapExactTokensForTokens(
+      ethers.utils.parseEther(amountIn.toString()),
+      0,
+      // ethers.utils.parseEther(amountOutMin.toString()),
+      path,
+      to,
+      deadline,
+    );
+
+    toast.success('Swap Success!', {
+      position: 'top-right',
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
-
   const checkHandle = async () => {
     // address
-    if (getWalletAddress() == null) {
+    if (getWalletAddress() === null) {
       await connectWallet();
       defaultValue();
 
       // network
-      if ((await getChainId()) == '0x4') {
+      if ((await getChainId()) === '0x4') {
         console.log('is 0x4');
-      } else {
+        return true;
+
+      }
+      else {
         console.log('change');
         await changeNetwork();
-        if ((await getChainId()) == '0x4') {
+        if ((await getChainId()) === '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
             autoClose: 2500,
@@ -129,6 +184,7 @@ const swap = () => {
             draggable: true,
             progress: undefined,
           });
+          return true;
         } else {
           defaultValue();
           toast.error('network not change', {
@@ -140,16 +196,18 @@ const swap = () => {
             draggable: true,
             progress: undefined,
           });
+          return false;
         }
       }
     } else {
       // network
-      if ((await getChainId()) == '0x4') {
+      if ((await getChainId()) === '0x4') {
         console.log('is 0x4');
+        return true;
       } else {
         console.log('change');
         await changeNetwork();
-        if ((await getChainId()) == '0x4') {
+        if ((await getChainId()) === '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
             autoClose: 2500,
@@ -159,6 +217,7 @@ const swap = () => {
             draggable: true,
             progress: undefined,
           });
+          return true;
         } else {
           defaultValue();
           toast.error('network not change', {
@@ -170,6 +229,7 @@ const swap = () => {
             draggable: true,
             progress: undefined,
           });
+          return false;
         }
       }
     }
@@ -177,12 +237,19 @@ const swap = () => {
 
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
-      checkHandle();
-      if (e.address !== token1 && getWalletAddress() != null) {
-        const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken1(formatEther(balances));
-        setToken1(e.address);
+      // checkHandle();
+      if (await checkHandle()) {
+        if (e.address !== token1) {
+          setToken1(e.address);
+          const balances = await getTokenBalance(e.address, address!);
+          setBalanceOfToken1(formatEther(balances));
+        }
+
+        else {
+          setBalanceOfToken1(formatEther(0));
+        }
       }
+
     }
   };
 
@@ -192,6 +259,12 @@ const swap = () => {
       if (e.address !== token2 && getWalletAddress() != null) {
         setToken2(e.address);
       }
+      // if(token1 !== null && token2 !== null){
+      //   getSwapAmountsOut(amountIn, token1, token2)
+      // }
+      // else{
+      //   setTestOut("0");
+      // }
     }
   };
 
@@ -223,7 +296,7 @@ const swap = () => {
 
   const onChangeToken1Handle = async (e: any) => {
     // e.prevent;
-    getSwapAmountsOut(token1, token2);
+   
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountIn(Number(balanceOfToken1));
 
@@ -233,74 +306,14 @@ const swap = () => {
     } else {
       setAmountIn(e);
       // setAmountOut(await getSwapAmountsOut());
+    } 
+    if (token2 !== null) {
+      const amountOut = await getSwapAmountsOut(amountIn, token1, token2);
+      setTestOut(amountOut);
+
     }
   };
 
-  useEffect(() => {
-    // console.log(option);
-
-    loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
-      defaultValue();
-      loadAccountData();
-    };
-
-    const handleNetworkChange = (networkId: string) => {
-      console.log('handle change ' + networkId);
-      setNetwork(networkId);
-
-      loadAccountData();
-      if (networkId === '0x4') {
-      } else {
-        defaultValue();
-      }
-    };
-
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-
-    // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-    amountOut.current = Number(getSwapAmountsOut(token1, token2));
-    // }
-  }, []);
-
-  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
-    // amountIn: number,
-    // amountOutMin: number,
-    // path: string,
-    // to: string,
-    // deadline: string,
-
-    {
-      const provider = getProvider()!;
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-      const path = [path1, path2]; //An array of token addresses
-
-      const to = signer.getAddress();
-      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
-
-      const txResponse = await contract.swapExactTokensForTokens(
-        ethers.utils.parseEther(amountIn.toString()),
-        0,
-        // ethers.utils.parseEther(amountOutMin.toString()),
-        path,
-        to,
-        deadline,
-      );
-
-      toast.success('Swap Success!', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    };
 
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
@@ -317,38 +330,37 @@ const swap = () => {
               options={option}
               autoFocus
               placeholder="Select Token 1"
-              // value={(e: any) => {
-              //   getToken1();
-              // }}
               isClearable
             />
 
             {token1 ? (
-              <div>
-                {balanceOfToken1 === 0 ? (
-                  <input
-                    className="w-11/12 h-14 rounded-lg justify-self-center"
-                    type="number"
-                    value={0}
-                    disabled
-                  ></input>
-                ) : (
+              // <div>
+              //   {balanceOfToken1 === 0 ? (
+              //     <input
+              //       className="w-11/12 h-14 rounded-lg justify-self-center"
+              //       type="number"
+              //       value={0}
+              //       disabled
+              //     ></input>
+              //   ) : (
+// faster
                   <input
                     className="w-11/12 h-14 rounded-lg justify-self-center"
                     type="number"
                     value={amountIn}
+                    // placeholder={balanceOfToken1}
                     onChange={(e) => {
                       onChangeToken1Handle(Number(e.target.value));
                     }}
                   ></input>
-                )}
-              </div>
+              //   )}
+              // </div>
             ) : (
               <input
                 className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
                 value={'Select Token'}
                 disabled
-                // onChange={0}
+              // onChange={0}
               ></input>
             )}
           </div>
@@ -372,12 +384,6 @@ const swap = () => {
               isClearable
             />
 
-            {/* {token1 && token2 && amountIn ? (
-              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite">{amountOut.current}</span>
-            ) : (
-              // <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {getSwapAmountsOut}</span>
-              <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> 0</span>
-            )} */}
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {testOut}</span>
           </div>
@@ -421,5 +427,6 @@ const swap = () => {
     </div>
   );
 };
+
 
 export default swap;

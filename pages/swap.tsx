@@ -24,7 +24,11 @@ import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { formatEther } from 'ethers/lib/utils';
-
+type Keyop = {
+  value: any;
+  label: any;
+  address: any;
+};
 const swap = () => {
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
@@ -54,30 +58,33 @@ const swap = () => {
   const amountOut = useRef(0);
   const [testOut, setTestOut] = useState<string | null>(null);
 
+  const [token1List, setToken1List] = useState<Keyop[]>([]);
+  const [token2List, setToken2List] = useState<Keyop[]>([]);
+
   // const [amountOut, setAmountOut] = useState<number | null>(null);
+  // let option = [{ value: '', label: '', address: '' }];
 
-  let option = [{ value: '', label: '', address: '' }];
-  ETH_TOKENS.map((e) =>
-    option.push({
-      value: e.symbol,
-      label: (
-        <div className="flex space-x-px">
-          <img src={e.imageUrl} height="30px" width="30px" />
-          {e.symbol}
-        </div>
-      ),
-      address: e.address,
-    }),
-  );
-  option.shift();
-
+  // option.shift();
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     if (getWalletAddress() === null) {
       await connectWallet();
-      // console.log(addr)
     }
-
+    let option: Keyop[] = [];
+    ETH_TOKENS.map((e) => {
+      option.push({
+        value: e.symbol,
+        label: (
+          <div className="flex space-x-px">
+            <img src={e.imageUrl} height="30px" width="30px" />
+            {e.symbol}
+          </div>
+        ),
+        address: e.address,
+      });
+    });
+    setToken1List(option);
+    setToken2List(option);
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
@@ -201,6 +208,25 @@ const swap = () => {
           setToken1(e.address);
           const balances = await getTokenBalance(e.address, address!);
           setBalanceOfToken1(formatEther(balances));
+
+          let option: Keyop[] = [];
+
+          ETH_TOKENS.filter((event, index) => {
+            if (event.address !== e.address) {
+              option.push({
+                value: event.symbol,
+                label: (
+                  <div className="flex space-x-px">
+                    <img src={event.imageUrl} height="30px" width="30px" />
+                    {event.symbol}
+                  </div>
+                ),
+                address: event.address,
+              });
+            }
+          });
+
+          setToken2List(option);
         } else {
           setBalanceOfToken1(formatEther(0));
         }
@@ -213,13 +239,25 @@ const swap = () => {
       checkHandle();
       if (e.address !== token2 && getWalletAddress() != null) {
         setToken2(e.address);
+
+        let option: Keyop[] = [];
+        ETH_TOKENS.filter((event, index) => {
+          if (event.address !== e.address) {
+            option.push({
+              value: event.symbol,
+              label: (
+                <div className="flex space-x-px">
+                  <img src={event.imageUrl} height="30px" width="30px" />
+                  {event.symbol}
+                </div>
+              ),
+              address: event.address,
+            });
+          }
+        });
+
+        setToken1List(option);
       }
-      // if(token1 !== null && token2 !== null){
-      //   getSwapAmountsOut(amountIn, token1, token2)
-      // }
-      // else{
-      //   setTestOut("0");
-      // }
     }
   };
 
@@ -249,21 +287,21 @@ const swap = () => {
     }
   };
 
-  const onChangeToken1Handle = async (e: any) => {
+  const onChangeToken1Handle = async (event: any) => {
     // e.prevent;
 
-    if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
+    if (Number(event) > Number(balanceOfToken1) && !isNaN(event)) {
       setAmountIn(Number(balanceOfToken1));
 
       // setAmountOut(await getSwapAmountsOut());
     } else if (Number(balanceOfToken1) === 0) {
       setAmountIn(0);
     } else {
-      setAmountIn(e);
+      setAmountIn(event);
       // setAmountOut(await getSwapAmountsOut());
     }
     if (token2 !== null) {
-      const amountOut = await getSwapAmountsOut(e, token1, token2);
+      const amountOut = await getSwapAmountsOut(event, token1, token2);
       setTestOut(amountOut);
     }
   };
@@ -348,7 +386,7 @@ const swap = () => {
               onChange={(e) => {
                 getSelectTokens1(e);
               }}
-              options={option}
+              options={token1List}
               autoFocus
               placeholder="Select Token 1"
               isClearable
@@ -370,7 +408,9 @@ const swap = () => {
                 type="number"
                 value={amountIn}
                 // placeholder={balanceOfToken1}
-                onChange={onChangeToken1Handle}
+                onChange={(e) => {
+                  onChangeToken1Handle(Number(e.target.value));
+                }}
               ></input>
             ) : (
               //   )}
@@ -397,7 +437,7 @@ const swap = () => {
               onChange={(e) => {
                 getSelectTokens2(e);
               }}
-              options={option}
+              options={token2List}
               autoFocus
               placeholder="Select Token 2"
               isClearable

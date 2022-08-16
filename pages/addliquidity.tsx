@@ -236,6 +236,7 @@ export default function AddliquidityModule({
         // console.log(balances);
         setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken2(e.address);
+
         let option: Keyop[] = [];
         ETH_TOKENS.filter((event) => {
           if (event.address !== e.address) {
@@ -268,28 +269,12 @@ export default function AddliquidityModule({
   };
 
   const addLiquidity = async () => {
-    // tokenA (address)
-
-    // tokenB (address)
-
-    // amountADesired (uint256)
-
-    // amountBDesired (uint256)
-
-    // amountAMin (uint256)
-
-    // amountBMin (uint256)
-
-    // to (address)
-
-    // deadline (uint256)
-
     const provider = getProvider()!;
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addr_contract, abi_contract, signer);
 
     const to = signer.getAddress(); // should be a checksummed recipient address
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20000 minutes from the current Unix time
 
     const txResponse = await contract.addLiquidity(
       token1,
@@ -455,7 +440,7 @@ export default function AddliquidityModule({
             <div className="flex-column w-auto grid">
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  {address ? (
+                  {token1 ? (
                     <input
                       className="col-span-4 h-20 rounded-lg "
                       type="number"
@@ -469,7 +454,7 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input className="col-span-4 h-20  rounded-lg " value={0} disabled></input>
+                    <input className="col-span-4 h-20  rounded-lg " placeholder={'Select Token 1'} disabled></input>
                   )}
 
                   <div className="grid grid-cols-6 col-span-1">
@@ -511,7 +496,7 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input className="col-span-4 h-20  rounded-lg " value={'Select ToKen'} disabled></input>
+                    <input className="col-span-4 h-20  rounded-lg " placeholder={'Select Token 2'} disabled></input>
                   )}
                   <div className="grid grid-cols-6 col-span-1">
                     <Select

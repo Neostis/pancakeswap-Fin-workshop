@@ -204,9 +204,11 @@ const swap = () => {
     if (e !== null) {
       // checkHandle();
       if (await checkHandle()) {
-        if (e.address !== token1) {
+        if (e.address !== token2) {
           setToken1(e.address);
+
           const balances = await getTokenBalance(e.address, address!);
+
           setBalanceOfToken1(formatEther(balances));
 
           let option: Keyop[] = [];
@@ -237,7 +239,7 @@ const swap = () => {
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
       checkHandle();
-      if (e.address !== token2 && getWalletAddress() != null) {
+      if (e.address !== token1 && getWalletAddress() != null) {
         setToken2(e.address);
 
         let option: Keyop[] = [];
@@ -271,7 +273,7 @@ const swap = () => {
         console.log('Allowance');
         swapExactTokensForTokensHandle(amountIn, path1, path2);
       } else {
-        console.log('aprrove');
+        console.log('approve');
         callApprove(path1, addr_contract);
       }
     } else {
@@ -301,8 +303,10 @@ const swap = () => {
       // setAmountOut(await getSwapAmountsOut());
     }
     if (token2 !== null) {
-      const amountOut = await getSwapAmountsOut(event, token1, token2);
-      setTestOut(amountOut);
+      try {
+        const amountOut = await getSwapAmountsOut(event, token1, token2);
+        setTestOut(amountOut);
+      } catch (error) {}
     }
   };
 
@@ -352,26 +356,38 @@ const swap = () => {
       const to = signer.getAddress();
       const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-      const txResponse = await contract.swapExactTokensForTokens(
-        ethers.utils.parseEther(amountIn.toString()),
-        0,
-        // ethers.utils.parseEther(amountOutMin.toString()),
-        path,
-        to,
-        deadline,
-      );
+      try {
+        const txResponse = await contract.swapExactTokensForTokens(
+          ethers.utils.parseEther(amountIn.toString()),
+          0,
+          // ethers.utils.parseEther(amountOutMin.toString()),
+          path,
+          to,
+          deadline,
+        );
 
-      await txResponse.wait();
+        await txResponse.wait();
 
-      toast.success('Swap Success!', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+        toast.success('Swap Success!', {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } catch (error) {
+        toast.error('Insufficient liquidity for this trade', {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     };
 
   return (
@@ -393,16 +409,6 @@ const swap = () => {
             />
 
             {token1 ? (
-              // <div>
-              //   {balanceOfToken1 === 0 ? (
-              //     <input
-              //       className="w-11/12 h-14 rounded-lg justify-self-center"
-              //       type="number"
-              //       value={0}
-              //       disabled
-              //     ></input>
-              //   ) : (
-              // faster
               <input
                 className="w-11/12 h-14 rounded-lg justify-self-center"
                 type="number"

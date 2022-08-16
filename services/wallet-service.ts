@@ -60,6 +60,7 @@ export const getTokenBalance = async (tokenAddress: string, ownerAddress: string
     const abi = ['function balanceOf(address owner) view returns (uint256)'];
     const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
     const txResponse = await contract.balanceOf(ownerAddress);
+    // await txResponse.wait();
     return txResponse;
   } catch (error) {
     return 0;

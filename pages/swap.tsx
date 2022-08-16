@@ -211,7 +211,7 @@ const swap = () => {
 
           let option: Keyop[] = [];
 
-          ETH_TOKENS.filter((event, index) => {
+          ETH_TOKENS.filter((event) => {
             if (event.address !== e.address) {
               option.push({
                 value: event.symbol,
@@ -241,7 +241,7 @@ const swap = () => {
         setToken2(e.address);
 
         let option: Keyop[] = [];
-        ETH_TOKENS.filter((event, index) => {
+        ETH_TOKENS.filter((event) => {
           if (event.address !== e.address) {
             option.push({
               value: event.symbol,

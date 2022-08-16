@@ -17,10 +17,7 @@ import {
   getAllowance,
   getTokenBalance,
 } from '../services/wallet-service';
-import {
-  getSwapAmountsOut,
-} from "../services/router-service";
-
+import { getSwapAmountsOut } from '../services/router-service';
 
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
@@ -74,7 +71,6 @@ const swap = () => {
   );
   option.shift();
 
-
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     if (getWalletAddress() === null) {
@@ -123,42 +119,41 @@ const swap = () => {
     setAmountIn(null);
   };
 
-
   const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
-  // amountIn: number,
-  // amountOutMin: number,
-  // path: string,
-  // to: string,
-  // deadline: string,
+    // amountIn: number,
+    // amountOutMin: number,
+    // path: string,
+    // to: string,
+    // deadline: string,
 
-  {
-    const provider = getProvider()!;
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    const path = [path1, path2]; //An array of token addresses
+    {
+      const provider = getProvider()!;
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+      const path = [path1, path2]; //An array of token addresses
 
-    const to = signer.getAddress();
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+      const to = signer.getAddress();
+      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-    const txResponse = await contract.swapExactTokensForTokens(
-      ethers.utils.parseEther(amountIn.toString()),
-      0,
-      // ethers.utils.parseEther(amountOutMin.toString()),
-      path,
-      to,
-      deadline,
-    );
+      const txResponse = await contract.swapExactTokensForTokens(
+        ethers.utils.parseEther(amountIn.toString()),
+        0,
+        // ethers.utils.parseEther(amountOutMin.toString()),
+        path,
+        to,
+        deadline,
+      );
 
-    toast.success('Swap Success!', {
-      position: 'top-right',
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
+      toast.success('Swap Success!', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    };
   const checkHandle = async () => {
     // address
     if (getWalletAddress() === null) {
@@ -169,9 +164,7 @@ const swap = () => {
       if ((await getChainId()) === '0x4') {
         console.log('is 0x4');
         return true;
-
-      }
-      else {
+      } else {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
@@ -243,13 +236,10 @@ const swap = () => {
           setToken1(e.address);
           const balances = await getTokenBalance(e.address, address!);
           setBalanceOfToken1(formatEther(balances));
-        }
-
-        else {
+        } else {
           setBalanceOfToken1(formatEther(0));
         }
       }
-
     }
   };
 
@@ -296,7 +286,7 @@ const swap = () => {
 
   const onChangeToken1Handle = async (e: any) => {
     // e.prevent;
-   
+
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountIn(Number(balanceOfToken1));
 
@@ -306,15 +296,13 @@ const swap = () => {
     } else {
       setAmountIn(e);
       // setAmountOut(await getSwapAmountsOut());
-    } 
+    }
     if (token2 !== null) {
       const amountOut = await getSwapAmountsOut(amountIn, token1, token2);
       setTestOut(amountOut);
-
     }
   };
 
-<<<<<<< HEAD
   useEffect(() => {
     // console.log(option);
 
@@ -341,7 +329,7 @@ const swap = () => {
     getEthereum()?.on('chainChanged', handleNetworkChange);
 
     // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-    amountOut.current = Number(getSwapAmountsOut(token1, token2));
+    amountOut.current = Number(getSwapAmountsOut(amountIn, token1, token2));
     // }
   }, []);
 
@@ -382,8 +370,6 @@ const swap = () => {
         progress: undefined,
       });
     };
-=======
->>>>>>> b09e02a332439c542c42c46e7bf8b0e18afc7d66
 
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
@@ -413,24 +399,24 @@ const swap = () => {
               //       disabled
               //     ></input>
               //   ) : (
-// faster
-                  <input
-                    className="w-11/12 h-14 rounded-lg justify-self-center"
-                    type="number"
-                    value={amountIn}
-                    // placeholder={balanceOfToken1}
-                    onChange={(e) => {
-                      onChangeToken1Handle(Number(e.target.value));
-                    }}
-                  ></input>
+              // faster
+              <input
+                className="w-11/12 h-14 rounded-lg justify-self-center"
+                type="number"
+                value={amountIn}
+                // placeholder={balanceOfToken1}
+                onChange={(e) => {
+                  onChangeToken1Handle(Number(e.target.value));
+                }}
+              ></input>
+            ) : (
               //   )}
               // </div>
-            ) : (
               <input
                 className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
                 value={'Select Token'}
                 disabled
-              // onChange={0}
+                // onChange={0}
               ></input>
             )}
           </div>
@@ -453,7 +439,6 @@ const swap = () => {
               placeholder="Select Token 2"
               isClearable
             />
-
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {testOut}</span>
           </div>
@@ -497,6 +482,5 @@ const swap = () => {
     </div>
   );
 };
-
 
 export default swap;

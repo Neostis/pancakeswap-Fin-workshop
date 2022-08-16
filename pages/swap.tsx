@@ -291,6 +291,8 @@ const swap = () => {
         deadline,
       );
 
+      await txResponse.wait();
+
       toast.success('Swap Success!', {
         position: 'top-right',
         autoClose: 2500,

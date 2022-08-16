@@ -65,7 +65,7 @@ export const getTokenBalance = async (tokenAddress: string, ownerAddress: string
 };
 
 export const callApprove = async (tokenAddress: string, spender: string) => {
-  console.log(tokenAddress, spender);
+  // console.log(tokenAddress, spender);
   const provider = getProvider()!;
   const signer = provider.getSigner();
 
@@ -75,6 +75,8 @@ export const callApprove = async (tokenAddress: string, spender: string) => {
     spender,
     '115792089237316195423570985008687907853269984665640564039457584007913129639935',
   );
+
+  await txResponse.wait();
   // .then((r)=>{setIsApprove(true)})
 };
 export const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {

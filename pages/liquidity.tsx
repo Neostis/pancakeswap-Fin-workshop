@@ -43,6 +43,10 @@ const liquidity = () => {
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
     </div>
   );
 };

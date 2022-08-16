@@ -3,7 +3,7 @@ import React from 'react';
 import { ModuleType } from '../types/module.type';
 import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
-import { formatEther } from 'ethers/lib/utils';
+import { formatEther, getAddress } from 'ethers/lib/utils';
 import abi_contract from '../ABI_CONTRACT/abi.json';
 // import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import { ToastContainer, toast } from 'react-toastify';
@@ -155,7 +155,7 @@ export default function AddliquidityModule({
             progress: undefined,
           });
         } else {
-          await defaultValue();
+          defaultValue();
           toast.error('network not change', {
             position: 'top-right',
             autoClose: 2500,
@@ -172,7 +172,8 @@ export default function AddliquidityModule({
 
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
-      checkHandle();
+      // await checkHandle();
+
       if (e.address !== token2) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken1(formatEther(balances));
@@ -187,14 +188,14 @@ export default function AddliquidityModule({
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
-      checkHandle();
-      if (e.address !== token1) {
+      await checkHandle();
+      if (e.address !== token1 && getWalletAddress() != null) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken2(formatEther(balances));
-        console.log(balances);
+        // console.log(balances);
         setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
         setToken2(e.address);
-        console.log(e.address);
+        // console.log(e.address);
       }
     }
   };
@@ -304,12 +305,12 @@ export default function AddliquidityModule({
       if (Number(allowance) < amountADesired) {
         console.log('approve A');
         await callApprove(token1, addr_contract);
-        setTokenAllowance1(formatEther(await getAllowance(token1, address!, addr_contract)));
+        setTokenAllowance1(allowance);
       }
       if (Number(allowance2) < amountBDesired) {
         console.log('approve B');
         await callApprove(token2, addr_contract);
-        setTokenAllowance2(formatEther(await getAllowance(token2, address!, addr_contract)));
+        setTokenAllowance2(allowance2);
       }
     }
   };
@@ -397,7 +398,7 @@ export default function AddliquidityModule({
             <div className="flex-column w-auto grid">
               <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
                 <div className="grid grid-cols-5 text-textblack ">
-                  {token1 ? (
+                  {address ? (
                     <input
                       className="col-span-4 h-20 rounded-lg "
                       type="number"
@@ -411,12 +412,7 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input
-                      className="col-span-4 h-20  rounded-lg "
-                      value={'Select Token'}
-                      disabled
-                      onChange={0}
-                    ></input>
+                    <input className="col-span-4 h-20  rounded-lg " value={0} disabled></input>
                   )}
 
                   <div className="grid grid-cols-6 col-span-1">
@@ -571,6 +567,12 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
       {/* <div className="py-4 flex-column w-auto grid text-textblack "> */}
 
       {/* <div> */}
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
     </div>

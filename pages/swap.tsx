@@ -44,7 +44,6 @@ const swap = () => {
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
-  const [isApprove, setIsApprove] = useState<boolean>(false);
   const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
@@ -95,15 +94,15 @@ const swap = () => {
           ),
         );
         //ได้
-        setTestOut(a);
+        setTestOut(a.toFixed(6));
 
-        //แตก
-        return a;
+        // //แตก
+        // return a;
       } else {
         setTestOut(0);
       }
     }
-    return 0;
+    // return 0;
 
     // setAmountOut(a);
   };
@@ -161,7 +160,7 @@ const swap = () => {
             progress: undefined,
           });
         } else {
-          await defaultValue();
+          defaultValue();
           toast.error('network not change', {
             position: 'top-right',
             autoClose: 2500,
@@ -179,7 +178,7 @@ const swap = () => {
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       checkHandle();
-      if (e.address !== token1) {
+      if (e.address !== token1 && getWalletAddress() != null) {
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken1(formatEther(balances));
         setToken1(e.address);
@@ -190,7 +189,7 @@ const swap = () => {
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
       checkHandle();
-      if (e.address !== token2) {
+      if (e.address !== token2 && getWalletAddress() != null) {
         setToken2(e.address);
       }
     }
@@ -198,8 +197,6 @@ const swap = () => {
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     console.log(amountIn, path1, path2);
-
-    getSwapAmountsOut(token1, token2);
 
     // setTestOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
@@ -226,7 +223,7 @@ const swap = () => {
 
   const onChangeToken1Handle = async (e: any) => {
     // e.prevent;
-
+    getSwapAmountsOut(token1, token2);
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountIn(Number(balanceOfToken1));
 
@@ -327,14 +324,25 @@ const swap = () => {
             />
 
             {token1 ? (
-              <input
-                className="w-11/12 h-14 rounded-lg justify-self-center"
-                type="number"
-                value={amountIn}
-                onChange={(e) => {
-                  onChangeToken1Handle(Number(e.target.value));
-                }}
-              ></input>
+              <div>
+                {balanceOfToken1 === 0 ? (
+                  <input
+                    className="w-11/12 h-14 rounded-lg justify-self-center"
+                    type="number"
+                    value={0}
+                    disabled
+                  ></input>
+                ) : (
+                  <input
+                    className="w-11/12 h-14 rounded-lg justify-self-center"
+                    type="number"
+                    value={amountIn}
+                    onChange={(e) => {
+                      onChangeToken1Handle(Number(e.target.value));
+                    }}
+                  ></input>
+                )}
+              </div>
             ) : (
               <input
                 className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
@@ -365,12 +373,6 @@ const swap = () => {
             />
 
             {/* {token1 && token2 && amountIn ? (
-              // <input
-              //   className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
-              //   value={}
-              //   disabled
-              //   // onChange={0}
-              // ></input>
               <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite">{amountOut.current}</span>
             ) : (
               // <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {getSwapAmountsOut}</span>
@@ -407,6 +409,11 @@ const swap = () => {
           <div className="py-2"></div>
         </div>
       </div>
+      <div className="py-10"></div>
+      <div className="py-10"></div>
+      <div>{balanceOfToken1}</div>
+      {/* <div>tokenAllowance1:{tokenAllowance1}</div> */}
+      <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>

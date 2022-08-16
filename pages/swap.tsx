@@ -119,41 +119,6 @@ const swap = () => {
     setAmountIn(null);
   };
 
-  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
-    // amountIn: number,
-    // amountOutMin: number,
-    // path: string,
-    // to: string,
-    // deadline: string,
-
-    {
-      const provider = getProvider()!;
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-      const path = [path1, path2]; //An array of token addresses
-
-      const to = signer.getAddress();
-      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
-
-      const txResponse = await contract.swapExactTokensForTokens(
-        ethers.utils.parseEther(amountIn.toString()),
-        0,
-        // ethers.utils.parseEther(amountOutMin.toString()),
-        path,
-        to,
-        deadline,
-      );
-
-      toast.success('Swap Success!', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    };
   const checkHandle = async () => {
     // address
     if (getWalletAddress() === null) {
@@ -405,9 +370,7 @@ const swap = () => {
                 type="number"
                 value={amountIn}
                 // placeholder={balanceOfToken1}
-                onChange={(e) => {
-                  onChangeToken1Handle(Number(e.target.value));
-                }}
+                onChange={onChangeToken1Handle}
               ></input>
             ) : (
               //   )}

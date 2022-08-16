@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import abi from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
+
 declare global {
   interface Window {
     ethereum: any; // TODO: find the type
@@ -58,7 +59,8 @@ export const getTokenBalance = async (tokenAddress: string, ownerAddress: string
   try {
     const abi = ['function balanceOf(address owner) view returns (uint256)'];
     const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-    return contract.balanceOf(ownerAddress);
+    const txResponse = await contract.balanceOf(ownerAddress);
+    return txResponse;
   } catch (error) {
     return 0;
   }

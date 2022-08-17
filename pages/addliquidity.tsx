@@ -19,10 +19,13 @@ import {
   getAllowance,
   changeNetwork,
   callApprove,
+  getTokenBalance,
 } from '../services/wallet-service';
 // import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
 import { ETH_TOKENS } from '../constants/tokens';
 import Select from 'react-select';
+
+import { addLiquidity, addLiquidityETH } from '../services/router-service';
 
 type Keyop = {
   value: any;
@@ -258,46 +261,6 @@ export default function AddliquidityModule({
     }
   };
 
-  const getTokenBalance = async (tokenAddress: string, ownerAddress: string) => {
-    try {
-      const abi = ['function balanceOf(address owner) view returns (uint256)'];
-      const contract = new ethers.Contract(tokenAddress, abi, getProvider()!);
-      return contract.balanceOf(ownerAddress);
-    } catch (error) {
-      return 0;
-    }
-  };
-
-  const addLiquidity = async () => {
-    const provider = getProvider()!;
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-
-    const to = signer.getAddress(); // should be a checksummed recipient address
-    const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20000 minutes from the current Unix time
-
-    const txResponse = await contract.addLiquidity(
-      token1,
-      token2,
-      ethers.utils.parseEther(amountADesired.toString()),
-      ethers.utils.parseEther(amountBDesired.toString()),
-      0,
-      0,
-      to,
-      deadline,
-    );
-
-    toast.success('Success!', {
-      position: 'top-right',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-
   const handleAddLiquidity = async () => {
     // console.log(token1, token2, amountADesired, amountBDesired);
 
@@ -309,24 +272,35 @@ export default function AddliquidityModule({
       amountADesired > 0 &&
       amountBDesired > 0
     ) {
-      // const allowance = formatEther(await getAllowance(token1, address, addr_contract));
-      // const allowance2 = formatEther(await getAllowance(token2, address, addr_contract));
+      try {
+        if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+          await addLiquidityETH(amountADesired /*WETH is token1*/, token2 /*address other token*/, amountBDesired);
+        } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+          await addLiquidityETH(amountBDesired /*WETH is token2*/, token1 /*address other token*/, amountADesired);
+        } else {
+          await addLiquidity(token1, token2, amountADesired, amountBDesired);
+        }
 
-      // if (Number(allowance) > amountADesired && Number(allowance2) > amountBDesired) {
-      //   console.log('Allowance All');
-
-      //   addLiquidity();
-      // } else if (Number(allowance) < amountADesired) {
-      //   console.log('approve A');
-      //   callApprove(token1, addr_contract);
-
-      //   if (Number(allowance) < amountBDesired) {
-      //     console.log('approve B');
-      //     callApprove(token2, addr_contract);
-      //   }
-      // }
-
-      addLiquidity();
+        toast.success('Success!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } catch (error) {
+        toast.error('Error!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
 
@@ -372,30 +346,30 @@ export default function AddliquidityModule({
   );
   option.shift();
 
-  const addTokenToWallet = async (token: Token) => {
-    try {
-      const wasAdded = await window.ethereum.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20', // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token.address, // The address that the token is at.
-            symbol: token.symbol, // A ticker symbol or shorthand, up to 5 chars.
-            decimals: token.decimals, // The number of decimals in the token
-            image: token.imageUrl, // A string url of the token logo
-          },
-        },
-      });
+  // const addTokenToWallet = async (token: Token) => {
+  //   try {
+  //     const wasAdded = await window.ethereum.request({
+  //       method: 'wallet_watchAsset',
+  //       params: {
+  //         type: 'ERC20', // Initially only supports ERC20, but eventually more!
+  //         options: {
+  //           address: token.address, // The address that the token is at.
+  //           symbol: token.symbol, // A ticker symbol or shorthand, up to 5 chars.
+  //           decimals: token.decimals, // The number of decimals in the token
+  //           image: token.imageUrl, // A string url of the token logo
+  //         },
+  //       },
+  //     });
 
-      if (wasAdded) {
-        console.log('Thanks for your interest!');
-      } else {
-        console.log('Your loss!');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     if (wasAdded) {
+  //       console.log('Thanks for your interest!');
+  //     } else {
+  //       console.log('Your loss!');
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const onChangeToken1Handle = async (e: any) => {
     // e.prevent;

@@ -17,7 +17,7 @@ import {
   getAllowance,
   getTokenBalance,
 } from '../services/wallet-service';
-import { getSwapAmountsOut } from '../services/router-service';
+import { getSwapAmountsOut, swapExactTokensForTokens } from '../services/router-service';
 
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
@@ -271,7 +271,28 @@ const swap = () => {
       const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
         console.log('Allowance');
-        swapExactTokensForTokensHandle(amountIn, path1, path2);
+        try {
+          await swapExactTokensForTokens(amountIn, path1, path2);
+          toast.success('Swap Success!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } catch (error) {
+          toast.error('Insufficient liquidity for this trade', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       } else {
         console.log('approve');
         callApprove(path1, addr_contract);
@@ -340,55 +361,48 @@ const swap = () => {
     // }
   }, []);
 
-  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) =>
-    // amountIn: number,
-    // amountOutMin: number,
-    // path: string,
-    // to: string,
-    // deadline: string,
+  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) => {
+    // const provider = getProvider()!;
+    // const signer = provider.getSigner();
+    // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+    // const path = [path1, path2]; //An array of token addresses
 
-    {
-      const provider = getProvider()!;
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-      const path = [path1, path2]; //An array of token addresses
+    // const to = signer.getAddress();
+    // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-      const to = signer.getAddress();
-      const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+    try {
+      // const txResponse = await contract.swapExactTokensForTokens(
+      //   ethers.utils.parseEther(amountIn.toString()),
+      //   0,
+      //   // ethers.utils.parseEther(amountOutMin.toString()),
+      //   path,
+      //   to,
+      //   deadline,
+      // );
 
-      try {
-        const txResponse = await contract.swapExactTokensForTokens(
-          ethers.utils.parseEther(amountIn.toString()),
-          0,
-          // ethers.utils.parseEther(amountOutMin.toString()),
-          path,
-          to,
-          deadline,
-        );
-
-        await txResponse.wait();
-
-        toast.success('Swap Success!', {
-          position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } catch (error) {
-        toast.error('Insufficient liquidity for this trade', {
-          position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      }
-    };
+      // await txResponse.wait();
+      swapExactTokensForTokens(amountIn, path1, path2);
+      toast.success('Swap Success!', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error) {
+      toast.error('Insufficient liquidity for this trade', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
 
   return (
     <div className="bg-bgtheme py-10 w-auto grid">

@@ -27,6 +27,13 @@ export const ETH_TOKENS = [
     imageUrl: 'https://cryptologos.cc/logos/aelf-elf-logo.png?v=002',
     address: '0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B',
   },
+  {
+    name: 'Wrapped Ether',
+    symbol: 'WETH',
+    decimals: 18,
+    imageUrl: 'https://cryptologos.cc/logos/pancakeswap-cake-logo.png?v=023',
+    address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+  },
 ];
 
 export const RINKEBY_TOKENS = [

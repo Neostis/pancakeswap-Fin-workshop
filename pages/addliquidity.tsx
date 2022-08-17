@@ -90,6 +90,14 @@ export default function AddliquidityModule({
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
+    const chainId = await getChainId();
+    if ((await getWalletAddress()) === null) {
+      await connectWallet();
+    }
+    if ((await getChainId()) === '0x4') {
+    } else {
+      defaultValue();
+    }
     let option: Keyop[] = [];
     ETH_TOKENS.map((e) => {
       option.push({
@@ -106,7 +114,6 @@ export default function AddliquidityModule({
     setToken1List(option);
     setToken2List(option);
     setAddress(addr);
-    const chainId = await getChainId();
     setNetwork(chainId);
   };
 
@@ -120,7 +127,7 @@ export default function AddliquidityModule({
 
     const handleNetworkChange = (networkId: string) => {
       setNetwork(networkId);
-
+      let option: Keyop[] = [];
       loadAccountData();
     };
 
@@ -131,17 +138,18 @@ export default function AddliquidityModule({
 
   const checkHandle = async () => {
     // address
-    if (getWalletAddress() == null) {
+    if (getWalletAddress() === null) {
       await connectWallet();
       defaultValue();
 
       // network
-      if ((await getChainId()) == '0x4') {
+      if ((await getChainId()) === '0x4') {
         console.log('is 0x4');
+        return true;
       } else {
         console.log('change');
         await changeNetwork();
-        if ((await getChainId()) == '0x4') {
+        if ((await getChainId()) === '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
             autoClose: 2500,
@@ -151,6 +159,7 @@ export default function AddliquidityModule({
             draggable: true,
             progress: undefined,
           });
+          return true;
         } else {
           defaultValue();
           toast.error('network not change', {
@@ -162,16 +171,18 @@ export default function AddliquidityModule({
             draggable: true,
             progress: undefined,
           });
+          return false;
         }
       }
     } else {
       // network
-      if ((await getChainId()) == '0x4') {
+      if ((await getChainId()) === '0x4') {
         console.log('is 0x4');
+        return true;
       } else {
         console.log('change');
         await changeNetwork();
-        if ((await getChainId()) == '0x4') {
+        if ((await getChainId()) === '0x4') {
           toast.success('network have changed!', {
             position: 'top-right',
             autoClose: 2500,
@@ -181,6 +192,7 @@ export default function AddliquidityModule({
             draggable: true,
             progress: undefined,
           });
+          return true;
         } else {
           defaultValue();
           toast.error('network not change', {
@@ -192,78 +204,64 @@ export default function AddliquidityModule({
             draggable: true,
             progress: undefined,
           });
+          return false;
         }
       }
     }
   };
 
+  const getDataList = (address: any) => {
+    let option: Keyop[] = [];
+
+    ETH_TOKENS.filter((event) => {
+      if (event.address !== address) {
+        option.push({
+          value: event.symbol,
+          label: (
+            <div className="flex space-x-px">
+              <img src={event.imageUrl} height="30px" width="30px" />
+              {event.symbol}
+            </div>
+          ),
+          address: event.address,
+        });
+      }
+    });
+    return option;
+  };
+
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       // await checkHandle();
+      if (await checkHandle()) {
+        if (e.address !== token2) {
+          const balances = await getTokenBalance(e.address, address!);
+          setBalanceOfToken1(formatEther(balances));
+          setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_contract)));
+          setToken1(e.address);
 
-      if (e.address !== token2) {
-        const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken1(formatEther(balances));
-        console.log(balances);
-        setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_contract)));
-        setToken1(e.address);
-
-        let option: Keyop[] = [];
-
-        ETH_TOKENS.filter((event) => {
-          if (event.address !== e.address) {
-            option.push({
-              value: event.symbol,
-              label: (
-                <div className="flex space-x-px">
-                  <img src={event.imageUrl} height="30px" width="30px" />
-                  {event.symbol}
-                </div>
-              ),
-              address: event.address,
-            });
-          }
-        });
-
-        setToken2List(option);
+          setToken2List(getDataList(e.address));
+        }
       }
     }
   };
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
-      await checkHandle();
-      if (e.address !== token1 && getWalletAddress() != null) {
-        const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken2(formatEther(balances));
-        // console.log(balances);
-        setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
-        setToken2(e.address);
+      if (await checkHandle()) {
+        if (e.address !== token1 && getWalletAddress() != null) {
+          const balances = await getTokenBalance(e.address, address!);
+          setBalanceOfToken2(formatEther(balances));
+          setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
+          setToken2(e.address);
 
-        let option: Keyop[] = [];
-        ETH_TOKENS.filter((event) => {
-          if (event.address !== e.address) {
-            option.push({
-              value: event.symbol,
-              label: (
-                <div className="flex space-x-px">
-                  <img src={event.imageUrl} height="30px" width="30px" />
-                  {event.symbol}
-                </div>
-              ),
-              address: event.address,
-            });
-          }
-        });
-
-        setToken1List(option);
+          setToken1List(getDataList(e.address));
+        }
       }
     }
   };
 
   const handleAddLiquidity = async () => {
-    // console.log(token1, token2, amountADesired, amountBDesired);
-
     if (
       token1 !== undefined &&
       token2 !== undefined &&
@@ -273,6 +271,11 @@ export default function AddliquidityModule({
       amountBDesired > 0
     ) {
       try {
+        console.log(
+          ethers.utils.parseEther(amountADesired.toString()),
+          ethers.utils.parseEther(amountBDesired.toString()),
+        );
+
         if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
           await addLiquidityETH(amountADesired /*WETH is token1*/, token2 /*address other token*/, amountBDesired);
         } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
@@ -291,15 +294,16 @@ export default function AddliquidityModule({
           progress: undefined,
         });
       } catch (error) {
-        toast.error('Error!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        // toast.error('Error!', {
+        //   position: 'top-right',
+        //   autoClose: 3000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
+        console.log(error);
       }
     }
   };
@@ -372,8 +376,6 @@ export default function AddliquidityModule({
   // };
 
   const onChangeToken1Handle = async (e: any) => {
-    // e.prevent;
-
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountADesired(Number(balanceOfToken1));
 
@@ -387,13 +389,11 @@ export default function AddliquidityModule({
   };
 
   const onChangeToken2Handle = async (e: any) => {
-    // e.prevent;
-
-    if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
-      setAmountBDesired(Number(balanceOfToken1));
+    if (Number(e) > Number(balanceOfToken2) && !isNaN(e)) {
+      setAmountBDesired(Number(balanceOfToken2));
 
       // setAmountOut(await getSwapAmountsOut());
-    } else if (Number(balanceOfToken1) === 0) {
+    } else if (Number(balanceOfToken2) === 0) {
       setAmountBDesired(0);
     } else {
       setAmountBDesired(e);

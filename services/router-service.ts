@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import * as ethers from 'ethers';
 import abi from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import abi_Router from '../ABI_CONTRACT/abi.json';
@@ -90,15 +90,7 @@ export const addLiquidity = async (token1: string, token2: string, amountADesire
 //   address to,
 //   uint256 deadline
 // )
-export const addLiquidityETH = async (
-  weth: number,
-  token: string,
-  amountTokenDesired: number,
-  // amountTokenMin: number,
-  // amountETHMin: number,
-  // to: string,
-  // deadline: number,
-) => {
+export const addLiquidityETH = async (weth: number, token: string, amountTokenDesired: number) => {
   const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000;
   const provider = getProvider()!;
   const signer = provider.getSigner();
@@ -112,7 +104,11 @@ export const addLiquidityETH = async (
     to,
     deadline,
     {
-      value: ethers.utils.parseEther(weth.toString()),
+      value: ethers.utils.parseEther('0.01'),
+      // gasPrice: 300000,
+      // gasLimit: 9000000,
     },
   );
+
+  // await tx.wait();
 };

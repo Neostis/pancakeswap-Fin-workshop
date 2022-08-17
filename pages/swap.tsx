@@ -50,7 +50,7 @@ const swap = () => {
   const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
 
   const [address, setAddress] = useState<string | null>(null);
-  const [network, setNetwork] = useState<string | null>(null);
+  // const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
   const [amountIn, setAmountIn] = useState<number | null>(null);
@@ -67,27 +67,21 @@ const swap = () => {
   // option.shift();
   const loadAccountData = async () => {
     const addr = getWalletAddress();
-    if (getWalletAddress() === null) {
-      await connectWallet();
-    }
-    let option: Keyop[] = [];
-    ETH_TOKENS.map((e) => {
-      option.push({
-        value: e.symbol,
-        label: (
-          <div className="flex space-x-px">
-            <img src={e.imageUrl} height="30px" width="30px" />
-            {e.symbol}
-          </div>
-        ),
-        address: e.address,
-      });
-    });
-    setToken1List(option);
-    setToken2List(option);
-    setAddress(addr);
     const chainId = await getChainId();
-    setNetwork(chainId);
+    if (addr === null) {
+      await connectWallet();
+    } else {
+      setAddress(addr);
+      setToken1List(getDataList(''));
+      setToken2List(getDataList(''));
+    }
+    if (chainId !== '0x4') {
+      await changeNetwork();
+    } else {
+      // setNetwork(chainId);
+      setToken1List(getDataList(''));
+      setToken2List(getDataList(''));
+    }
   };
 
   useEffect(() => {
@@ -95,20 +89,16 @@ const swap = () => {
 
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
+      // setAddress(addresses[0]);
       defaultValue();
       loadAccountData();
     };
 
     const handleNetworkChange = (networkId: string) => {
-      console.log('handle change ' + networkId);
-      setNetwork(networkId);
-
+      defaultValue();
+      // console.log('handle change ' + networkId);
+      // setNetwork(networkId);
       loadAccountData();
-      if (networkId === '0x4') {
-      } else {
-        defaultValue();
-      }
     };
 
     getEthereum()?.on('accountsChanged', handleAccountChange);
@@ -119,11 +109,15 @@ const swap = () => {
     amountOut.current = Number(getSwapAmountsOut(amountIn, token1, token2));
     // }
   }, []);
+
   const defaultValue = () => {
     setToken1(undefined);
     setToken2(undefined);
+    setToken1List([]);
+    setToken2List([]);
     setAmountIn(null);
     setAmountIn(null);
+    setTestOut(null);
   };
 
   const checkHandle = async () => {
@@ -200,35 +194,35 @@ const swap = () => {
     }
   };
 
+  const getDataList = (address: any) => {
+    let option: Keyop[] = [];
+
+    ETH_TOKENS.filter((event) => {
+      if (event.address !== address) {
+        option.push({
+          value: event.symbol,
+          label: (
+            <div className="flex space-x-px">
+              <img src={event.imageUrl} height="30px" width="30px" />
+              {event.symbol}
+            </div>
+          ),
+          address: event.address,
+        });
+      }
+    });
+    return option;
+  };
+
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       // checkHandle();
       if (await checkHandle()) {
         if (e.address !== token2) {
           setToken1(e.address);
-
           const balances = await getTokenBalance(e.address, address!);
-
           setBalanceOfToken1(formatEther(balances));
-
-          let option: Keyop[] = [];
-
-          ETH_TOKENS.filter((event) => {
-            if (event.address !== e.address) {
-              option.push({
-                value: event.symbol,
-                label: (
-                  <div className="flex space-x-px">
-                    <img src={event.imageUrl} height="30px" width="30px" />
-                    {event.symbol}
-                  </div>
-                ),
-                address: event.address,
-              });
-            }
-          });
-
-          setToken2List(option);
+          setToken2List(getDataList(e.address));
         } else {
           setBalanceOfToken1(formatEther(0));
         }
@@ -238,27 +232,11 @@ const swap = () => {
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
-      checkHandle();
-      if (e.address !== token1 && getWalletAddress() != null) {
-        setToken2(e.address);
-
-        let option: Keyop[] = [];
-        ETH_TOKENS.filter((event) => {
-          if (event.address !== e.address) {
-            option.push({
-              value: event.symbol,
-              label: (
-                <div className="flex space-x-px">
-                  <img src={event.imageUrl} height="30px" width="30px" />
-                  {event.symbol}
-                </div>
-              ),
-              address: event.address,
-            });
-          }
-        });
-
-        setToken1List(option);
+      if (await checkHandle()) {
+        if (e.address !== token1 && getWalletAddress() != null) {
+          setToken2(e.address);
+          setToken1List(getDataList(e.address));
+        }
       }
     }
   };
@@ -330,36 +308,6 @@ const swap = () => {
       } catch (error) {}
     }
   };
-
-  useEffect(() => {
-    // console.log(option);
-
-    loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
-      defaultValue();
-      loadAccountData();
-    };
-
-    const handleNetworkChange = (networkId: string) => {
-      console.log('handle change ' + networkId);
-      setNetwork(networkId);
-
-      loadAccountData();
-      if (networkId === '0x4') {
-      } else {
-        defaultValue();
-      }
-    };
-
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-
-    // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-    amountOut.current = Number(getSwapAmountsOut(amountIn, token1, token2));
-    // }
-  }, []);
 
   const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) => {
     // const provider = getProvider()!;

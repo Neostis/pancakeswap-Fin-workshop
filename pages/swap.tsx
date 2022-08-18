@@ -70,17 +70,19 @@ const swap = () => {
     const chainId = await getChainId();
     if (addr === null) {
       await connectWallet();
+      defaultValue();
     } else {
       setAddress(addr);
-      setToken1List(getDataList(''));
-      setToken2List(getDataList(''));
+      setToken1List(getDataList(token2!));
+      setToken2List(getDataList(token1!));
     }
     if (chainId !== '0x4') {
       await changeNetwork();
+      defaultValue();
     } else {
       // setNetwork(chainId);
-      setToken1List(getDataList(''));
-      setToken2List(getDataList(''));
+      setToken1List(getDataList(token2!));
+      setToken2List(getDataList(token1!));
     }
   };
 
@@ -90,12 +92,12 @@ const swap = () => {
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
       // setAddress(addresses[0]);
-      defaultValue();
+      // defaultValue();
       loadAccountData();
     };
 
     const handleNetworkChange = (networkId: string) => {
-      defaultValue();
+      // defaultValue();
       // console.log('handle change ' + networkId);
       // setNetwork(networkId);
       loadAccountData();
@@ -113,8 +115,8 @@ const swap = () => {
   const defaultValue = () => {
     setToken1(undefined);
     setToken2(undefined);
-    setToken1List([]);
-    setToken2List([]);
+    // setToken1List([]);
+    // setToken2List([]);
     setAmountIn(null);
     setAmountIn(null);
     setTestOut(null);
@@ -217,27 +219,30 @@ const swap = () => {
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
       // checkHandle();
-      if (await checkHandle()) {
+      // if () {
         if (e.address !== token2) {
           setToken1(e.address);
           const balances = await getTokenBalance(e.address, address!);
           setBalanceOfToken1(formatEther(balances));
           setToken2List(getDataList(e.address));
+          await checkHandle()
         } else {
           setBalanceOfToken1(formatEther(0));
+          await checkHandle()
         }
-      }
+      // }
     }
   };
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
-      if (await checkHandle()) {
-        if (e.address !== token1 && getWalletAddress() != null) {
+      // if () {
+        if (e.address !== token1/* && getWalletAddress() != null*/) {
           setToken2(e.address);
           setToken1List(getDataList(e.address));
+          await checkHandle()
         }
-      }
+      // }
     }
   };
 
@@ -375,7 +380,7 @@ const swap = () => {
                 className="w-11/12 h-14 rounded-lg justify-self-center"
                 type="number"
                 value={amountIn}
-                // placeholder={balanceOfToken1}
+                placeholder={balanceOfToken1}
                 onChange={(e) => {
                   onChangeToken1Handle(Number(e.target.value));
                 }}

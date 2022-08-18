@@ -324,17 +324,28 @@ export default function AddliquidityModule({
           draggable: true,
           progress: undefined,
         });
-      } catch (error) {
-        // toast.error('Error!', {
-        //   position: 'top-right',
-        //   autoClose: 3000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
-        console.log(error);
+      } catch (error: any) {
+        if (error.code == 4001) {
+          toast.warn('Transaction Cancelled', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
+          toast.error('UNPREDICTABLE_GAS_LIMIT', {
+            position: 'top-right',
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       }
     }
   };

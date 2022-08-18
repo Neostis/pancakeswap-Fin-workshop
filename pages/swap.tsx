@@ -275,16 +275,38 @@ const swap = () => {
             draggable: true,
             progress: undefined,
           });
-        } catch (error) {
-          toast.error('Insufficient liquidity for this trade', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+        } catch (error: any) {
+          if (error.code == 4001) {
+            toast.warn('Transaction Cancelled', {
+              position: 'top-right',
+              autoClose: 2500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
+            toast.error('UNPREDICTABLE_GAS_LIMIT', {
+              position: 'top-right',
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            toast.error('Insufficient liquidity for this trade', {
+              position: 'top-right',
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }
         }
       } else {
         console.log('approve');
@@ -293,7 +315,7 @@ const swap = () => {
     } else {
       toast.error('Something Wrong', {
         position: 'top-right',
-        autoClose: 2500,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

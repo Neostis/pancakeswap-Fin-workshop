@@ -56,7 +56,8 @@ export default function AddliquidityModule({
       });
     }
   }
-  const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
+  // const addr_Router = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
+  const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
   const [address, setAddress] = useState<string | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
   const [balanceOfToken2, setBalanceOfToken2] = useState<string | null>(null);
@@ -76,59 +77,81 @@ export default function AddliquidityModule({
   const [token1List, setToken1List] = useState<Keyop[]>([]);
   const [token2List, setToken2List] = useState<Keyop[]>([]);
 
-  // const [approve, setApprove] = useState<string | null>(null);
-  // const [liquidity, setLiquidity] = useState<string | null>(null);
-
-  const defaultValue = () => {
-    setBalanceOfToken1(null);
-    setBalanceOfToken2(null);
-    setToken1(undefined);
-    setToken2(undefined);
-    setAmountADesired(null);
-    setAmountBDesired(null);
-  };
+  const [showToken1, setShowToken1] = useState();
+  const [showToken2, setShowToken2] = useState();
 
   const loadAccountData = async () => {
+    setShowToken1(null);
+    setShowToken2(null);
+    // setToken1(null);
+    // setToken2(null);
     const addr = getWalletAddress();
+    console.log(addr);
     const chainId = await getChainId();
-    if ((await getWalletAddress()) === null) {
+    const balancesToken1 = await getTokenBalance(token1!, address!);
+    setBalanceOfToken1(formatEther(balancesToken1));
+    const balancesToken2 = await getTokenBalance(token2!, address!);
+    setBalanceOfToken2(formatEther(balancesToken2));
+    if (addr === null) {
       await connectWallet();
-    }
-    if ((await getChainId()) === '0x4') {
-    } else {
       defaultValue();
+    } else {
+      setToken1List(getDataList(token2!));
+      setToken2List(getDataList(token1!));
     }
-    let option: Keyop[] = [];
-    ETH_TOKENS.map((e) => {
-      option.push({
-        value: e.symbol,
-        label: (
-          <div className="flex space-x-px">
-            <img src={e.imageUrl} height="30px" width="30px" />
-            {e.symbol}
-          </div>
-        ),
-        address: e.address,
-      });
-    });
-    setToken1List(option);
-    setToken2List(option);
+    if (chainId !== '0x4') {
+      await changeNetwork();
+      defaultValue();
+    } else {
+      // setNetwork(chainId);
+      setToken1List(getDataList(token2!));
+      setToken2List(getDataList(token1!));
+    }
     setAddress(addr);
     setNetwork(chainId);
+    // setShowToken1(null);
+    // setShowToken2(null);
+    // setToken1(null);
+    // setToken2(null);
+    // const addr = getWalletAddress();
+    // const chainId = await getChainId();
+    // const balances = await getTokenBalance(token1!, address!);
+    // setBalanceOfToken1(formatEther(balances));
+    // if (addr === null) {
+    //   await connectWallet();
+    //   defaultValue();
+    // } else {
+    //   setAddress(addr);
+    //   setToken1List(getDataList(token2!));
+    //   setToken2List(getDataList(token1!));
+    // }
+    // if (chainId !== '0x4') {
+    //   await changeNetwork();
+    //   defaultValue();
+    // } else {
+    //   setToken1List(getDataList(token2!));
+    //   setToken2List(getDataList(token1!));
+    // }
   };
 
+  const defaultValue = () => {
+    setToken1(null);
+    setToken2(null);
+    setAmountADesired(null);
+    setAmountBDesired(null);
+    // setTestOut(null);
+  };
   useEffect(() => {
     loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
+    const handleAccountChange = async (addresses: string[]) => {
       setAddress(addresses[0]);
-
-      loadAccountData();
+      await loadAccountData();
+      defaultValue();
     };
 
-    const handleNetworkChange = (networkId: string) => {
-      setNetwork(networkId);
-      let option: Keyop[] = [];
-      loadAccountData();
+    const handleNetworkChange = async (/*networkId: string*/) => {
+      await loadAccountData();
+      defaultValue();
     };
 
     getEthereum()?.on('accountsChanged', handleAccountChange);
@@ -136,79 +159,79 @@ export default function AddliquidityModule({
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
 
-  const checkHandle = async () => {
-    // address
-    if (getWalletAddress() === null) {
-      await connectWallet();
-      defaultValue();
+  // const checkHandle = async () => {
+  //   // address
+  //   if (getWalletAddress() === null) {
+  //     await connectWallet();
+  //     defaultValue();
 
-      // network
-      if ((await getChainId()) === '0x4') {
-        console.log('is 0x4');
-        return true;
-      } else {
-        console.log('change');
-        await changeNetwork();
-        if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return true;
-        } else {
-          defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return false;
-        }
-      }
-    } else {
-      // network
-      if ((await getChainId()) === '0x4') {
-        console.log('is 0x4');
-        return true;
-      } else {
-        console.log('change');
-        await changeNetwork();
-        if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return true;
-        } else {
-          defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return false;
-        }
-      }
-    }
-  };
+  //     // network
+  //     if ((await getChainId()) === '0x4') {
+  //       console.log('is 0x4');
+  //       return true;
+  //     } else {
+  //       console.log('change');
+  //       await changeNetwork();
+  //       if ((await getChainId()) === '0x4') {
+  //         toast.success('network have changed!', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return true;
+  //       } else {
+  //         defaultValue();
+  //         toast.error('network not change', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return false;
+  //       }
+  //     }
+  //   } else {
+  //     // network
+  //     if ((await getChainId()) === '0x4') {
+  //       console.log('is 0x4');
+  //       return true;
+  //     } else {
+  //       console.log('change');
+  //       await changeNetwork();
+  //       if ((await getChainId()) === '0x4') {
+  //         toast.success('network have changed!', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return true;
+  //       } else {
+  //         defaultValue();
+  //         toast.error('network not change', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return false;
+  //       }
+  //     }
+  //   }
+  // };
 
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
@@ -232,31 +255,39 @@ export default function AddliquidityModule({
 
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
-      // await checkHandle();
-      if (await checkHandle()) {
-        if (e.address !== token2) {
+      if (e.address !== token2) {
+        if (network === '0x4') {
           const balances = await getTokenBalance(e.address, address!);
           setBalanceOfToken1(formatEther(balances));
-          setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_contract)));
-          setToken1(e.address);
-
-          setToken2List(getDataList(e.address));
+          setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_Router)));
         }
+        setToken1(e.address);
+        setShowToken1(e);
+
+        setToken2List(getDataList(e.address));
+        // await checkHandle();
+      } else {
+        setBalanceOfToken1(formatEther(0));
+        // await checkHandle();
       }
     }
   };
 
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
-      if (await checkHandle()) {
-        if (e.address !== token1 && getWalletAddress() != null) {
+      if (e.address !== token1 /*&& getWalletAddress() != null*/) {
+        if (network === '0x4') {
           const balances = await getTokenBalance(e.address, address!);
           setBalanceOfToken2(formatEther(balances));
-          setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_contract)));
-          setToken2(e.address);
-
-          setToken1List(getDataList(e.address));
+          setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_Router)));
         }
+        setToken2(e.address);
+        setShowToken2(e);
+        setToken1List(getDataList(e.address));
+        // await checkHandle();
+      } else {
+        setBalanceOfToken1(formatEther(0));
+        // await checkHandle();
       }
     }
   };
@@ -317,63 +348,23 @@ export default function AddliquidityModule({
       amountADesired > 0 &&
       amountBDesired > 0
     ) {
-      const allowance = formatEther(await getAllowance(token1, address!, addr_contract));
-      const allowance2 = formatEther(await getAllowance(token2, address!, addr_contract));
+      const allowance = formatEther(await getAllowance(token1, address!, addr_Router));
+      const allowance2 = formatEther(await getAllowance(token2, address!, addr_Router));
 
       // console.log(token1, token2);
 
       if (Number(allowance) < amountADesired) {
         console.log('approve A');
-        await callApprove(token1, addr_contract);
+        await callApprove(token1, addr_Router);
         setTokenAllowance1(allowance);
       }
       if (Number(allowance2) < amountBDesired) {
         console.log('approve B');
-        await callApprove(token2, addr_contract);
+        await callApprove(token2, addr_Router);
         setTokenAllowance2(allowance2);
       }
     }
   };
-
-  let option = [{ value: '', label: '', address: '' }];
-  ETH_TOKENS.map((e) =>
-    option.push({
-      value: e.symbol,
-      label: (
-        <div className="flex space-x-px">
-          <img src={e.imageUrl} height="25px" width="25px" />
-          <span className="w-auto h-auto">{e.symbol}</span>
-        </div>
-      ),
-      address: e.address,
-    }),
-  );
-  option.shift();
-
-  // const addTokenToWallet = async (token: Token) => {
-  //   try {
-  //     const wasAdded = await window.ethereum.request({
-  //       method: 'wallet_watchAsset',
-  //       params: {
-  //         type: 'ERC20', // Initially only supports ERC20, but eventually more!
-  //         options: {
-  //           address: token.address, // The address that the token is at.
-  //           symbol: token.symbol, // A ticker symbol or shorthand, up to 5 chars.
-  //           decimals: token.decimals, // The number of decimals in the token
-  //           image: token.imageUrl, // A string url of the token logo
-  //         },
-  //       },
-  //     });
-
-  //     if (wasAdded) {
-  //       console.log('Thanks for your interest!');
-  //     } else {
-  //       console.log('Your loss!');
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const onChangeToken1Handle = async (e: any) => {
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
@@ -428,13 +419,13 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input className="col-span-4 h-20  rounded-lg " placeholder={'Select Token 1'} disabled></input>
+                    <input className="col-span-4 h-20  rounded-lg " value={'Select Token 1'} disabled></input>
                   )}
 
                   <div className="grid grid-cols-6 col-span-1">
                     {/* {here} */}
                     <Select
-                      defaultValue={token1}
+                      value={showToken1}
                       onChange={(e) => {
                         getSelectTokens1(e);
                       }}
@@ -470,11 +461,16 @@ export default function AddliquidityModule({
                       }
                     ></input>
                   ) : (
-                    <input className="col-span-4 h-20  rounded-lg " placeholder={'Select Token 2'} disabled></input>
+                    <input
+                      className="col-span-4 h-20  rounded-lg "
+                      placeholder={'Select Token 2'}
+                      value={'Select Token2'}
+                      disabled
+                    ></input>
                   )}
                   <div className="grid grid-cols-6 col-span-1">
                     <Select
-                      defaultValue={token2}
+                      value={showToken2}
                       onChange={(e) => {
                         getSelectTokens2(e);
                       }}
@@ -541,6 +537,7 @@ export default function AddliquidityModule({
     from-blueswapdark  to-blueswapbutton 
 text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     // onClick={}
+                    disabled
                   >
                     Invalid Pair
                   </button>

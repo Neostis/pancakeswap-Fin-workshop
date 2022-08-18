@@ -47,10 +47,10 @@ const swap = () => {
     }
   }
 
-  const addr_contract = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
+  const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
 
   const [address, setAddress] = useState<string | null>(null);
-  // const [network, setNetwork] = useState<string | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
   const [token1, setToken1] = useState();
   const [token2, setToken2] = useState();
   const [amountIn, setAmountIn] = useState<number | null>(null);
@@ -61,17 +61,12 @@ const swap = () => {
   const [token1List, setToken1List] = useState<Keyop[]>([]);
   const [token2List, setToken2List] = useState<Keyop[]>([]);
 
-  // const [amountOut, setAmountOut] = useState<number | null>(null);
-  // let option = [{ value: '', label: '', address: '' }];
-
-  // option.shift();
-
   const [showToken1, setShowToken1] = useState();
   const [showToken2, setShowToken2] = useState();
 
   const loadAccountData = async () => {
-    // setShowToken1(null);
-    // setShowToken2(null);
+    setShowToken1(null);
+    setShowToken2(null);
     // setToken1(null);
     // setToken2(null);
     const addr = getWalletAddress();
@@ -82,7 +77,6 @@ const swap = () => {
       await connectWallet();
       defaultValue();
     } else {
-      setAddress(addr);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
     }
@@ -90,15 +84,14 @@ const swap = () => {
       await changeNetwork();
       defaultValue();
     } else {
-      // setNetwork(chainId);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
     }
+    setAddress(addr);
+    setNetwork(chainId);
   };
 
   useEffect(() => {
-    // console.log(option);
-
     loadAccountData();
     const handleAccountChange = async (addresses: string[]) => {
       setAddress(addresses[0]);
@@ -108,7 +101,7 @@ const swap = () => {
 
     const handleNetworkChange = async (networkId: string) => {
       // console.log('handle change ' + networkId);
-      // setNetwork(networkId);
+      setNetwork(networkId);
       await loadAccountData();
       defaultValue();
     };
@@ -123,93 +116,93 @@ const swap = () => {
   }, []);
 
   const defaultValue = () => {
-    setToken1(undefined);
-    setToken2(undefined);
+    setToken1(null);
+    setToken2(null);
     // setToken1List([]);
     // setToken2List([]);
     setAmountIn(null);
-    setAmountIn(null);
+    // setAmountIn(null);
     setAmountOut(null);
 
-    setShowToken1(null);
-    setShowToken2(null);
-    setToken1(null);
-    setToken2(null);
+    // setShowToken1(null);
+    // setShowToken2(null);
+    // setToken1(null);
+    // setToken2(null);
   };
 
-  const checkHandle = async () => {
-    // address
-    if (getWalletAddress() === null) {
-      await connectWallet();
-      defaultValue();
+  // const checkHandle = async () => {
+  //   // address
+  //   if (getWalletAddress() === null) {
+  //     await connectWallet();
+  //     defaultValue();
 
-      // network
-      if ((await getChainId()) === '0x4') {
-        console.log('is 0x4');
-        return true;
-      } else {
-        console.log('change');
-        await changeNetwork();
-        if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return true;
-        } else {
-          defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return false;
-        }
-      }
-    } else {
-      // network
-      if ((await getChainId()) === '0x4') {
-        console.log('is 0x4');
-        return true;
-      } else {
-        console.log('change');
-        await changeNetwork();
-        if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return true;
-        } else {
-          defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          return false;
-        }
-      }
-    }
-  };
+  //     // network
+  //     if ((await getChainId()) === '0x4') {
+  //       console.log('is 0x4');
+  //       return true;
+  //     } else {
+  //       console.log('change');
+  //       await changeNetwork();
+  //       if ((await getChainId()) === '0x4') {
+  //         toast.success('network have changed!', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return true;
+  //       } else {
+  //         defaultValue();
+  //         toast.error('network not change', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return false;
+  //       }
+  //     }
+  //   } else {
+  //     // network
+  //     if ((await getChainId()) === '0x4') {
+  //       console.log('is 0x4');
+  //       return true;
+  //     } else {
+  //       console.log('change');
+  //       await changeNetwork();
+  //       if ((await getChainId()) === '0x4') {
+  //         toast.success('network have changed!', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return true;
+  //       } else {
+  //         defaultValue();
+  //         toast.error('network not change', {
+  //           position: 'top-right',
+  //           autoClose: 2500,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: undefined,
+  //         });
+  //         return false;
+  //       }
+  //     }
+  //   }
+  // };
 
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
@@ -236,14 +229,16 @@ const swap = () => {
       if (e.address !== token2) {
         setToken1(e.address);
         setShowToken1(e);
-        const balances = await getTokenBalance(e.address, address!);
-        setBalanceOfToken1(formatEther(balances));
+        if (network === '0x4') {
+          const balances = await getTokenBalance(e.address, address!);
+          setBalanceOfToken1(formatEther(balances));
+        }
         setToken2List(getDataList(e.address));
 
-        await checkHandle();
+        // await checkHandle();
       } else {
         setBalanceOfToken1(formatEther(0));
-        await checkHandle();
+        // await checkHandle();
       }
     }
   };
@@ -255,7 +250,7 @@ const swap = () => {
         setToken2(e.address);
         setShowToken2(e);
         setToken1List(getDataList(e.address));
-        await checkHandle();
+        // await checkHandle();
       }
       // }
     }
@@ -266,7 +261,7 @@ const swap = () => {
 
     // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
-      const allowance = formatEther(await getAllowance(path1, address, addr_contract));
+      const allowance = formatEther(await getAllowance(path1, address, addr_Router));
       if (Number(allowance) > amountIn) {
         console.log('Allowance');
         try {
@@ -293,7 +288,7 @@ const swap = () => {
         }
       } else {
         console.log('approve');
-        callApprove(path1, addr_contract);
+        callApprove(path1, addr_Router);
       }
     } else {
       toast.error('Something Wrong', {
@@ -311,12 +306,12 @@ const swap = () => {
   const onChangeToken1Handle = async (event: any) => {
     // e.prevent;
 
-    if (Number(event) > Number(balanceOfToken1) && !isNaN(event)) {
-      setAmountIn(Number(balanceOfToken1));
+    if (Number(balanceOfToken1) === 0) {
+      setAmountIn(0);
 
       // setAmountOut(await getSwapAmountsOut());
-    } else if (Number(balanceOfToken1) === 0) {
-      setAmountIn(0);
+    } else if (Number(event) > Number(balanceOfToken1) && !isNaN(event)) {
+      setAmountIn(Number(balanceOfToken1));
     } else {
       setAmountIn(event);
       // setAmountOut(await getSwapAmountsOut());
@@ -324,18 +319,25 @@ const swap = () => {
     if (token2 !== null) {
       try {
         let amountOut;
+
         if (event > 0) {
-          amountOut = await getSwapAmountsOut(event, token1, token2);
+          if (event > Number(balanceOfToken1)) {
+            amountOut = await getSwapAmountsOut(Number(balanceOfToken1), token1, token2);
+          } else if (Number(balanceOfToken1) !== 0) {
+            amountOut = await getSwapAmountsOut(event, token1, token2);
+          }
         } else {
           amountOut = 0;
         }
         setAmountOut(amountOut);
-      } catch (error) {}
+      } catch (CALL_EXCEPTION) {
+        console.log('CALL_EXCEPTION ERROR');
+      }
     }
   };
 
   return (
-    <div className="bg-bgtheme py-10 w-auto grid">
+    <div className="bg-bgtheme py-10 w-auto grid min-h-screen">
       {/* แก้grid for set width */}
       <div className="justify-self-center bg-blueWidget rounded-3xl ">
         {/* <div>{address}</div> */}
@@ -350,7 +352,6 @@ const swap = () => {
               options={token1List}
               autoFocus
               placeholder="Select Token 1"
-              // isClearable
             />
 
             {token1 ? (
@@ -391,7 +392,6 @@ const swap = () => {
               options={token2List}
               autoFocus
               placeholder="Select Token 2"
-              // isClearable
             />
 
             <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOutState}</span>
@@ -403,8 +403,7 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                // handleSwap(Number(amountIn), token1, token2);
-                Test();
+                handleSwap(Number(amountIn), token1, token2);
               }}
             >
               Swap

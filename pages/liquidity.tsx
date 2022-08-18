@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const liquidity = () => {
   return (
-    <div className="bg-bgtheme py-10 flex-column w-auto grid">
+    <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
         <div className="rounded-lg  font-bold">
           <div>
@@ -26,7 +26,7 @@ const liquidity = () => {
                 </Link>
               </button>
             </div>
-            <div className="flex-column w-auto grid">
+            <div className="flex-column w-auto grid ">
               <div className="py-10"></div>
               <div className="py-10"></div>
               <div className="py-10"></div>

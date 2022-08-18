@@ -15,7 +15,7 @@ import {
   getTokenBalance,
 } from '../services/wallet-service';
 
-const addr_Router = '0x3e1a682E5a80e822dE1137d21791E066a6d8da0d';
+const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
 
 export const getSwapAmountsOut = async (amountIn: any, token1: any, token2: any) => {
   const path = [token1, token2]; //An array of token addresses

@@ -65,6 +65,12 @@ const swap = () => {
   // let option = [{ value: '', label: '', address: '' }];
 
   // option.shift();
+  const [value, setValue] = useState('one');
+
+  const handleChange = (value: any) => {
+    setValue(value);
+  };
+
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     const chainId = await getChainId();
@@ -319,48 +325,48 @@ const swap = () => {
     }
   };
 
-  const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) => {
-    // const provider = getProvider()!;
-    // const signer = provider.getSigner();
-    // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-    // const path = [path1, path2]; //An array of token addresses
+  // const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) => {
+  //   // const provider = getProvider()!;
+  //   // const signer = provider.getSigner();
+  //   // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
+  //   // const path = [path1, path2]; //An array of token addresses
 
-    // const to = signer.getAddress();
-    // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
+  //   // const to = signer.getAddress();
+  //   // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-    try {
-      // const txResponse = await contract.swapExactTokensForTokens(
-      //   ethers.utils.parseEther(amountIn.toString()),
-      //   0,
-      //   // ethers.utils.parseEther(amountOutMin.toString()),
-      //   path,
-      //   to,
-      //   deadline,
-      // );
+  //   try {
+  //     // const txResponse = await contract.swapExactTokensForTokens(
+  //     //   ethers.utils.parseEther(amountIn.toString()),
+  //     //   0,
+  //     //   // ethers.utils.parseEther(amountOutMin.toString()),
+  //     //   path,
+  //     //   to,
+  //     //   deadline,
+  //     // );
 
-      // await txResponse.wait();
-      swapExactTokensForTokens(amountIn, path1, path2);
-      toast.success('Swap Success!', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } catch (error) {
-      toast.error('Insufficient liquidity for this trade', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
+  //     // await txResponse.wait();
+  //     swapExactTokensForTokens(amountIn, path1, path2);
+  //     toast.success('Swap Success!', {
+  //       position: 'top-right',
+  //       autoClose: 2500,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   } catch (error) {
+  //     toast.error('Insufficient liquidity for this trade', {
+  //       position: 'top-right',
+  //       autoClose: 2500,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   }
+  // };
 
   return (
     <div className="bg-bgtheme py-10 w-auto grid">

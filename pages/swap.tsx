@@ -220,16 +220,16 @@ const swap = () => {
     if (e !== null) {
       // checkHandle();
       // if () {
-        if (e.address !== token2) {
-          setToken1(e.address);
-          const balances = await getTokenBalance(e.address, address!);
-          setBalanceOfToken1(formatEther(balances));
-          setToken2List(getDataList(e.address));
-          await checkHandle()
-        } else {
-          setBalanceOfToken1(formatEther(0));
-          await checkHandle()
-        }
+      if (e.address !== token2) {
+        setToken1(e.address);
+        const balances = await getTokenBalance(e.address, address!);
+        setBalanceOfToken1(formatEther(balances));
+        setToken2List(getDataList(e.address));
+        await checkHandle();
+      } else {
+        setBalanceOfToken1(formatEther(0));
+        await checkHandle();
+      }
       // }
     }
   };
@@ -237,11 +237,11 @@ const swap = () => {
   const getSelectTokens2 = async (e: any) => {
     if (e !== null) {
       // if () {
-        if (e.address !== token1/* && getWalletAddress() != null*/) {
-          setToken2(e.address);
-          setToken1List(getDataList(e.address));
-          await checkHandle()
-        }
+      if (e.address !== token1 /* && getWalletAddress() != null*/) {
+        setToken2(e.address);
+        setToken1List(getDataList(e.address));
+        await checkHandle();
+      }
       // }
     }
   };
@@ -308,7 +308,12 @@ const swap = () => {
     }
     if (token2 !== null) {
       try {
-        const amountOut = await getSwapAmountsOut(event, token1, token2);
+        let amountOut;
+        if (event > 0) {
+          amountOut = await getSwapAmountsOut(event, token1, token2);
+        } else {
+          amountOut = 0;
+        }
         setTestOut(amountOut);
       } catch (error) {}
     }

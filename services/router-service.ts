@@ -105,8 +105,8 @@ export const addLiquidityETH = async (weth: number, token: string, amountTokenDe
     deadline,
     {
       value: ethers.utils.parseEther('0.01'),
-      // gasPrice: 300000,
-      // gasLimit: 9000000,
+      gasPrice: 300000,
+      gasLimit: 9000000,
     },
   );
 

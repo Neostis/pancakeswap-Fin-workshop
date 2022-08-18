@@ -449,6 +449,7 @@ const swap = () => {
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div>{balanceOfToken1}</div>
+      <div>{address}</div>
       {/* <div>tokenAllowance1:{tokenAllowance1}</div> */}
       <div className="py-10"></div>
       <div className="py-10"></div>

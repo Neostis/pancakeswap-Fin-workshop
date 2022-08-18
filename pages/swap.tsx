@@ -56,7 +56,7 @@ const swap = () => {
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
   const amountOut = useRef(0);
-  const [testOut, setTestOut] = useState<string | null>(null);
+  const [amountOutState, setAmountOut] = useState<string | null>(null);
 
   const [token1List, setToken1List] = useState<Keyop[]>([]);
   const [token2List, setToken2List] = useState<Keyop[]>([]);
@@ -65,15 +65,19 @@ const swap = () => {
   // let option = [{ value: '', label: '', address: '' }];
 
   // option.shift();
-  const [value, setValue] = useState('one');
 
-  const handleChange = (value: any) => {
-    setValue(value);
-  };
+  const [showToken1, setShowToken1] = useState();
+  const [showToken2, setShowToken2] = useState();
 
   const loadAccountData = async () => {
+    // setShowToken1(null);
+    // setShowToken2(null);
+    // setToken1(null);
+    // setToken2(null);
     const addr = getWalletAddress();
     const chainId = await getChainId();
+    const balances = await getTokenBalance(token1!, address!);
+    setBalanceOfToken1(formatEther(balances));
     if (addr === null) {
       await connectWallet();
       defaultValue();
@@ -96,17 +100,17 @@ const swap = () => {
     // console.log(option);
 
     loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      // setAddress(addresses[0]);
-      // defaultValue();
-      loadAccountData();
+    const handleAccountChange = async (addresses: string[]) => {
+      setAddress(addresses[0]);
+      await loadAccountData();
+      defaultValue();
     };
 
-    const handleNetworkChange = (networkId: string) => {
-      // defaultValue();
+    const handleNetworkChange = async (networkId: string) => {
       // console.log('handle change ' + networkId);
       // setNetwork(networkId);
-      loadAccountData();
+      await loadAccountData();
+      defaultValue();
     };
 
     getEthereum()?.on('accountsChanged', handleAccountChange);
@@ -125,7 +129,12 @@ const swap = () => {
     // setToken2List([]);
     setAmountIn(null);
     setAmountIn(null);
-    setTestOut(null);
+    setAmountOut(null);
+
+    setShowToken1(null);
+    setShowToken2(null);
+    setToken1(null);
+    setToken2(null);
   };
 
   const checkHandle = async () => {
@@ -224,19 +233,18 @@ const swap = () => {
 
   const getSelectTokens1 = async (e: any) => {
     if (e !== null) {
-      // checkHandle();
-      // if () {
       if (e.address !== token2) {
         setToken1(e.address);
+        setShowToken1(e);
         const balances = await getTokenBalance(e.address, address!);
         setBalanceOfToken1(formatEther(balances));
         setToken2List(getDataList(e.address));
+
         await checkHandle();
       } else {
         setBalanceOfToken1(formatEther(0));
         await checkHandle();
       }
-      // }
     }
   };
 
@@ -245,6 +253,7 @@ const swap = () => {
       // if () {
       if (e.address !== token1 /* && getWalletAddress() != null*/) {
         setToken2(e.address);
+        setShowToken2(e);
         setToken1List(getDataList(e.address));
         await checkHandle();
       }
@@ -255,7 +264,7 @@ const swap = () => {
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     console.log(amountIn, path1, path2);
 
-    // setTestOut(Number(getSwapAmountsOut(token1, token2)));
+    // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
       const allowance = formatEther(await getAllowance(path1, address, addr_contract));
       if (Number(allowance) > amountIn) {
@@ -320,53 +329,10 @@ const swap = () => {
         } else {
           amountOut = 0;
         }
-        setTestOut(amountOut);
+        setAmountOut(amountOut);
       } catch (error) {}
     }
   };
-
-  // const swapExactTokensForTokensHandle = async (amountIn: number, path1: string, path2: string) => {
-  //   // const provider = getProvider()!;
-  //   // const signer = provider.getSigner();
-  //   // const contract = new ethers.Contract(addr_contract, abi_contract, signer);
-  //   // const path = [path1, path2]; //An array of token addresses
-
-  //   // const to = signer.getAddress();
-  //   // const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
-
-  //   try {
-  //     // const txResponse = await contract.swapExactTokensForTokens(
-  //     //   ethers.utils.parseEther(amountIn.toString()),
-  //     //   0,
-  //     //   // ethers.utils.parseEther(amountOutMin.toString()),
-  //     //   path,
-  //     //   to,
-  //     //   deadline,
-  //     // );
-
-  //     // await txResponse.wait();
-  //     swapExactTokensForTokens(amountIn, path1, path2);
-  //     toast.success('Swap Success!', {
-  //       position: 'top-right',
-  //       autoClose: 2500,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   } catch (error) {
-  //     toast.error('Insufficient liquidity for this trade', {
-  //       position: 'top-right',
-  //       autoClose: 2500,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   }
-  // };
 
   return (
     <div className="bg-bgtheme py-10 w-auto grid">
@@ -376,14 +342,15 @@ const swap = () => {
         <div className="w-96 rounded-lg  font-bold">
           <div className="py-2 flex-column w-auto grid text-textblack ">
             <Select
-              defaultValue={token1}
+              // defaultValue={token1}
+              value={showToken1}
               onChange={(e) => {
                 getSelectTokens1(e);
               }}
               options={token1List}
               autoFocus
               placeholder="Select Token 1"
-              isClearable
+              // isClearable
             />
 
             {token1 ? (
@@ -417,17 +384,17 @@ const swap = () => {
           </div>
           <div className="flex-column w-auto grid text-textblack">
             <Select
-              defaultValue={token2}
+              value={showToken2}
               onChange={(e) => {
                 getSelectTokens2(e);
               }}
               options={token2List}
               autoFocus
               placeholder="Select Token 2"
-              isClearable
+              // isClearable
             />
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {testOut}</span>
+            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOutState}</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button
@@ -436,7 +403,8 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                handleSwap(Number(amountIn), token1, token2);
+                // handleSwap(Number(amountIn), token1, token2);
+                Test();
               }}
             >
               Swap

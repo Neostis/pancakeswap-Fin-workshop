@@ -27,6 +27,7 @@ export const getSwapAmountsOut = async (amountIn: any, token1: any, token2: any)
       // await tx.wait();
       // console.log(tx);
       const a = Number(ethers.utils.formatEther(tx[1]));
+
       //ได้
       return a.toFixed(6);
 
@@ -36,6 +37,7 @@ export const getSwapAmountsOut = async (amountIn: any, token1: any, token2: any)
       return 0;
     }
   }
+
   return 0;
 
   // setAmountOut(a);

@@ -25,7 +25,7 @@ import {
 import { ETH_TOKENS } from '../constants/tokens';
 import Select from 'react-select';
 
-import { addLiquidity, addLiquidityETH } from '../services/router-service';
+import { addLiquidity, addLiquidityETH, _removeLiquidity, _removeLiquidityETH } from '../services/router-service';
 
 type Keyop = {
   value: any;
@@ -81,24 +81,12 @@ export default function AddliquidityModule({
   const [showToken2, setShowToken2] = useState();
 
   const [toggle, setToggle] = useState(true);
-  const [Mode, setMode] = useState('ADD');
-
-  const toggleClass = ' transform translate-x-5';
-
-  const a = () => {
-    setToggle(!toggle);
-
-    if (Mode === 'ADD') {
-      setMode('REMOVE');
-    } else if (Mode === 'REMOVE') {
-      setMode('ADD');
-    }
-  };
+  const toggleClass = ' transform translate-x-6';
 
   const modeName = () => {
-    if (Mode === 'ADD') {
+    if (toggle) {
       return 'ADD Liquidity';
-    } else if (Mode === 'REMOVE') {
+    } else if (!toggle) {
       return 'REMOVE Liquidity';
     }
   };
@@ -317,6 +305,108 @@ export default function AddliquidityModule({
   };
 
   const handleAddLiquidity = async () => {
+    // if (
+    //   token1 !== undefined &&
+    //   token2 !== undefined &&
+    //   amountADesired !== null &&
+    //   amountBDesired !== null &&
+    //   amountADesired > 0 &&
+    //   amountBDesired > 0
+    // ) {
+    try {
+      console.log(
+        ethers.utils.parseEther(amountADesired.toString()),
+        ethers.utils.parseEther(amountBDesired.toString()),
+      );
+
+      if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await addLiquidityETH(amountADesired /*WETH is token1*/, token2 /*address other token*/, amountBDesired);
+      } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await addLiquidityETH(amountBDesired /*WETH is token2*/, token1 /*address other token*/, amountADesired);
+      } else {
+        await addLiquidity(token1, token2, amountADesired, amountBDesired);
+      }
+
+      toast.success('Success!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error: any) {
+      if (error.code == 4001) {
+        toast.warn('Transaction Cancelled', {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
+        toast.error('UNPREDICTABLE_GAS_LIMIT', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+      // }
+    }
+  };
+
+  const handleRemoveLiquidity = async () => {
+    try {
+      if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await _removeLiquidityETH(token2, 0.0001);
+      } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await _removeLiquidityETH(token1, 0.0001);
+      } else {
+        await _removeLiquidity(token1, token2, 0.0001);
+      }
+
+      toast.success('Success!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error: any) {
+      if (error.code == 4001) {
+        toast.warn('Transaction Cancelled', {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
+        toast.error('UNPREDICTABLE_GAS_LIMIT', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  const handleModeCheck = async () => {
     if (
       token1 !== undefined &&
       token2 !== undefined &&
@@ -325,51 +415,10 @@ export default function AddliquidityModule({
       amountADesired > 0 &&
       amountBDesired > 0
     ) {
-      try {
-        console.log(
-          ethers.utils.parseEther(amountADesired.toString()),
-          ethers.utils.parseEther(amountBDesired.toString()),
-        );
-
-        if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-          await addLiquidityETH(amountADesired /*WETH is token1*/, token2 /*address other token*/, amountBDesired);
-        } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-          await addLiquidityETH(amountBDesired /*WETH is token2*/, token1 /*address other token*/, amountADesired);
-        } else {
-          await addLiquidity(token1, token2, amountADesired, amountBDesired);
-        }
-
-        toast.success('Success!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } catch (error: any) {
-        if (error.code == 4001) {
-          toast.warn('Transaction Cancelled', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
-          toast.error('UNPREDICTABLE_GAS_LIMIT', {
-            position: 'top-right',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
+      if (toggle) {
+        handleAddLiquidity();
+      } else if (!toggle) {
+        handleRemoveLiquidity();
       }
     }
   };
@@ -440,11 +489,11 @@ export default function AddliquidityModule({
             <div
               className={
                 toggle
-                  ? 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-addToggle rounded-full p-1 transform cursor-pointer top-0 right-0 flex space-x-px'
-                  : 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-removeToggle rounded-full p-1 transform cursor-pointer top-0 right-0 flex space-x-px'
+                  ? 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-addToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
+                  : 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-removeToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
               }
               onClick={() => {
-                a();
+                setToggle(!toggle);
               }}
             >
               <div
@@ -567,7 +616,7 @@ export default function AddliquidityModule({
                         className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 
                         text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-                        onClick={handleAddLiquidity}
+                        onClick={handleModeCheck}
                       >
                         Supply
                       </button>

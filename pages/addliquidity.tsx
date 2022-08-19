@@ -392,12 +392,10 @@ export default function addliquidity({
 
   const handleRemoveLiquidity = async () => {
     try {
-      if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        await _removeLiquidityETH(token2, 0.0001);
-      } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        await _removeLiquidityETH(token1, 0.0001);
+      if (pairLP == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await _removeLiquidityETH(pairLP, 0.0001);
       } else {
-        await _removeLiquidity(token1, token2, 0.0001);
+        await _removeLiquidity(pairLP, pairLP, 0.0001);
       }
 
       toast.success('Success!', {
@@ -445,7 +443,9 @@ export default function addliquidity({
     ) {
       if (toggle) {
         handleAddLiquidity();
-      } else if (!toggle) {
+      }
+    } else if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
+      if (!toggle) {
         handleRemoveLiquidity();
       }
     }

@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
-import { getAllPairsDetails } from '../constants/tokens.ts';
+import { getAllPairsDetails } from '../constants/tokens';
 // import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
 
 type Keyop = {
@@ -146,13 +146,13 @@ function PairLiquidity() {
             return(
               <div>
 
-                <div className='flex'>
+                <div className='flex space-x-px'>
                 <img src={e.token0.imageUrl} height="30px" width="30px" />
                 <h1> 
                 {e.token0.name}
                  </h1>
                   </div>
-                <div className='flex'>
+                <div className='flex space-x-px'>
                 <img src={e.token1.imageUrl} height="30px" width="30px" />
                 <h1> 
                 {e.token1.name}

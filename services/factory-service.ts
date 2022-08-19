@@ -31,7 +31,7 @@ export const _allPairsLength = async () => {
 
 export const AllPairs = async (pairsLength: number) => {
   const pairList = [];
-  const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
+  // const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
   for (let i = 0; i < pairsLength; i++) {
     pairList.push(await _allPairs(i));
   }
@@ -39,11 +39,8 @@ export const AllPairs = async (pairsLength: number) => {
 };
 
 export const _allPairs = async (Index: number) => {
-  //   const provider = getProvider()!;
-  //   const signer = provider.getSigner();
   const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
   return contract.allPairs(Index);
-  //   return tx;
 };
 
 export const getAllPairsToken = async (pairList: []) => {

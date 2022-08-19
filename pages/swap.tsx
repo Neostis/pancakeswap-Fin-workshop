@@ -131,79 +131,79 @@ const swap = () => {
     // setToken2(null);
   };
 
-  // const checkHandle = async () => {
-  //   // address
-  //   if (getWalletAddress() === null) {
-  //     await connectWallet();
-  //     defaultValue();
+  const checkHandle = async () => {
+    // address
+    if (getWalletAddress() === null) {
+      await connectWallet();
+      defaultValue();
 
-  //     // network
-  //     if ((await getChainId()) === '0x4') {
-  //       console.log('is 0x4');
-  //       return true;
-  //     } else {
-  //       console.log('change');
-  //       await changeNetwork();
-  //       if ((await getChainId()) === '0x4') {
-  //         toast.success('network have changed!', {
-  //           position: 'top-right',
-  //           autoClose: 2500,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         return true;
-  //       } else {
-  //         defaultValue();
-  //         toast.error('network not change', {
-  //           position: 'top-right',
-  //           autoClose: 2500,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         return false;
-  //       }
-  //     }
-  //   } else {
-  //     // network
-  //     if ((await getChainId()) === '0x4') {
-  //       console.log('is 0x4');
-  //       return true;
-  //     } else {
-  //       console.log('change');
-  //       await changeNetwork();
-  //       if ((await getChainId()) === '0x4') {
-  //         toast.success('network have changed!', {
-  //           position: 'top-right',
-  //           autoClose: 2500,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         return true;
-  //       } else {
-  //         defaultValue();
-  //         toast.error('network not change', {
-  //           position: 'top-right',
-  //           autoClose: 2500,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         return false;
-  //       }
-  //     }
-  //   }
-  // };
+      // network
+      if ((await getChainId()) === '0x4') {
+        console.log('is 0x4');
+        return true;
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) === '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return true;
+        } else {
+          defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return false;
+        }
+      }
+    } else {
+      // network
+      if ((await getChainId()) === '0x4') {
+        console.log('is 0x4');
+        return true;
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) === '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return true;
+        } else {
+          defaultValue();
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return false;
+        }
+      }
+    }
+  };
 
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
@@ -236,10 +236,10 @@ const swap = () => {
         }
         setToken2List(getDataList(e.address));
 
-        // await checkHandle();
+        await checkHandle();
       } else {
         setBalanceOfToken1(formatEther(0));
-        // await checkHandle();
+        await checkHandle();
       }
     }
   };
@@ -251,7 +251,7 @@ const swap = () => {
         setToken2(e.address);
         setShowToken2(e);
         setToken1List(getDataList(e.address));
-        // await checkHandle();
+        await checkHandle();
       }
       // }
     }

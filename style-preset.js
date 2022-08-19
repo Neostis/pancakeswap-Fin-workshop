@@ -27,7 +27,8 @@ module.exports = {
       'bgtheme': '#507DAC',
       'roundedbuttonswap' : '#2A5295',
       'blueswapbuttonOn' : '#0C2F6B',
-      
+      'removeToggle' : '#740000',
+      'addToggle' : '#153A15',
     }
     
   }

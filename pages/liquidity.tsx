@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import PairLiquidity from '../components/PairLiquidity';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -87,30 +88,31 @@ const liquidity = () => {
      text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                 onClick={handleClickOpen}
               >
-                {/* <Link
+                <Link
                   href="/pool"
                   className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                   from-blueswapdark  to-blueswapbutton
          text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                 >
-                  All Pool
-                </Link> */}
-                All Pool
+                  Pool
+                </Link>
               </button>
 
-              <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+              {/* <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                 <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
                   Pool
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
-                  <Typography gutterBottom>Text here</Typography>
+                  <Typography gutterBottom>
+                    <PairLiquidity />
+                  </Typography>
                 </DialogContent>
                 <DialogActions>
                   <button autoFocus onClick={handleClose}>
                     OK
                   </button>
                 </DialogActions>
-              </BootstrapDialog>
+              </BootstrapDialog> */}
             </div>
             <div className="flex-column w-auto grid ">
               <div className="py-10"></div>

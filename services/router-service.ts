@@ -164,11 +164,3 @@ export const _removeLiquidityETH = async (token: string, liquidity: number) => {
     deadline,
   );
 };
-
-export const _allPairsLength = async () => {
-  const provider = getProvider()!;
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(addr_Router, abi_Factory, signer);
-  const tx = await contract.allPairsLength();
-  return tx.wait();
-};

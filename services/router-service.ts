@@ -2,6 +2,7 @@ import * as ethers from 'ethers';
 import abi from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import abi_Router from '../ABI_CONTRACT/abi.json';
+import abi_Factory from '../ABI_CONTRACT/abi-Factory.json';
 import {
   connectWallet,
   getBalance,
@@ -16,7 +17,7 @@ import {
 } from '../services/wallet-service';
 
 const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
-
+const addr_Factory = '0x1858F08ce7425B2715d870c20e0e2c79899994aa';
 export const getSwapAmountsOut = async (amountIn: any, token1: any, token2: any) => {
   const path = [token1, token2]; //An array of token addresses
   const contract = new ethers.Contract(addr_Router, abi_Router, getProvider()!);
@@ -113,4 +114,61 @@ export const addLiquidityETH = async (weth: number, token: string, amountTokenDe
   );
 
   // await tx.wait();
+};
+
+// // **** REMOVE LIQUIDITY ****
+// function removeLiquidity(
+//   address tokenA,
+//   address tokenB,
+//   uint256 liquidity,
+//   uint256 amountAMin,
+//   uint256 amountBMin,
+//   address to,
+//   uint256 deadline
+export const _removeLiquidity = async (tokenA: string, tokenB: string, liquidity: number) => {
+  const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000;
+  const provider = getProvider()!;
+  const signer = provider.getSigner();
+  const to = signer.getAddress();
+  const contract = new ethers.Contract(addr_Router, abi_Router, signer);
+  const tx = await contract.removeLiquidity(
+    tokenA,
+    tokenB,
+    ethers.utils.parseEther(liquidity.toString()),
+    0,
+    0,
+    to,
+    deadline,
+  );
+};
+
+// function removeLiquidityETH(
+//   address token,
+//   uint256 liquidity,
+//   uint256 amountTokenMin,
+//   uint256 amountETHMin,
+//   address to,
+//   uint256 deadline
+export const _removeLiquidityETH = async (token: string, liquidity: number) => {
+  const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000;
+  const provider = getProvider()!;
+  const signer = provider.getSigner();
+  const to = signer.getAddress();
+  const contract = new ethers.Contract(addr_Router, abi_Router, signer);
+  const tx = await contract.removeLiquidityETH(
+    token,
+    ethers.utils.parseEther(liquidity.toString()),
+    0,
+    0,
+    to,
+    deadline,
+  );
+};
+
+export const _allPairsLength = async () => {
+  const provider = getProvider()!;
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(addr_Router, abi_Factory, signer);
+  const tx = await contract.allPairsLength();
+  return tx.wait();
 };

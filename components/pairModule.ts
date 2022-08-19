@@ -10,10 +10,10 @@ import {
 } from '../services/wallet-service';
 import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
+import { getBalanceOf } from '../services/pair-service';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
-import { formatEther, parseUnits } from 'ethers/lib/utils';
 import { getAllPairsDetails } from '../constants/tokens';
-// import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
+import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
 
 type Keyop = {
   value: any;
@@ -49,94 +49,74 @@ type token1 ={
 
 
 
-function PairLiquidity() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [network, setNetwork] = useState<string | null>(null);
-  const [pairList, setPairList] = useState([]);
-  const [allPairsLength, setAllPairLength] = useState<string | null>(null);
-  const [allPairsToken, setAllPairsToken] = useState([]);
-  const [dataList, setDataList] = useState([{}]);
+export const pairModule = async()=> {
+//   const [dataList, setDataList] = useState([{}]);
+    const dataList = []
 
-  const loadAccountData = async () => {
-    // setToken1(null);
-    // setToken2(null);
-    const addr = getWalletAddress();
-    const chainId = await getChainId();
     const length = await _allPairsLength();
     const data = [];
-    setAllPairLength(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
-    setPairList(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString()));
-    // setAllPairsToken(
-      //   await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
-      // )
-      
+    
     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
     let ordersData = (
       await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
     ).map((e,index) => {
       
+
       return (
-     {   [`${allPair[index]}`] :
-        {
-        token0: getAllPairsDetails(e.token0),
-        token1: getAllPairsDetails(e.token1),
-      },
-    }
+            dataList.push(   {   [`${allPair[index]}`] :
+            {
+            token0: getAllPairsDetails(e.token0),
+            token1: getAllPairsDetails(e.token1),
+          },
+        })
       )
      }
     );
-    setDataList(ordersData)
-    console.log(ordersData)
-    // const balances = await gdataTokenBalance(token1!, address!);
-    // setBalanceOfToken1(formatEther(balances));
-    if (addr === null) {
-      await connectWallet();
-      //   defaultValue();
-    } else {
-      //   setToken1List(getDataList(token2!));
-      //   setToken2List(getDataList(token1!));
-    }
-    if (chainId !== '0x4') {
-      await changeNetwork();
-      //   defaultValue();
-    } else {
-      //   setToken1List(getDataList(token2!));
-      //   setToken2List(getDataList(token1!));
-    }
-    // setAddress(addr);
-    // setNetwork(chainId);
-  };
-
-  useEffect(() => {
-    loadAccountData();
-
-    const handleAccountChange = async (addresses: string[]) => {
-      setAddress(addresses[0]);
-      await loadAccountData();
-      //   defaultValue();
-    };
-
-    const handleNetworkChange = async (networkId: string) => {
-      // console.log('handle change ' + networkId);
-      setNetwork(networkId);
-      await loadAccountData();
-      //   defaultValue();
-    };
-
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-
- 
-  }, []);
-
-
-
 
   return dataList
 
 }
-export default PairLiquidity;
+export const pairFilter = async()=> {
+//   const [dataList, setDataList] = useState([{}]);
+    const dataList = []
+    let count =0;
+    const length = await _allPairsLength();
+    const addr =  await getWalletAddress()!;
+    const data = [];
+    
+    const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
+    let ordersData = (
+      await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
+    ).map(async(e,index) => {
+    console.log(allPair[index],addr)
+
+    // console.log(Number(balance) > 0);
+    // if(Number(balance) > 0){
+    return(
+
+       
+            dataList.push(   {   [`${allPair[index]}`] :
+            {
+                token0: getAllPairsDetails(e.token0),
+                token1: getAllPairsDetails(e.token1),
+            },
+        })
+        // )
+        )
+    // }
+}
+
+    );
+    return dataList
+
+}
+
+
+
+
+
+
+// export default PairLiquidity;
 
 //   return (
 //     <div>

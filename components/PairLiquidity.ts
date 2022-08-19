@@ -49,7 +49,7 @@ type token1 ={
 
 
 
-function PairLiquidity() {
+export const PairLiquidity = ()=> {
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
   const [pairList, setPairList] = useState([]);
@@ -136,7 +136,7 @@ function PairLiquidity() {
   return dataList
 
 }
-export default PairLiquidity;
+// export default PairLiquidity;
 
 //   return (
 //     <div>

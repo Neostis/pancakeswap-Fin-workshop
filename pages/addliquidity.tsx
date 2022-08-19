@@ -33,7 +33,7 @@ type Keyop = {
   address: any;
 };
 
-export default function AddliquidityModule({
+export default function addliquidity({
   setModule,
   account,
 }: {
@@ -80,6 +80,12 @@ export default function AddliquidityModule({
   const [showToken1, setShowToken1] = useState();
   const [showToken2, setShowToken2] = useState();
 
+  const [pairLPList, setPairLPList] = useState<Keyop[]>([]);
+  const [pairLP, setPairLP] = useState();
+  const [amountLP, setAmountLP] = useState<number | null>(null);
+  const [balanceOfLP, setBalanceOfLP] = useState<string | null>(null);
+  const [showLP, setShowLP] = useState();
+
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
 
@@ -94,6 +100,7 @@ export default function AddliquidityModule({
   const loadAccountData = async () => {
     setShowToken1(null);
     setShowToken2(null);
+    setShowLP(null);
     // setToken1(null);
     // setToken2(null);
     const addr = getWalletAddress();
@@ -103,12 +110,18 @@ export default function AddliquidityModule({
     setBalanceOfToken1(formatEther(balancesToken1));
     const balancesToken2 = await getTokenBalance(token2!, address!);
     setBalanceOfToken2(formatEther(balancesToken2));
+
+    //fix
+    setBalanceOfLP(formatEther(10000));
+
     if (addr === null) {
       await connectWallet();
       defaultValue();
     } else {
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
+      //fix
+      setPairLPList(getDataList(''));
     }
     if (chainId !== '0x4') {
       await changeNetwork();
@@ -117,6 +130,8 @@ export default function AddliquidityModule({
       // setNetwork(chainId);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
+      //fix
+      setPairLPList(getDataList(''));
     }
     setAddress(addr);
     setNetwork(chainId);
@@ -266,53 +281,66 @@ export default function AddliquidityModule({
   };
 
   const getSelectTokens1 = async (e: any) => {
-    if (e !== null) {
-      if (e.address !== token2) {
-        if (network === '0x4') {
-          const balances = await getTokenBalance(e.address, address!);
-          setBalanceOfToken1(formatEther(balances));
-          setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_Router)));
-        }
-        setToken1(e.address);
-        setShowToken1(e);
+    if (toggle) {
+      if (e !== null) {
+        if (e.address !== token2) {
+          if (network === '0x4') {
+            const balances = await getTokenBalance(e.address, address!);
+            setBalanceOfToken1(formatEther(balances));
+            setTokenAllowance1(formatEther(await getAllowance(e.address, address!, addr_Router)));
+          }
+          setToken1(e.address);
+          setShowToken1(e);
 
-        setToken2List(getDataList(e.address));
-        await checkHandle();
-      } else {
-        setBalanceOfToken1(formatEther(0));
-        await checkHandle();
+          setToken2List(getDataList(e.address));
+          await checkHandle();
+        } else {
+          setBalanceOfToken1(formatEther(0));
+          await checkHandle();
+        }
       }
     }
   };
 
   const getSelectTokens2 = async (e: any) => {
-    if (e !== null) {
-      if (e.address !== token1 /*&& getWalletAddress() != null*/) {
+    if (toggle) {
+      if (e !== null) {
+        if (e.address !== token1) {
+          if (network === '0x4') {
+            const balances = await getTokenBalance(e.address, address!);
+            setBalanceOfToken2(formatEther(balances));
+            setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_Router)));
+          }
+          setToken2(e.address);
+          setShowToken2(e);
+          setToken1List(getDataList(e.address));
+          await checkHandle();
+        } else {
+          setBalanceOfToken1(formatEther(0));
+          await checkHandle();
+        }
+      }
+    }
+  };
+
+  const getSelectRemoveLiq = async (e: any) => {
+    if (!toggle) {
+      if (e !== null) {
         if (network === '0x4') {
           const balances = await getTokenBalance(e.address, address!);
-          setBalanceOfToken2(formatEther(balances));
-          setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_Router)));
+          setBalanceOfLP(formatEther(balances));
+
+          // setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_Router)));
         }
-        setToken2(e.address);
-        setShowToken2(e);
-        setToken1List(getDataList(e.address));
-        await checkHandle();
-      } else {
-        setBalanceOfToken1(formatEther(0));
+        setPairLP(e.address);
+        setShowLP(e);
+        // setPairLPList(getDataList(''));
         await checkHandle();
       }
     }
   };
 
   const handleAddLiquidity = async () => {
-    // if (
-    //   token1 !== undefined &&
-    //   token2 !== undefined &&
-    //   amountADesired !== null &&
-    //   amountBDesired !== null &&
-    //   amountADesired > 0 &&
-    //   amountBDesired > 0
-    // ) {
     try {
       console.log(
         ethers.utils.parseEther(amountADesired.toString()),
@@ -476,6 +504,21 @@ export default function AddliquidityModule({
     }
   };
 
+  const onChangePairLPHandle = async (e: any) => {
+    console.log(123);
+
+    if (Number(e) > Number(balanceOfLP) && !isNaN(e)) {
+      setAmountLP(Number(balanceOfLP));
+
+      // setAmountOut(await getSwapAmountsOut());
+    } else if (Number(balanceOfLP) === 0) {
+      setAmountLP(0);
+    } else {
+      setAmountLP(e);
+      // setAmountOut(await getSwapAmountsOut());
+    }
+  };
+
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
@@ -505,90 +548,223 @@ export default function AddliquidityModule({
             </div>
 
             <div className="flex-column w-auto grid">
-              <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
-                <div className="grid grid-cols-5 text-textblack ">
-                  {token1 ? (
-                    <input
-                      className="col-span-4 h-20 rounded-lg "
-                      type="number"
-                      value={amountADesired}
-                      onChange={
-                        (e) => onChangeToken1Handle(Number(e.target.value))
+              {toggle ? (
+                <div>
+                  {' '}
+                  <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
+                    <div className="grid grid-cols-5 text-textblack ">
+                      {token1 ? (
+                        <input
+                          className="col-span-4 h-20 rounded-lg "
+                          type="number"
+                          value={amountADesired}
+                          onChange={(e) => onChangeToken1Handle(Number(e.target.value))}
+                        ></input>
+                      ) : (
+                        <input className="col-span-4 h-20  rounded-lg " value={'Select Token 1'} disabled></input>
+                      )}
 
-                        // Number(e.target.value) > Number(balanceOfToken1) && !isNaN(e.target.value)
-                        //   ? setAmountADesired(balanceOfToken1)
-                        //   : setAmountADesired(e.target.value)
-                      }
-                    ></input>
-                  ) : (
-                    <input className="col-span-4 h-20  rounded-lg " value={'Select Token 1'} disabled></input>
-                  )}
-
-                  <div className="grid grid-cols-6 col-span-1">
-                    {/* {here} */}
-                    <Select
-                      value={showToken1}
-                      onChange={(e) => {
-                        getSelectTokens1(e);
-                      }}
-                      options={token1List}
-                      autoFocus
-                      placeholder="Select Token 1"
-                      // isClearable
-                      className="col-span-6 w-auto h-auto  cursor-pointer"
-                    />
+                      <div className="grid grid-cols-6 col-span-1">
+                        <Select
+                          value={showToken1}
+                          onChange={(e) => {
+                            getSelectTokens1(e);
+                          }}
+                          options={token1List}
+                          autoFocus
+                          placeholder="Select Token 1"
+                          className="col-span-6 w-auto h-auto  cursor-pointer"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className=" flex-column w-auto grid text-textblack h-12">
-                <button className="">+</button>
-              </div>
-
-              {/* <div className="">{tokenBalances[tokenPair.token2.symbol] || 0}</div> */}
-
-              <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
-                <div className="grid grid-cols-5 text-textblack ">
-                  {token2 ? (
-                    <input
-                      className="col-span-4 h-20  rounded-lg "
-                      type="number"
-                      value={amountBDesired}
-                      onChange={
-                        (e) => {
-                          onChangeToken2Handle(Number(e.target.value));
-                        }
-                        // Number(e.target.value) > Number(balanceOfToken2) && !isNaN(e.target.value)
-                        //   ? setAmountBDesired(balanceOfToken2)
-                        //   : setAmountBDesired(e.target.value)
-                      }
-                    ></input>
-                  ) : (
-                    <input
-                      className="col-span-4 h-20  rounded-lg "
-                      placeholder={'Select Token 2'}
-                      value={'Select Token2'}
-                      disabled
-                    ></input>
-                  )}
-                  <div className="grid grid-cols-6 col-span-1">
-                    <Select
-                      value={showToken2}
-                      onChange={(e) => {
-                        getSelectTokens2(e);
-                      }}
-                      options={token2List}
-                      autoFocus
-                      placeholder="Select Token 2"
-                      // isClearable
-                      className="col-span-6 w-auto h-auto cursor-pointer"
-                    />
-
-                    {/* <div className="col-span-2">˅</div> */}
+                  <div className=" flex-column w-auto grid text-textblack h-12">
+                    <button className="">+</button>
                   </div>
-                </div>
-              </div>
+                  <div className="bg-textwhite rounded-lg w-10/12 justify-self-center">
+                    <div className="grid grid-cols-5 text-textblack ">
+                      {token2 ? (
+                        <input
+                          className="col-span-4 h-20  rounded-lg "
+                          type="number"
+                          value={amountBDesired}
+                          onChange={
+                            (e) => {
+                              onChangeToken2Handle(Number(e.target.value));
+                            }
+                            // Number(e.target.value) > Number(balanceOfToken2) && !isNaN(e.target.value)
+                            //   ? setAmountBDesired(balanceOfToken2)
+                            //   : setAmountBDesired(e.target.value)
+                          }
+                        ></input>
+                      ) : (
+                        <input
+                          className="col-span-4 h-20  rounded-lg "
+                          placeholder={'Select Token 2'}
+                          value={'Select Token2'}
+                          disabled
+                        ></input>
+                      )}
+                      <div className="grid grid-cols-6 col-span-1">
+                        <Select
+                          value={showToken2}
+                          onChange={(e) => {
+                            getSelectTokens2(e);
+                          }}
+                          options={token2List}
+                          autoFocus
+                          placeholder="Select Token 2"
+                          // isClearable
+                          className="col-span-6 w-auto h-auto cursor-pointer"
+                        />
 
-              {token1 && token2 && amountADesired && amountBDesired ? (
+                        {/* <div className="col-span-2">˅</div> */}
+                      </div>
+                    </div>
+                  </div>
+                  {token1 && token2 && amountADesired && amountBDesired ? (
+                    <div className="py-10 flex-column w-auto grid text-textblack ">
+                      {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                        <button
+                          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                     from-blueswapdark  to-blueswapbutton 
+                     text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                          disabled
+                        >
+                          Approve
+                        </button>
+                      ) : (
+                        <button
+                          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                      from-blueswapdark  to-blueswapbutton
+              text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                          onClick={handleApprove}
+                        >
+                          Approve
+                        </button>
+                      )}
+
+                      <div className="py-10 flex-column w-auto grid text-textblack ">
+                        {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                          <button
+                            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                            onClick={handleModeCheck}
+                          >
+                            Supply
+                          </button>
+                        ) : (
+                          <button
+                            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                            disabled
+                          >
+                            Supply
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-10 flex-column w-auto grid text-textblack ">
+                      <button
+                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+    from-blueswapdark  to-blueswapbutton 
+text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                        // onClick={}
+                        disabled
+                      >
+                        Invalid Pair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {' '}
+                  <div className="flex-column w-auto grid text-textblack">
+                    <Select
+                      value={showLP}
+                      onChange={(e) => {
+                        getSelectRemoveLiq(e);
+                      }}
+                      options={pairLPList}
+                      autoFocus
+                      placeholder="Select pair"
+                    />
+                    {pairLP ? (
+                      <input
+                        className="col-span-4 h-20 rounded-lg "
+                        type="number"
+                        value={amountLP}
+                        onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
+                      ></input>
+                    ) : (
+                      <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
+                    )}
+                  </div>
+                  {pairLP && amountLP ? (
+                    <div className="py-10 flex-column w-auto grid text-textblack ">
+                      {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                        <button
+                          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                     from-blueswapdark  to-blueswapbutton 
+                     text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                          disabled
+                        >
+                          Approve
+                        </button>
+                      ) : (
+                        <button
+                          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                      from-blueswapdark  to-blueswapbutton
+              text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                          onClick={handleApprove}
+                        >
+                          Approve
+                        </button>
+                      )}
+
+                      <div className="py-10 flex-column w-auto grid text-textblack ">
+                        {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                          <button
+                            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
+                            onClick={handleModeCheck}
+                          >
+                            Supply
+                          </button>
+                        ) : (
+                          <button
+                            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        from-blueswapdark  to-blueswapbutton 
+                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                            disabled
+                          >
+                            Supply
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-10 flex-column w-auto grid text-textblack ">
+                      <button
+                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+    from-blueswapdark  to-blueswapbutton 
+text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
+                        // onClick={}
+                        disabled
+                      >
+                        Invalid Pair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* {token1 && token2 && amountADesired && amountBDesired ? (
                 <div className="py-10 flex-column w-auto grid text-textblack ">
                   {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
                     <button
@@ -644,7 +820,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     Invalid Pair
                   </button>
                 </div>
-              )}
+              )} */}
 
               <ToastContainer
                 position="top-right"
@@ -672,6 +848,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         <div>{amountBDesired}</div>
         <div>tokenAllowance1:{tokenAllowance1}</div>
         <div>tokenAllowance2:{tokenAllowance2}</div>
+        <br />
       </div>
       <div className="py-10"></div>
       {/* <div className="py-4 flex-column w-auto grid text-textblack "> */}

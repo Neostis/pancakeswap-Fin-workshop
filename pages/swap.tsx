@@ -19,7 +19,7 @@ import {
 } from '../services/wallet-service';
 import { getSwapAmountsOut, swapExactTokensForTokens } from '../services/router-service';
 
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
+import { ETH_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';

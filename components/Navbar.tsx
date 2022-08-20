@@ -12,11 +12,35 @@ import {
   getProvider,
   getWalletAddress,
 } from '../services/wallet-service';
+import { pairModule } from './pairModule';
 
 function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [network, setNetwork] = useState<string | null>(null);
+  // const [dataListObject, setDataListObject] = useState([{}]);
+
+  // const getData = async () => {
+  //   try {
+  //     if (typeof window !== 'undefined') {
+  //       // console.log("You are on the browser");
+
+  //       let savedDataList = window.localStorage.getItem('dataList');
+  //       console.log(savedDataList);
+
+  //       if (savedDataList) {
+  //         console.log(JSON.parse(savedDataList));
+  //         setDataListObject(JSON.parse(savedDataList));
+  //       } else {
+  //         setDataListObject(JSON.parse('{}'));
+  //       }
+  //     } else {
+  //       // console.log("You are on the server");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const loadAccountData = async () => {
     const addr = getWalletAddress();
@@ -42,6 +66,60 @@ function Navbar() {
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let savedDataList = window.localStorage.getItem('dataList');
+
+      if (typeof window !== 'undefined') {
+        // console.log("You are on the browser");
+
+        let savedDataList = window.localStorage.getItem('dataList');
+        if (savedDataList) {
+          const dataParse = JSON.parse(savedDataList);
+        }
+        window.localStorage.setItem('dataList', JSON.stringify(await pairModule()));
+      }
+    };
+    fetchData();
+  }, []);
+
+  // // interval
+  // useEffect(() => {
+  //   // const interval = setInterval(() => {
+
+  //   let savedDataList = window.localStorage.getItem('dataList');
+  //   const fetchData = async () => {
+  //     if (typeof window !== 'undefined') {
+  //       let savedDataList = window.localStorage.getItem('dataList');
+  //       console.log(savedDataList);
+
+  //       // console.log(savedDataList);
+
+  //       if (savedDataList) {
+  //         console.log(2);
+
+  //         const dataParse = JSON.parse(savedDataList);
+  //         // await pairModule())
+  //         window.localStorage.setItem('dataList', JSON.stringify('asfasfasfafas'));
+  //         // return ob;
+  //       }
+
+  //       // console.log(JSON.parse(savedDataList));
+  //       // setDataListObject(JSON.parse(savedDataList));
+  //     } else {
+  //       // setDataListObject(JSON.parse("{}"));
+  //     }
+  //   };
+
+  //   // call the function
+  //   fetchData();
+
+  //   // }
+  //   // }, 3000);
+  //   // return () => clearInterval(interval);
+  // }, []);
+
   return (
     <div>
       <nav className=" shadow-sm w-full z-10">

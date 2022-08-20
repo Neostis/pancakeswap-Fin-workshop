@@ -12,13 +12,14 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
-import { pairModule, pairFilter } from '../components/pairModule';
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
+import { pairModule, poolList } from '../components/pairModule';
+import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
-import { getAllPairsDetails } from '../constants/tokens';
+// import { getAllPairsDetails } from '../constants/tokens';
 
 const pool = () => {
   const [dataList, setDataList] = useState([{}]);
+  // const [dataList, setDataList] = useState([{}]);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
@@ -30,8 +31,8 @@ const pool = () => {
     const length = await _allPairsLength();
 
     // setDataList(await pairModule());
-    setDataList(await pairFilter());
-    // const balances = await gdataTokenBalance(token1!, address!);
+    // setDataList(await poolList());
+    // const balances = await dataTokenBalance(token1!, address!);
     // setBalanceOfToken1(formatEther(balances));
     if (addr === null) {
       await connectWallet();
@@ -49,27 +50,56 @@ const pool = () => {
     }
     // setAddress(addr);
     // setNetwork(chainId);
+    // console.log(dataList);
+  };
+  const getData = async () => {
+    try {
+      if (typeof window !== 'undefined') {
+        // console.log("You are on the browser");
+
+        let savedDataList = window.localStorage.getItem('dataList');
+        console.log(savedDataList);
+
+        if (savedDataList) {
+          console.log(JSON.parse(savedDataList));
+          setDataList(JSON.parse(savedDataList));
+        } else {
+          setDataList(JSON.parse('{}'));
+        }
+      } else {
+        // console.log("You are on the server");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    loadAccountData();
+    const interval = setInterval(() => {
+      const fetchData = async () => {
+        await getData();
+        await loadAccountData();
+      };
+      fetchData();
 
-    const handleAccountChange = async (addresses: string[]) => {
-      setAddress(addresses[0]);
-      await loadAccountData();
-      //   defaultValue();
-    };
+      const handleAccountChange = async (addresses: string[]) => {
+        setAddress(addresses[0]);
+        await loadAccountData();
+        //   defaultValue();
+      };
 
-    const handleNetworkChange = async (networkId: string) => {
-      // console.log('handle change ' + networkId);
-      setNetwork(networkId);
-      await loadAccountData();
-      //   defaultValue();
-    };
+      const handleNetworkChange = async (networkId: string) => {
+        // console.log('handle change ' + networkId);
+        setNetwork(networkId);
+        await loadAccountData();
+        //   defaultValue();
+      };
 
-    getEthereum()?.on('accountsChanged', handleAccountChange);
+      getEthereum()?.on('accountsChanged', handleAccountChange);
 
-    getEthereum()?.on('chainChanged', handleNetworkChange);
+      getEthereum()?.on('chainChanged', handleNetworkChange);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

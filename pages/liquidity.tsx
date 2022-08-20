@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -7,7 +7,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import PairLiquidity from '../components/PairLiquidity';
+// import PairLiquidity from '../components/PairLiquidity';
+import { pairModule, poolList } from '../components/pairModule';
+import {
+  connectWallet,
+  getBalance,
+  getChainId,
+  getEthereum,
+  getProvider,
+  getWalletAddress,
+  changeNetwork,
+} from '../services/wallet-service';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -48,6 +58,79 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 
 const liquidity = () => {
   const [open, setOpen] = React.useState(false);
+  const [dataList, setDataList] = useState([{}]);
+  const [address, setAddress] = useState<string | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
+
+  const loadAccountData = async () => {
+    const addr = getWalletAddress();
+    const chainId = await getChainId();
+
+    if (addr === null) {
+      await connectWallet();
+    } else {
+    }
+    if (chainId !== '0x4') {
+      await changeNetwork();
+    } else {
+    }
+    console.log();
+    // const filterList = (addr, index) => {
+    //   console.log('addr', Object.keys(addr));
+    // };
+    // const dataFiler = await Object.keys(dataList).map(async (key, index) => {
+    //   return console.log(await Object.keys(dataList[key]));
+    // });
+  };
+  const getData = async () => {
+    try {
+      if (typeof window !== 'undefined') {
+        // console.log("You are on the browser");
+
+        let savedDataList = window.localStorage.getItem('dataList');
+        // console.log(savedDataList);
+
+        if (savedDataList) {
+          // console.log(JSON.parse(savedDataList));
+          setDataList(JSON.parse(savedDataList));
+        } else {
+          setDataList(JSON.parse('{}'));
+        }
+      } else {
+        // console.log("You are on the server");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const fetchData = async () => {
+        await getData();
+        await loadAccountData();
+      };
+      fetchData();
+
+      const handleAccountChange = async (addresses: string[]) => {
+        setAddress(addresses[0]);
+        await loadAccountData();
+        //   defaultValue();
+      };
+
+      const handleNetworkChange = async (networkId: string) => {
+        // console.log('handle change ' + networkId);
+        setNetwork(networkId);
+        await loadAccountData();
+        //   defaultValue();
+      };
+
+      getEthereum()?.on('accountsChanged', handleAccountChange);
+
+      getEthereum()?.on('chainChanged', handleNetworkChange);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -119,7 +202,32 @@ const liquidity = () => {
               <div className="py-10"></div>
               <div className="py-10"></div>
               <div className="py-10"></div>
-
+              <div>
+                {Object.keys(dataList).length >= 1
+                  ? Object.keys(dataList).map((key, index) => {
+                      return (
+                        <div key={key}>
+                          {/* <a className="px-12 py-3">{(dataList[index]).Object.keys(dataList[key]).token0.name}</a> */}
+                          <a>Pool:{Object.keys(dataList[key])}</a>
+                          {Object.values(dataList[key]).map((e) => {
+                            return (
+                              <div>
+                                <div className="flex space-x-px">
+                                  <img src={e.token0.imageUrl} height="30px" width="30px" />
+                                  <h1>{e.token0.name}</h1>
+                                </div>
+                                <div className="flex">
+                                  <img src={e.token1.imageUrl} height="30px" width="30px" />
+                                  <h1>{e.token1.name}</h1>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })
+                  : 'no items'}
+              </div>
               <div className="py-2"></div>
             </div>
           </div>

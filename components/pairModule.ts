@@ -11,8 +11,8 @@ import {
 import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
 import { getBalanceOf } from '../services/pair-service';
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
-import { getAllPairsDetails } from '../constants/tokens';
+import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS, PairsList } from '../constants/tokens';
+import { getTokenPairsDetails } from '../constants/tokens';
 import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
 
 type Keyop = {
@@ -24,14 +24,14 @@ type Keyop = {
 //   token0: tokenDetails;
 //   token1: tokenDetails;
 // };
-// type tokenDetails ={
-//   name: string;
-//   symbol: string;
-//   decimals: any;
-//   imageUrl: string;
-//   address: string;
+type tokenDetails ={
+  name: string;
+  symbol: string;
+  decimals: any;
+  imageUrl: string;
+  address: string;
   
-// }
+}
 type token0 ={
   name: string;
   symbol: string;
@@ -60,56 +60,72 @@ export const pairModule = async()=> {
     let ordersData = (
       await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
     ).map((e,index) => {
-      
-
       return (
             dataList.push(   {   [`${allPair[index]}`] :
             {
-            token0: getAllPairsDetails(e.token0),
-            token1: getAllPairsDetails(e.token1),
+            token0: getTokenPairsDetails(e.token0),
+            token1: getTokenPairsDetails(e.token1),
           },
         })
       )
      }
     );
-
   return dataList
-
-}
-export const pairFilter = async()=> {
-//   const [dataList, setDataList] = useState([{}]);
-    const dataList = []
-    let count =0;
-    const length = await _allPairsLength();
-    const addr =  await getWalletAddress()!;
-    const data = [];
-    
-    const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
-    let ordersData = (
-      await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
-    ).map(async(e,index) => {
-    console.log(allPair[index],addr)
-
-    // console.log(Number(balance) > 0);
-    // if(Number(balance) > 0){
-    return(
-
-       
-            dataList.push(   {   [`${allPair[index]}`] :
-            {
-                token0: getAllPairsDetails(e.token0),
-                token1: getAllPairsDetails(e.token1),
-            },
-        })
-        // )
-        )
-    // }
 }
 
-    );
-    return dataList
+export const poolFilter = async()=> {
+    const dataDetail = []
+    // length
+    // loop in length
+    // add address (if balance of > )
+    PairsList.map(async(item)=>{
+      return(
+        dataDetail.push(   {   [`${item.addressPair}`] :
+        {
+            token0: item.token0,
+            token1: item.token1,
+        },
+      })
+      )
+    })
+    return dataDetail 
+  }
 
-}
+
+export const poolList = async()=> {
+    const dataDetail = []
+    PairsList.map(async(item)=>{
+      return(
+        dataDetail.push(   {   [`${item.addressPair}`] :
+        {
+            token0: item.token0,
+            token1: item.token1,
+        },
+      })
+      )
+    })
+    return dataDetail 
+  }
+
+//     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
+//     let ordersData = (
+//       await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
+//     ).map(async(e,index) => {
+//     console.log(allPair[index],addr)
+//     return(
+//             dataList.push(   {   [`${allPair[index]}`] :
+//             {
+//                 token0: getTokenPairsDetails(e.token0),
+//                 token1: getTokenPairsDetails(e.token1),
+//             },
+//         })
+// )
+// }
+
+//     );
+//     return dataList
+
+// }
 
 
 
@@ -182,8 +198,8 @@ export const pairFilter = async()=> {
 //   {   
 //   0x00002 :
 //           {
-//           token0: getAllPairsDetails(e.token0),
-//           token1: getAllPairsDetails(e.token1),
+//           token0: getTokenPairsDetails(e.token0),
+//           token1: getTokenPairsDetails(e.token1),
 //         },
 //       }
   

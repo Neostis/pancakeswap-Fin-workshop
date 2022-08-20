@@ -27,6 +27,9 @@ import Select from 'react-select';
 
 import { addLiquidity, addLiquidityETH, _removeLiquidity, _removeLiquidityETH } from '../services/router-service';
 
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+
 type Keyop = {
   value: any;
   label: any;
@@ -130,7 +133,7 @@ export default function addliquidity({
       // setNetwork(chainId);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
-      //fix
+      //fix getData
       setPairLPList(getDataList(''));
     }
     setAddress(addr);
@@ -393,9 +396,9 @@ export default function addliquidity({
   const handleRemoveLiquidity = async () => {
     try {
       if (pairLP == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        await _removeLiquidityETH(pairLP, 0.0001);
+        await _removeLiquidityETH(pairLP, amountLP);
       } else {
-        await _removeLiquidity(pairLP, pairLP, 0.0001);
+        await _removeLiquidity(pairLP, pairLP, amountLP);
       }
 
       toast.success('Success!', {
@@ -505,18 +508,28 @@ export default function addliquidity({
   };
 
   const onChangePairLPHandle = async (e: any) => {
-    console.log(123);
+    // console.log(Number(balanceOfLP), e);
 
-    if (Number(e) > Number(balanceOfLP) && !isNaN(e)) {
-      setAmountLP(Number(balanceOfLP));
-
-      // setAmountOut(await getSwapAmountsOut());
-    } else if (Number(balanceOfLP) === 0) {
+    if (e == 0) {
       setAmountLP(0);
+    } else if (e > 0 && e < 100) {
+      setAmountLP(Number(balanceOfLP) - Math.round((Number(balanceOfLP) * (100 - e)) / 100));
     } else {
-      setAmountLP(e);
-      // setAmountOut(await getSwapAmountsOut());
+      setAmountLP(Number(balanceOfLP));
     }
+    console.log(amountLP);
+
+    // const amountTmp: number = Math.round((Number(balanceOfLP) / e) * 100);
+    // if (amountTmp > Number(balanceOfLP) && !isNaN(e)) {
+    //   setAmountLP(Number(balanceOfLP));
+
+    //   // setAmountOut(await getSwapAmountsOut());
+    // } else if (Number(balanceOfLP) === 0) {
+    //   setAmountLP(0);
+    // } else {
+    //   setAmountLP(amountTmp);
+    //   // setAmountOut(await getSwapAmountsOut());
+    // }
   };
 
   return (
@@ -694,14 +707,26 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                       placeholder="Select pair"
                     />
                     {pairLP ? (
-                      <input
-                        className="col-span-4 h-20 rounded-lg "
-                        type="number"
-                        value={amountLP}
-                        onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
-                      ></input>
+                      // <input
+                      //   className="col-span-4 h-20 rounded-lg "
+                      //   type="number"
+                      //   value={amountLP}
+                      //   onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
+                      // ></input>
+                      <Box width={300}>
+                        <Slider
+                          defaultValue={50}
+                          aria-label="Default"
+                          valueLabelDisplay="auto"
+                          // value={amountLP}
+                          onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
+                        />
+                      </Box>
                     ) : (
-                      <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
+                      // <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
+                      <Box width={300}>
+                        <Slider defaultValue={50} aria-label="Disabled slider" valueLabelDisplay="auto" disabled />
+                      </Box>
                     )}
                   </div>
                   {pairLP && amountLP ? (
@@ -763,64 +788,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   )}
                 </div>
               )}
-
-              {/* {token1 && token2 && amountADesired && amountBDesired ? (
-                <div className="py-10 flex-column w-auto grid text-textblack ">
-                  {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
-                    <button
-                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                     from-blueswapdark  to-blueswapbutton 
-                     text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                      disabled
-                    >
-                      Approve
-                    </button>
-                  ) : (
-                    <button
-                      className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                      from-blueswapdark  to-blueswapbutton
-              text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-                      onClick={handleApprove}
-                    >
-                      Approve
-                    </button>
-                  )}
-
-                  <div className="py-10 flex-column w-auto grid text-textblack ">
-                    {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
-                      <button
-                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                        from-blueswapdark  to-blueswapbutton 
-                        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-                        onClick={handleModeCheck}
-                      >
-                        Supply
-                      </button>
-                    ) : (
-                      <button
-                        className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                        from-blueswapdark  to-blueswapbutton 
-                        text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                        disabled
-                      >
-                        Supply
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="py-10 flex-column w-auto grid text-textblack ">
-                  <button
-                    className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-    from-blueswapdark  to-blueswapbutton 
-text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                    // onClick={}
-                    disabled
-                  >
-                    Invalid Pair
-                  </button>
-                </div>
-              )} */}
 
               <ToastContainer
                 position="top-right"

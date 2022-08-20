@@ -22,13 +22,13 @@ type pairsToken = {
 };
 const addr_Factory = '0x1858F08ce7425B2715d870c20e0e2c79899994aa';
 export const _allPairsLength = async () => {
-  //   const provider = getProvider()!;
-  //   const signer = provider.getSigner();
   const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
   return contract.allPairsLength();
-  //   return tx;
 };
-
+export const _allPairs = async (Index: number) => {
+  const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
+  return contract.allPairs(Index);
+};
 export const AllPairs = async (pairsLength: number) => {
   const pairList = [];
   // const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
@@ -36,11 +36,6 @@ export const AllPairs = async (pairsLength: number) => {
     pairList.push(await _allPairs(i));
   }
   return pairList;
-};
-
-export const _allPairs = async (Index: number) => {
-  const contract = new ethers.Contract(addr_Factory, abi_Factory, getProvider()!);
-  return contract.allPairs(Index);
 };
 
 export const getAllPairsToken = async (pairList: []) => {

@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
 import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
-import { getAllPairsDetails } from '../constants/tokens';
+import { getTokenPairsDetails } from '../constants/tokens';
 // import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
 
 type Keyop = {
@@ -78,8 +78,8 @@ function PairLiquidity() {
       return (
      {   [`${allPair[index]}`] :
         {
-        token0: getAllPairsDetails(e.token0),
-        token1: getAllPairsDetails(e.token1),
+        token0: getTokenPairsDetails(e.token0),
+        token1: getTokenPairsDetails(e.token1),
       },
     }
       )
@@ -202,8 +202,8 @@ export default PairLiquidity;
 //   {   
 //   0x00002 :
 //           {
-//           token0: getAllPairsDetails(e.token0),
-//           token1: getAllPairsDetails(e.token1),
+//           token0: getTokenPairsDetails(e.token0),
+//           token1: getTokenPairsDetails(e.token1),
 //         },
 //       }
   

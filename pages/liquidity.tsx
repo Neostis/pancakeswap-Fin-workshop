@@ -9,6 +9,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // import PairLiquidity from '../components/PairLiquidity';
 import { pairModule, poolList } from '../components/pairModule';
+import { getBalanceOf } from '../services/pair-service';
+import { formatEther, getAddress } from 'ethers/lib/utils';
 import {
   connectWallet,
   getBalance,
@@ -58,7 +60,9 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 
 const liquidity = () => {
   const [open, setOpen] = React.useState(false);
+
   const [dataList, setDataList] = useState([{}]);
+  // const [dataList, setDataList] = useState<[{}] | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
@@ -82,7 +86,32 @@ const liquidity = () => {
     //   return console.log(await Object.keys(dataList[key]));
     // });
   };
+  // function obPromise(){
+  //   return new Promise((resolve, reject) =>{
+  //     setTimeout(async()=>{
+  //       const balance = formatEther(
+  //         await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
+  //       );
+  //     })
+  //   })
+  // }
   const getData = async () => {
+    let ob = [];
+    const obPromise = (key: any, savedDataList: any) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          const balance = formatEther(
+            await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
+          );
+          if (Number(balance) > 0) {
+            resolve(balance);
+            // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
+          } else {
+          }
+        }, 1000);
+      });
+    };
+
     try {
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
@@ -91,10 +120,44 @@ const liquidity = () => {
         // console.log(savedDataList);
 
         if (savedDataList) {
+          const a = Promise.all(
+            Object.keys(JSON.parse(savedDataList)).map(async (key, index) => {
+              await obPromise(key, savedDataList)
+                .then((result) => {
+                  const mappingData = {
+                    ...dataList,
+                    result,
+                  };
+                  setDataList(mappingData);
+
+                  ob.push(result);
+                })
+                .catch((error) => {
+                  alert(error);
+                });
+              // await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
+              // if (Number(balance) > 0) {
+              //   ob.push({ [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance });
+              //   // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
+              // }
+            }),
+          );
+          // setDataList(ob);
+          // Promise.all(promises).then(function (results) {
+          //   console.log(results);
+          // });
+
+          // ob.shift();
+          console.log(ob);
+
+          console.log(ob.length);
+
           // console.log(JSON.parse(savedDataList));
-          setDataList(JSON.parse(savedDataList));
+
+          console.log(1);
         } else {
           setDataList(JSON.parse('{}'));
+          console.log(2);
         }
       } else {
         // console.log("You are on the server");
@@ -103,33 +166,37 @@ const liquidity = () => {
       console.log(error);
     }
   };
+  const getDataList = () => {
+    console.log(dataList.length);
+    console.log(...dataList);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const fetchData = async () => {
-        await getData();
-        await loadAccountData();
-      };
-      fetchData();
+    // const interval = setInterval(() => {
+    const fetchData = async () => {
+      await getData();
+      await loadAccountData();
+    };
+    fetchData();
 
-      const handleAccountChange = async (addresses: string[]) => {
-        setAddress(addresses[0]);
-        await loadAccountData();
-        //   defaultValue();
-      };
+    const handleAccountChange = async (addresses: string[]) => {
+      setAddress(addresses[0]);
+      await loadAccountData();
+      //   defaultValue();
+    };
 
-      const handleNetworkChange = async (networkId: string) => {
-        // console.log('handle change ' + networkId);
-        setNetwork(networkId);
-        await loadAccountData();
-        //   defaultValue();
-      };
+    const handleNetworkChange = async (networkId: string) => {
+      // console.log('handle change ' + networkId);
+      setNetwork(networkId);
+      await loadAccountData();
+      //   defaultValue();
+    };
 
-      getEthereum()?.on('accountsChanged', handleAccountChange);
+    getEthereum()?.on('accountsChanged', handleAccountChange);
 
-      getEthereum()?.on('chainChanged', handleNetworkChange);
-    }, 3000);
-    return () => clearInterval(interval);
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+    // }, 3000);
+    // return () => clearInterval(interval);
   }, []);
 
   const handleClickOpen = () => {
@@ -165,7 +232,7 @@ const liquidity = () => {
 
               <br />
               <br />
-              <button
+              {/* <button
                 className="outlined justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                 from-blueswapdark  to-blueswapbutton 
      text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
@@ -179,7 +246,7 @@ const liquidity = () => {
                 >
                   Pool
                 </Link>
-              </button>
+              </button> */}
 
               {/* <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                 <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
@@ -202,32 +269,21 @@ const liquidity = () => {
               <div className="py-10"></div>
               <div className="py-10"></div>
               <div className="py-10"></div>
+              <div>{dataList.length}</div>
+
+              {/* 
               <div>
                 {Object.keys(dataList).length >= 1
                   ? Object.keys(dataList).map((key, index) => {
                       return (
                         <div key={key}>
-                          {/* <a className="px-12 py-3">{(dataList[index]).Object.keys(dataList[key]).token0.name}</a> */}
-                          <a>Pool:{Object.keys(dataList[key])}</a>
-                          {Object.values(dataList[key]).map((e) => {
-                            return (
-                              <div>
-                                <div className="flex space-x-px">
-                                  <img src={e.token0.imageUrl} height="30px" width="30px" />
-                                  <h1>{e.token0.name}</h1>
-                                </div>
-                                <div className="flex">
-                                  <img src={e.token1.imageUrl} height="30px" width="30px" />
-                                  <h1>{e.token1.name}</h1>
-                                </div>
-                              </div>
-                            );
-                          })}
+                          <a>Pool:{Object.keys(dataList[key])[0]}</a>
+           
                         </div>
                       );
                     })
                   : 'no items'}
-              </div>
+              </div> */}
               <div className="py-2"></div>
             </div>
           </div>
@@ -238,7 +294,21 @@ const liquidity = () => {
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
+      <div>
+        {dataList.length >= 1
+          ? dataList.map((e, index) => {
+              return (
+                <div key={index}>
+                  {/* <a>key:{item}</a> */}
+                  {/* <a className="px-12 py-3">{(dataList[index]).Object.keys(dataList[key]).token0.name}</a> */}
+                  <h1>Pool:{Object.keys(e)[0]}</h1>
+                </div>
+              );
+            })
+          : 'no items'}
+      </div>
       <div className="py-10"></div>
+      <button onClick={getDataList}>checkData</button>
       <div className="py-10"></div>
       <div className="py-10"></div>
     </div>

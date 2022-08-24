@@ -69,16 +69,16 @@ function Navbar() {
 
   useEffect(() => {
     const fetchData = async () => {
-      let savedDataList = window.localStorage.getItem('dataList');
+      let savedDataList = window.localStorage.getItem('ownerDataList');
 
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
 
-        let savedDataList = window.localStorage.getItem('dataList');
+        let savedDataList = window.localStorage.getItem('ownerDataList');
         if (savedDataList) {
           const dataParse = JSON.parse(savedDataList);
         }
-        window.localStorage.setItem('dataList', JSON.stringify(await pairModule()));
+        window.localStorage.setItem('ownerDataList', JSON.stringify(await pairModule()));
       }
     };
     fetchData();

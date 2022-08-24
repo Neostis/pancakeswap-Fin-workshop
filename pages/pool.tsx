@@ -22,7 +22,7 @@ const pool = () => {
   // const [dataList, setDataList] = useState([{}]);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-
+  // SEARCH
   const loadAccountData = async () => {
     // setToken1(null);
     // setToken2(null);
@@ -57,11 +57,11 @@ const pool = () => {
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
 
-        let savedDataList = window.localStorage.getItem('dataList');
-        console.log(savedDataList);
+        let savedDataList = window.localStorage.getItem('ownerDataList');
+        // console.log(savedDataList);
 
         if (savedDataList) {
-          console.log(JSON.parse(savedDataList));
+          // console.log(JSON.parse(savedDataList));
           setDataList(JSON.parse(savedDataList));
         } else {
           setDataList(JSON.parse('{}'));
@@ -101,11 +101,49 @@ const pool = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+  const [query, setQuery] = useState('');
 
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
-        <div className="rounded-lg  font-bold"></div>
+        {/* <div className="rounded-lg  font-bold"></div> */}
+
+        <input
+          type="text"
+          placeholder="SEARCH..."
+          className=" text-textblack"
+          onChange={(e) => setQuery(e.target.value.toLowerCase())}
+        />
+        <ul className="list">
+          {Object.keys(dataList).length >= 1
+            ? Object.keys(dataList).map((key) => {
+                return (
+                  <div key={key}>
+                    {Object.values(dataList[key])
+                      .filter(
+                        (e) =>
+                          e.token0.symbol.toLowerCase().includes(query) ||
+                          e.token1.symbol.toLowerCase().includes(query),
+                      )
+                      .map((item) => (
+                        <div>
+                          <a className=" text-textwhite">Pool:{Object.keys(dataList[key])}</a>
+                          <div className="flex space-x-px text-textwhite">
+                            <img src={item.token0.imageUrl} height="30px" width="30px" />
+                            <h1>{item.token0.name}</h1>
+                          </div>
+                          <div className="flex space-x-px text-textwhite">
+                            <img src={item.token1.imageUrl} height="30px" width="30px" />
+                            <h1>{item.token1.name}</h1>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                );
+              })
+            : 'no items'}
+        </ul>
+
         {/* <button
           className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                 from-blueswapdark  to-blueswapbutton 
@@ -122,12 +160,11 @@ const pool = () => {
         </button> */}
         <br />
         <br />
-        <div>
+        {/* <div>
           {Object.keys(dataList).length >= 1
             ? Object.keys(dataList).map((key, index) => {
                 return (
                   <div key={key}>
-                    {/* <a className="px-12 py-3">{(dataList[index]).Object.keys(dataList[key]).token0.name}</a> */}
                     <a>Pool:{Object.keys(dataList[key])}</a>
                     {Object.values(dataList[key]).map((e) => {
                       return (
@@ -147,7 +184,7 @@ const pool = () => {
                 );
               })
             : 'no items'}
-        </div>
+        </div> */}
       </div>
       <div className="py-10"></div>
       <div className="py-10"></div>

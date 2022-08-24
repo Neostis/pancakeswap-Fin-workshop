@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
 import { getBalanceOf } from '../services/pair-service';
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS, PairsList } from '../constants/tokens';
+import { ETH_TOKENS, PairsList } from '../constants/tokens';
 import { getTokenPairsDetails } from '../constants/tokens';
 import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
 
@@ -24,47 +24,50 @@ type Keyop = {
 //   token0: tokenDetails;
 //   token1: tokenDetails;
 // };
-type tokenDetails ={
+type tokenDetails = {
   name: string;
   symbol: string;
   decimals: any;
   imageUrl: string;
   address: string;
-  
-}
-type token0 ={
+};
+type token0 = {
   name: string;
   symbol: string;
   decimals: any;
   imageUrl: string;
   address: string;
-}
-type token1 ={
+};
+type token1 = {
   name: string;
   symbol: string;
   decimals: any;
   imageUrl: string;
   address: string;
-}
+};
 
+export const pairModule = async ()=> {
 
-
-export const pairModule = async()=> {
-//   const [dataList, setDataList] = useState([{}]);
     const dataList = []
 
+    const addr = getWalletAddress();
     const length = await _allPairsLength();
     const data = [];
-    
+
     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
     let ordersData = (
       await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
-    ).map((e,index) => {
+    ).map(async (e,index) => {
+      ///
+      // const balances = await getBalanceOf(allPair[index],addr);
+      // console.log(balances);
+      const balances = 10;
       return (
             dataList.push(   {   [`${allPair[index]}`] :
             {
             token0: getTokenPairsDetails(e.token0),
             token1: getTokenPairsDetails(e.token1),
+            balance: balances,
           },
         })
       )
@@ -72,40 +75,92 @@ export const pairModule = async()=> {
     );
   return dataList
 }
+// export const pairModule = async () => {
+//   //   const [dataList, setDataList] = useState([{}]);
 
-export const poolFilter = async()=> {
-    const dataDetail = []
-    // length
-    // loop in length
-    // add address (if balance of > )
-    PairsList.map(async(item)=>{
-      return(
-        dataDetail.push(   {   [`${item.addressPair}`] :
-        {
-            token0: item.token0,
-            token1: item.token1,
-        },
-      })
-      )
-    })
-    return dataDetail 
-  }
+//   const balancePromise = (addrPair: any, addr: any) => {
+//     return new Promise((resolve, reject) => {
+//       setTimeout(async () => {
+//         // const balance: any = 10;
+//         const balance: any = formatEther(await getBalanceOf(addrPair, addr));
+//         // console.log(Object.keys(JSON.parse(savedDataList)[key])[0]);
+//         // console.log('value:', Object.values(JSON.parse(savedDataList)[key])[0].balance);
 
+//         console.log(balance);
+//         // if (Number(balance) > 0) {
+//         resolve(balance);
+//         // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
+//         // } else {
+//         // }
+//       }, 1000);
+//     });
+//   };
 
-export const poolList = async()=> {
-    const dataDetail = []
-    PairsList.map(async(item)=>{
-      return(
-        dataDetail.push(   {   [`${item.addressPair}`] :
-        {
-            token0: item.token0,
-            token1: item.token1,
-        },
-      })
-      )
-    })
-    return dataDetail 
-  }
+//   let dataList = [];
+
+//   const addr = getWalletAddress();
+//   const length = await _allPairsLength();
+//   const data = [];
+//   // PairsList;
+//   // const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
+//   let ordersData = PairsList.map(async (e, index) => {
+//     ///
+//     // const balances = await getBalanceOf(e.addressPair, addr);
+//     // console.log(balances);
+//     console.log(e.addressPair, addr, e.token0.address, e.token1.address);
+//     // await balancePromise(e.addressPair, addr)
+//     //   .then((result) => {
+//     //     dataList.push({
+//     //       [`${e.addressPair}`]: {
+//     //         token0: e.token0.address,
+//     //         token1: e.token1.address,
+//     //         balance: result,
+//     //       },
+//     //     });
+//     //   })
+//     //   .catch((error) => {
+//     //     alert(error);
+//     //   });
+//     dataList.push({
+//       [`${e.addressPair}`]: {
+//         token0: getTokenPairsDetails(e.token0.address),
+//         token1: getTokenPairsDetails(e.token1.address),
+//         // balance: formatEther(await getBalanceOf(e.addressPair, addr)),
+//       },
+//     });
+//     // const balances = 10;
+//   });
+//   console.log('datalist: ', dataList);
+//   console.log('ordersData: ', ordersData);
+//   return dataList;
+// };
+
+export const poolFilter = async () => {
+  const dataDetail = [];
+
+  PairsList.map(async (item) => {
+    return dataDetail.push({
+      [`${item.addressPair}`]: {
+        token0: item.token0,
+        token1: item.token1,
+      },
+    });
+  });
+  return dataDetail;
+};
+
+export const poolList = async () => {
+  const dataDetail = [];
+  PairsList.map(async (item) => {
+    return dataDetail.push({
+      [`${item.addressPair}`]: {
+        token0: item.token0,
+        token1: item.token1,
+      },
+    });
+  });
+  return dataDetail;
+};
 
 //     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
 //     let ordersData = (
@@ -127,16 +182,11 @@ export const poolList = async()=> {
 
 // }
 
-
-
-
-
-
 // export default PairLiquidity;
 
 //   return (
 //     <div>
-//       {allPairsLength}        
+//       {allPairsLength}
 // {Object.keys(dataList).length >= 1
 //   ? Object.keys(dataList).map((key, index) => {
 //       return (
@@ -149,13 +199,13 @@ export const poolList = async()=> {
 
 //                 <div className='flex space-x-px'>
 //                 <img src={e.token0.imageUrl} height="30px" width="30px" />
-//                 <h1> 
+//                 <h1>
 //                 {e.token0.name}
 //                  </h1>
 //                   </div>
 //                 <div className='flex'>
 //                 <img src={e.token1.imageUrl} height="30px" width="30px" />
-//                 <h1> 
+//                 <h1>
 //                 {e.token1.name}
 //                  </h1>
 //                   </div>
@@ -167,16 +217,15 @@ export const poolList = async()=> {
 //       );
 //     })
 //   : "no items"}
-          
+
 //     </div>
 //   );
 // }
 // export default PairLiquidity;
 
-
 // --------------object----------
 // [
-//   {  
+//   {
 //   0x00001 :
 //           {
 //           token0: {
@@ -186,7 +235,7 @@ export const poolList = async()=> {
 //             imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
 //             address: '0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723',
 //       },
-//           token1: 
+//           token1:
 //       name: 'B Coin',
 //             symbol: 'BC',
 //             decimals: 18,
@@ -195,16 +244,15 @@ export const poolList = async()=> {
 //             },
 //     }
 //   ,
-//   {   
+//   {
 //   0x00002 :
 //           {
 //           token0: getTokenPairsDetails(e.token0),
 //           token1: getTokenPairsDetails(e.token1),
 //         },
 //       }
-  
+
 //   ]
-  
 
 // -------------console.log-------------------
 // (2) [{…}, {…}]

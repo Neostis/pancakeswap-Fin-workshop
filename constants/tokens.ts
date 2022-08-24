@@ -105,6 +105,40 @@ export const PairsList = [
       address: '0xcc0Cb628E826F557E2273EC3412e370B474b9120',
     },
   },
+  {
+    addressPair: '0xC96fF23AA569BE6adD743762A01CCDD101fa3c87',
+    token0: {
+      name: 'A Coin',
+      symbol: 'AC',
+      decimals: 18,
+      imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
+      address: '0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723',
+    },
+    token1: {
+      name: 'D Coin',
+      symbol: 'DC',
+      decimals: 18,
+      imageUrl: 'https://cryptologos.cc/logos/aelf-elf-logo.png?v=002',
+      address: '0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B',
+    },
+  },
+  {
+    addressPair: '0x9f10cf10F492CC38d1Ca938a7fE206f6Da13D6f3',
+    token0: {
+      name: 'B Coin',
+      symbol: 'BC',
+      decimals: 18,
+      imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
+      address: '0x1089DcF6B59912a0ff8c250383E47F5c0e0be4fb',
+    },
+    token1: {
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      decimals: 18,
+      imageUrl: 'https://cryptologos.cc/logos/pancakeswap-cake-logo.png?v=023',
+      address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+    },
+  },
 ];
 //
 export const getTokenPairsDetails = (addrToken: string) => {

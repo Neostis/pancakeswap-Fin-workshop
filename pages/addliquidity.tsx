@@ -22,13 +22,14 @@ import {
   getTokenBalance,
 } from '../services/wallet-service';
 // import { getNetworkCurrency, getNetworkName, getNetworkTokens } from '../constants/network-id';
-import { ETH_TOKENS } from '../constants/tokens';
+import { ETH_TOKENS, PairsList } from '../constants/tokens';
 import Select from 'react-select';
 
 import { addLiquidity, addLiquidityETH, _removeLiquidity, _removeLiquidityETH } from '../services/router-service';
 
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import { getBalanceOf, getToken0, getToken1 } from '../services/pair-service';
 
 type Keyop = {
   value: any;
@@ -87,6 +88,8 @@ export default function addliquidity({
   const [pairLP, setPairLP] = useState();
   const [amountLP, setAmountLP] = useState<number | null>(null);
   const [balanceOfLP, setBalanceOfLP] = useState<string | null>(null);
+  const [LPAllowance, setLPAllowance] = useState<string | null>(null);
+
   const [showLP, setShowLP] = useState();
 
   const [toggle, setToggle] = useState(true);
@@ -100,6 +103,42 @@ export default function addliquidity({
     }
   };
 
+  // PairsList = [
+  //   {
+  //     addressPair: '0x396aCf468CC9d44b10A669Fa50A194435FCF05F5',
+  //     token0: {
+  //       name: 'A Coin',
+  //       symbol: 'AC',
+  //       decimals: 18,
+  //       imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
+  //       address: '0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723',
+  //     },
+  //     token1: {
+  //       name: 'Wrapped Ether',
+  //       symbol: 'WETH',
+  //       decimals: 18,
+  //       imageUrl: 'https://cryptologos.cc/logos/pancakeswap-cake-logo.png?v=023',
+  //       address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+  //     },
+  //   },
+  //   {
+  //     addressPair: '0xAF966C9B55c71919d2c800232ea83E5baB89Be4E',
+  //     token0: {
+  //       name: 'B Coin',
+  //       symbol: 'BC',
+  //       decimals: 18,
+  //       imageUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=022',
+  //       address: '0x1089DcF6B59912a0ff8c250383E47F5c0e0be4fb',
+  //     },
+  //     token1: {
+  //       name: 'A Coin',
+  //       symbol: 'AC',
+  //       decimals: 18,
+  //       imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
+  //       address: '0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723',
+  //     },
+  //   },
+
   const loadAccountData = async () => {
     setShowToken1(null);
     setShowToken2(null);
@@ -107,15 +146,11 @@ export default function addliquidity({
     // setToken1(null);
     // setToken2(null);
     const addr = getWalletAddress();
-    console.log(addr);
     const chainId = await getChainId();
     const balancesToken1 = await getTokenBalance(token1!, address!);
     setBalanceOfToken1(formatEther(balancesToken1));
     const balancesToken2 = await getTokenBalance(token2!, address!);
     setBalanceOfToken2(formatEther(balancesToken2));
-
-    //fix
-    setBalanceOfLP(formatEther(10000));
 
     if (addr === null) {
       await connectWallet();
@@ -123,8 +158,8 @@ export default function addliquidity({
     } else {
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
-      //fix
-      setPairLPList(getDataList(''));
+
+      setPairLPList(getPoolList());
     }
     if (chainId !== '0x4') {
       await changeNetwork();
@@ -133,34 +168,10 @@ export default function addliquidity({
       // setNetwork(chainId);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
-      //fix getData
-      setPairLPList(getDataList(''));
+      setPairLPList(getPoolList());
     }
     setAddress(addr);
     setNetwork(chainId);
-    // setShowToken1(null);
-    // setShowToken2(null);
-    // setToken1(null);
-    // setToken2(null);
-    // const addr = getWalletAddress();
-    // const chainId = await getChainId();
-    // const balances = await getTokenBalance(token1!, address!);
-    // setBalanceOfToken1(formatEther(balances));
-    // if (addr === null) {
-    //   await connectWallet();
-    //   defaultValue();
-    // } else {
-    //   setAddress(addr);
-    //   setToken1List(getDataList(token2!));
-    //   setToken2List(getDataList(token1!));
-    // }
-    // if (chainId !== '0x4') {
-    //   await changeNetwork();
-    //   defaultValue();
-    // } else {
-    //   setToken1List(getDataList(token2!));
-    //   setToken2List(getDataList(token1!));
-    // }
   };
 
   const defaultValue = () => {
@@ -263,6 +274,29 @@ export default function addliquidity({
     }
   };
 
+  const getPoolList = () => {
+    let option: Keyop[] = [];
+
+    PairsList.filter((event) => {
+      if (event.addressPair !== address) {
+        option.push({
+          value: event.token0.symbol + '/' + event.token1.symbol,
+          // value: Object.keys(event),
+          label: (
+            <div className="flex space-x-px">
+              <img className=" space-x-px" src={event.token0.imageUrl} height="30px" width="30px" />
+              <img className=" space-x-px" src={event.token1.imageUrl} height="30px" width="30px" />
+
+              {event.token0.symbol + '/' + event.token1.symbol}
+            </div>
+          ),
+          address: event.addressPair,
+        });
+      }
+    });
+    return option;
+  };
+
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
 
@@ -330,14 +364,14 @@ export default function addliquidity({
     if (!toggle) {
       if (e !== null) {
         if (network === '0x4') {
-          const balances = await getTokenBalance(e.address, address!);
+          const balances = await getBalanceOf(e.address, address!);
+
           setBalanceOfLP(formatEther(balances));
 
-          // setTokenAllowance2(formatEther(await getAllowance(e.address, address!, addr_Router)));
+          setLPAllowance(formatEther(await getAllowance(e.address, address!, addr_Router)));
         }
         setPairLP(e.address);
         setShowLP(e);
-        // setPairLPList(getDataList(''));
         await checkHandle();
       }
     }
@@ -358,7 +392,7 @@ export default function addliquidity({
         await addLiquidity(token1, token2, amountADesired, amountBDesired);
       }
 
-      toast.success('Success!', {
+      toast.success('Transaction Success!', {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
@@ -395,13 +429,19 @@ export default function addliquidity({
 
   const handleRemoveLiquidity = async () => {
     try {
-      if (pairLP == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        await _removeLiquidityETH(pairLP, amountLP);
+      const token0 = await getToken0(pairLP);
+      const token1 = await getToken1(pairLP);
+      // console.log(pairLP, token0, token1, amountLP);
+
+      if (token0 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await _removeLiquidityETH(token1, amountLP);
+      } else if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+        await _removeLiquidityETH(token0, amountLP);
       } else {
-        await _removeLiquidity(pairLP, pairLP, amountLP);
+        await _removeLiquidity(token0, token1, amountLP);
       }
 
-      toast.success('Success!', {
+      toast.success('Transaction Success!', {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
@@ -463,20 +503,31 @@ export default function addliquidity({
       amountADesired > 0 &&
       amountBDesired > 0
     ) {
-      const allowance = formatEther(await getAllowance(token1, address!, addr_Router));
-      const allowance2 = formatEther(await getAllowance(token2, address!, addr_Router));
+      if (toggle) {
+        const allowance = formatEther(await getAllowance(token1, address!, addr_Router));
+        const allowance2 = formatEther(await getAllowance(token2, address!, addr_Router));
 
-      // console.log(token1, token2);
+        // console.log(token1, token2);
 
-      if (Number(allowance) < amountADesired) {
-        console.log('approve A');
-        await callApprove(token1, addr_Router);
-        setTokenAllowance1(allowance);
+        if (Number(allowance) < amountADesired) {
+          console.log('approve A');
+          await callApprove(token1, addr_Router);
+          setTokenAllowance1(allowance);
+        }
+        if (Number(allowance2) < amountBDesired) {
+          console.log('approve B');
+          await callApprove(token2, addr_Router);
+          setTokenAllowance2(allowance2);
+        }
       }
-      if (Number(allowance2) < amountBDesired) {
-        console.log('approve B');
-        await callApprove(token2, addr_Router);
-        setTokenAllowance2(allowance2);
+    } else if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
+      if (!toggle) {
+        const allowance = formatEther(await getAllowance(pairLP, address!, addr_Router));
+        if (Number(allowance) < amountLP) {
+          console.log('approve LP');
+          await callApprove(pairLP, addr_Router);
+          setTokenAllowance2(allowance);
+        }
       }
     }
   };
@@ -508,28 +559,15 @@ export default function addliquidity({
   };
 
   const onChangePairLPHandle = async (e: any) => {
-    // console.log(Number(balanceOfLP), e);
-
     if (e == 0) {
       setAmountLP(0);
     } else if (e > 0 && e < 100) {
-      setAmountLP(Number(balanceOfLP) - Math.round((Number(balanceOfLP) * (100 - e)) / 100));
+      setAmountLP((Number(balanceOfLP) * e) / 100);
+      // console.log((Number(balanceOfLP) * e) / 100);
+      // console.log(Number(balanceOfLP) + ' * ' + e + ' / 100 = ' + (Number(balanceOfLP) * e) / 100);
     } else {
       setAmountLP(Number(balanceOfLP));
     }
-    console.log(amountLP);
-
-    // const amountTmp: number = Math.round((Number(balanceOfLP) / e) * 100);
-    // if (amountTmp > Number(balanceOfLP) && !isNaN(e)) {
-    //   setAmountLP(Number(balanceOfLP));
-
-    //   // setAmountOut(await getSwapAmountsOut());
-    // } else if (Number(balanceOfLP) === 0) {
-    //   setAmountLP(0);
-    // } else {
-    //   setAmountLP(amountTmp);
-    //   // setAmountOut(await getSwapAmountsOut());
-    // }
   };
 
   return (
@@ -707,12 +745,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                       placeholder="Select pair"
                     />
                     {pairLP ? (
-                      // <input
-                      //   className="col-span-4 h-20 rounded-lg "
-                      //   type="number"
-                      //   value={amountLP}
-                      //   onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
-                      // ></input>
                       <Box width={300}>
                         <Slider
                           defaultValue={50}
@@ -731,7 +763,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   </div>
                   {pairLP && amountLP ? (
                     <div className="py-10 flex-column w-auto grid text-textblack ">
-                      {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                      {Number(LPAllowance) > 0 ? (
                         <button
                           className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                      from-blueswapdark  to-blueswapbutton 
@@ -752,7 +784,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                       )}
 
                       <div className="py-10 flex-column w-auto grid text-textblack ">
-                        {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                        {Number(LPAllowance) > 0 ? (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 

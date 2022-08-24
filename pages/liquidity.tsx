@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-// import PairLiquidity from '../components/PairLiquidity';
 import { pairModule, poolList } from '../components/pairModule';
 import { getBalanceOf } from '../services/pair-service';
 import { formatEther, getAddress } from 'ethers/lib/utils';
@@ -96,15 +95,19 @@ const liquidity = () => {
   //   })
   // }
   const getData = async () => {
-    let ob = [];
     const obPromise = (key: any, savedDataList: any) => {
       return new Promise((resolve, reject) => {
         setTimeout(async () => {
           const balance = formatEther(
             await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
           );
+          console.log('balance', balance);
+          // const balance: any = formatEther(Object.values(JSON.parse(savedDataList)[key])[0].balance);
+          // console.log(Object.keys(JSON.parse(savedDataList)[key])[0]);
+          // console.log('value:', Object.values(JSON.parse(savedDataList)[key])[0].balance);
+
           if (Number(balance) > 0) {
-            resolve(balance);
+            resolve({ [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance });
             // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
           } else {
           }
@@ -116,41 +119,44 @@ const liquidity = () => {
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
 
-        let savedDataList = window.localStorage.getItem('dataList');
+        let savedDataList = window.localStorage.getItem('ownerDataList');
         // console.log(savedDataList);
 
         if (savedDataList) {
           const a = Promise.all(
             Object.keys(JSON.parse(savedDataList)).map(async (key, index) => {
-              await obPromise(key, savedDataList)
+              const ob = await obPromise(key, savedDataList)
                 .then((result) => {
-                  const mappingData = {
-                    ...dataList,
-                    result,
-                  };
-                  setDataList(mappingData);
-
-                  ob.push(result);
+                  return result;
+                  // ob.push(result);
                 })
                 .catch((error) => {
                   alert(error);
                 });
+
+              // const mappingData = {
+              //   ...dataList,
+              //   a,
+              // };;
+              // window.localStorage.setItem('ownerDataList', JSON.stringify(ob));
               // await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
               // if (Number(balance) > 0) {
               //   ob.push({ [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance });
               //   // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
               // }
+              const mappingData = [...dataList, ob];
+              console.log('mappingData:', mappingData);
+              setDataList(mappingData);
+              return ob;
             }),
           );
+
           // setDataList(ob);
           // Promise.all(promises).then(function (results) {
           //   console.log(results);
           // });
 
           // ob.shift();
-          console.log(ob);
-
-          console.log(ob.length);
 
           // console.log(JSON.parse(savedDataList));
 
@@ -168,35 +174,47 @@ const liquidity = () => {
   };
   const getDataList = () => {
     console.log(dataList.length);
+    dataList.map((e) => {
+      // console.log('e: ', e);
+    });
     console.log(...dataList);
+    console.log(Object.keys(dataList[0]).toString());
+    const mapped = Object.fromEntries(Object.entries(dataList).map(([key, value]) => [key, [value]]));
+
+    // console.log(...mapped);
+
+    // console.log(Object.keys(dataList[0])[1].toString());
+    // console.log(Object.keys(dataList[0])[2].toString());
+    // console.log(Object.keys(dataList[0])[3].toString());
   };
 
   useEffect(() => {
-    // const interval = setInterval(() => {
-    const fetchData = async () => {
-      await getData();
-      await loadAccountData();
-    };
-    fetchData();
+    const interval = setInterval(() => {
+      console.log('dataList', ...dataList);
+      const fetchData = async () => {
+        await getData();
+        await loadAccountData();
+      };
+      fetchData();
 
-    const handleAccountChange = async (addresses: string[]) => {
-      setAddress(addresses[0]);
-      await loadAccountData();
-      //   defaultValue();
-    };
+      const handleAccountChange = async (addresses: string[]) => {
+        setAddress(addresses[0]);
+        await loadAccountData();
+        //   defaultValue();
+      };
 
-    const handleNetworkChange = async (networkId: string) => {
-      // console.log('handle change ' + networkId);
-      setNetwork(networkId);
-      await loadAccountData();
-      //   defaultValue();
-    };
+      const handleNetworkChange = async (networkId: string) => {
+        // console.log('handle change ' + networkId);
+        setNetwork(networkId);
+        await loadAccountData();
+        //   defaultValue();
+      };
 
-    getEthereum()?.on('accountsChanged', handleAccountChange);
+      getEthereum()?.on('accountsChanged', handleAccountChange);
 
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-    // }, 3000);
-    // return () => clearInterval(interval);
+      getEthereum()?.on('chainChanged', handleNetworkChange);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleClickOpen = () => {
@@ -232,37 +250,42 @@ const liquidity = () => {
 
               <br />
               <br />
-              {/* <button
+              <button
                 className="outlined justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                 from-blueswapdark  to-blueswapbutton 
      text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
                 onClick={handleClickOpen}
-              >
-                <Link
-                  href="/pool"
-                  className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton
-         text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-                >
-                  Pool
-                </Link>
-              </button> */}
+              ></button>
 
-              {/* <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+              <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                 <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                  Pool
+                  bobo
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
-                  <Typography gutterBottom>
-                    <PairLiquidity />
-                  </Typography>
+                  <Typography gutterBottom>loading....</Typography>
                 </DialogContent>
                 <DialogActions>
                   <button autoFocus onClick={handleClose}>
                     OK
                   </button>
                 </DialogActions>
-              </BootstrapDialog> */}
+              </BootstrapDialog>
+
+              {/* <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+              <Box sx={{ display: 'flex' }}>
+                <CircularProgress />
+              </Box>
+            </BootstrapDialogTitle>
+            <DialogContent dividers>
+              <Typography gutterBottom>Waiting for confirmation</Typography>
+            </DialogContent>
+            <DialogActions>
+              <button autoFocus onClick={handleClose}>
+                OK
+              </button>
+            </DialogActions>
+          </BootstrapDialog> */}
             </div>
             <div className="flex-column w-auto grid ">
               <div className="py-10"></div>
@@ -295,17 +318,27 @@ const liquidity = () => {
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div>
-        {dataList.length >= 1
-          ? dataList.map((e, index) => {
+        <div>Pool</div>
+        {dataList ? (
+          <div>
+            {' '}
+            {Object.keys(dataList).map((key, index) => {
               return (
-                <div key={index}>
-                  {/* <a>key:{item}</a> */}
-                  {/* <a className="px-12 py-3">{(dataList[index]).Object.keys(dataList[key]).token0.name}</a> */}
-                  <h1>Pool:{Object.keys(e)[0]}</h1>
+                <div key={key}>
+                  <a>Pool:{Object.keys(dataList[key])[0]}</a>
+                  <a>Pool:{Object.values(dataList[key])[0]}</a>
                 </div>
               );
-            })
-          : 'no items'}
+            })}
+            {/* <h1>{Object.keys(dataList[1])}</h1>
+            <h1>{Object.keys(dataList[2])}</h1> */}
+            {/* <h1>{Object.keys(dataList[1])}</h1>
+            <h1>{Object.keys(dataList[2])}</h1> */}
+            {/* console.log(Object.keys(dataList[0]).toString()); */}
+          </div>
+        ) : (
+          <h2>no item</h2>
+        )}
       </div>
       <div className="py-10"></div>
       <button onClick={getDataList}>checkData</button>
@@ -316,3 +349,14 @@ const liquidity = () => {
 };
 
 export default liquidity;
+// {dataList.length >= 1
+//   ? dataList.map((e, index) => {
+//       return (
+//         <div key={index}>
+
+//           <h1>{Object.keys(e)[0]}</h1>
+
+//         </div>
+//       );
+//     })
+//     : 'no items'}

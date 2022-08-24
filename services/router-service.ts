@@ -53,7 +53,8 @@ export const swapExactTokensForTokens = async (amountIn: number, path1: string, 
   const to = signer.getAddress();
   const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20 minutes from the current Unix time
 
-  const txResponse = await contract.swapExactTokensForTokens(
+  // const txResponse = await contract.swapExactTokensForTokens(
+  return await contract.swapExactTokensForTokens(
     ethers.utils.parseEther(amountIn.toString()),
     0,
     // ethers.utils.parseEther(amountOutMin.toString()),
@@ -61,8 +62,6 @@ export const swapExactTokensForTokens = async (amountIn: number, path1: string, 
     to,
     deadline,
   );
-
-  await txResponse.wait();
 };
 
 export const addLiquidity = async (token1: string, token2: string, amountADesired: number, amountBDesired: number) => {
@@ -150,6 +149,8 @@ export const _removeLiquidity = async (tokenA: string, tokenB: string, liquidity
 //   address to,
 //   uint256 deadline
 export const _removeLiquidityETH = async (token: string, liquidity: number) => {
+  // console.log(liquidity.toString(), ethers.utils.parseEther(liquidity.toString()));
+
   const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000;
   const provider = getProvider()!;
   const signer = provider.getSigner();
@@ -157,6 +158,7 @@ export const _removeLiquidityETH = async (token: string, liquidity: number) => {
   const contract = new ethers.Contract(addr_Router, abi_Router, signer);
   const tx = await contract.removeLiquidityETH(
     token,
+    // liquidity.toString(),
     ethers.utils.parseEther(liquidity.toString()),
     0,
     0,

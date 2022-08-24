@@ -14,6 +14,7 @@ export const getToken1 = (contractAddr: string) => {
 };
 
 export const getBalanceOf = async (contractAddr: string, addr: string) => {
+  // const contract = new ethers.Contract(contractAddr, abi_Pair, getProvider()!);
   const contract = new ethers.Contract(contractAddr, abi_Pair, getProvider()!);
   return await contract.balanceOf(addr);
 };

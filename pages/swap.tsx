@@ -19,17 +19,67 @@ import {
 } from '../services/wallet-service';
 import { getSwapAmountsOut, swapExactTokensForTokens } from '../services/router-service';
 
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+
 import { ETH_TOKENS } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { formatEther } from 'ethers/lib/utils';
+import { Status } from '../types/status';
 
 type Keyop = {
   value: any;
   label: any;
   address: any;
 };
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+export interface DialogTitleProps {
+  id: string;
+  children?: React.ReactNode;
+  onClose: () => void;
+}
+
+const BootstrapDialogTitle = (props: DialogTitleProps) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        ></IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
 const swap = () => {
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
@@ -48,6 +98,13 @@ const swap = () => {
     }
   }
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const [status, setStatus] = React.useState<Status>(Status.NONE);
   const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
 
   const [address, setAddress] = useState<string | null>(null);
@@ -258,6 +315,8 @@ const swap = () => {
   };
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
+    setStatus(Status.PENDING);
+    setOpen(true);
     console.log(amountIn, path1, path2);
 
     // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
@@ -266,7 +325,9 @@ const swap = () => {
       if (Number(allowance) > amountIn) {
         console.log('Allowance');
         try {
-          await swapExactTokensForTokens(amountIn, path1, path2);
+          const tx = await swapExactTokensForTokens(amountIn, path1, path2);
+          await tx.wait();
+          setStatus(Status.SUCCESS);
           toast.success('Swap Success!', {
             position: 'top-right',
             autoClose: 2500,
@@ -277,6 +338,7 @@ const swap = () => {
             progress: undefined,
           });
         } catch (error: any) {
+          setStatus(Status.FAILED);
           if (error.code == 4001) {
             toast.warn('Transaction Cancelled', {
               position: 'top-right',
@@ -359,6 +421,14 @@ const swap = () => {
     }
   };
 
+  const getSymbolToken = (tokenAddress: string) => {
+    if ('0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723' === tokenAddress) return 'AC';
+    else if ('0x1089DcF6B59912a0ff8c250383E47F5c0e0be4fb' === tokenAddress) return 'BC';
+    else if ('0xcc0Cb628E826F557E2273EC3412e370B474b9120' === tokenAddress) return 'CC';
+    else if ('0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B' === tokenAddress) return 'DC';
+    else if ('0xc778417E063141139Fce010982780140Aa0cD5Ab' === tokenAddress) return 'WETH';
+  };
+
   return (
     <div className="bg-bgtheme py-10 w-auto grid min-h-screen">
       {/* แก้grid for set width */}
@@ -432,6 +502,53 @@ const swap = () => {
               Swap
             </button>
           </div>
+          <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+              {status === Status.PENDING && (
+                <Box sx={{ display: 'flex' }}>
+                  <div className="absolute inset-0">
+                    <CircularProgress />
+                  </div>
+                  <DialogContent>
+                    Waiting for confirmation
+                    <Typography gutterBottom>
+                      Swapping {amountIn} {getSymbolToken(token1)} for {amountOutState} {getSymbolToken(token2)}
+                    </Typography>
+                  </DialogContent>
+                </Box>
+              )}
+              {status === Status.SUCCESS && (
+                <Box sx={{ display: 'flex' }}>
+                  <div>
+                    <CheckCircleIcon color="success" fontSize="large" />
+                  </div>
+                  <DialogContent dividers>
+                    Transaction submitted
+                    <Typography gutterBottom>ADD {getSymbolToken(token2)}</Typography>
+                  </DialogContent>
+                </Box>
+              )}
+              {status === Status.FAILED && (
+                <Box sx={{ display: 'flex' }}>
+                  <div>
+                    <WarningAmberIcon color="secondary" fontSize="large" />
+                  </div>
+
+                  <DialogContent dividers>
+                    Transaction rejected
+                    {/* <Typography gutterBottom>Fail</Typography> */}
+                  </DialogContent>
+                </Box>
+              )}
+            </BootstrapDialogTitle>
+
+            <DialogActions>
+              <button autoFocus onClick={handleClose}>
+                OK
+              </button>
+            </DialogActions>
+          </BootstrapDialog>
+
           <ToastContainer
             position="top-right"
             autoClose={5000}

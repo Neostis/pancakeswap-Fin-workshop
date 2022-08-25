@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import Navbar from '../components/Navbar';
 import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
@@ -31,12 +31,13 @@ import Box from '@mui/material/Box';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
-import { ETH_TOKENS } from '../constants/tokens';
+import { ETH_TOKENS, getTokenPairsDetails } from '../constants/tokens';
 import { getAddress } from 'ethers/lib/utils';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { formatEther } from 'ethers/lib/utils';
 import { Status } from '../types/status';
+import { Areachart } from '../components/charts/Areachart';
 
 type Keyop = {
   value: any;
@@ -422,13 +423,13 @@ const swap = () => {
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-    if ('0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723' === tokenAddress) return 'AC';
-    else if ('0x1089DcF6B59912a0ff8c250383E47F5c0e0be4fb' === tokenAddress) return 'BC';
-    else if ('0xcc0Cb628E826F557E2273EC3412e370B474b9120' === tokenAddress) return 'CC';
-    else if ('0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B' === tokenAddress) return 'DC';
-    else if ('0xc778417E063141139Fce010982780140Aa0cD5Ab' === tokenAddress) return 'WETH';
+    const details = getTokenPairsDetails(tokenAddress).symbol;
+    return details;
   };
-
+  const getImageToken = (tokenAddress: string) => {
+    const details = getTokenPairsDetails(tokenAddress).imageUrl;
+    return details;
+  };
   return (
     <div className="bg-bgtheme py-10 w-auto grid min-h-screen">
       {/* แก้grid for set width */}
@@ -564,11 +565,61 @@ const swap = () => {
           <div className="py-2"></div>
         </div>
       </div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
+
       <div>{balanceOfToken1}</div>
       <div>{address}</div>
       {/* <div>tokenAllowance1:{tokenAllowance1}</div> */}
+      <div className="justify-self-center bg-blueWidget rounded-3xl ">
+        <div className="py-12">
+          <div>
+            {token1 && token2 ? (
+              <div>
+                <div className="grid grid-cols-4 gap-4 px-5 text-textwhite ">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="flex space-x-px">
+                      <img src={getImageToken(token1)} height="50px" width="60px" />
+                    </div>
+                    <div className="flex space-x-px">
+                      <img src={getImageToken(token2)} height="50px" width="60px" />
+                    </div>
+                    <div>{getSymbolToken(token1)}</div>
+                    <div>{getSymbolToken(token2)}</div>
+                  </div>
+                  <div>02</div>
+                  <div>03</div>
+                  <div className="grid grid-cols-4 gap-4">
+                    {amountOutState ? <div>{amountOutState}</div> : <div>0</div>}
+
+                    <div>token1</div>
+                    <div>{getSymbolToken(token1)}</div>
+                    <div>{getSymbolToken(token2)}</div>
+                    <div></div>
+                  </div>
+                </div>
+                <div className="py-12 px-8">{Areachart(true)}</div>
+              </div>
+            ) : (
+              <div>
+                <div className="grid grid-cols-4 gap-4 px-5 text-textwhite">
+                  <div>01</div>
+                  <div>02</div>
+                  <div>03</div>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>token1</div>
+                    <div>a</div>
+                    <div>b</div>
+                    <div>c</div>
+                  </div>
+                </div>
+                <div className="py-12 px-8">{Areachart(false)}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="py-10"></div>
+      <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>
       <div className="py-10"></div>

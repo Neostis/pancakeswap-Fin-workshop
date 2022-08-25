@@ -532,29 +532,23 @@ export default function addliquidity({
     }
   };
 
-  const onChangeToken1Handle = async (e: any) => {
+  const onChangeToken1Handle = (e: any) => {
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountADesired(Number(balanceOfToken1));
-
-      // setAmountOut(await getSwapAmountsOut());
     } else if (Number(balanceOfToken1) === 0) {
       setAmountADesired(0);
     } else {
       setAmountADesired(e);
-      // setAmountOut(await getSwapAmountsOut());
     }
   };
 
-  const onChangeToken2Handle = async (e: any) => {
+  const onChangeToken2Handle = (e: any) => {
     if (Number(e) > Number(balanceOfToken2) && !isNaN(e)) {
       setAmountBDesired(Number(balanceOfToken2));
-
-      // setAmountOut(await getSwapAmountsOut());
     } else if (Number(balanceOfToken2) === 0) {
       setAmountBDesired(0);
     } else {
       setAmountBDesired(e);
-      // setAmountOut(await getSwapAmountsOut());
     }
   };
 
@@ -563,8 +557,6 @@ export default function addliquidity({
       setAmountLP(0);
     } else if (e > 0 && e < 100) {
       setAmountLP((Number(balanceOfLP) * e) / 100);
-      // console.log((Number(balanceOfLP) * e) / 100);
-      // console.log(Number(balanceOfLP) + ' * ' + e + ' / 100 = ' + (Number(balanceOfLP) * e) / 100);
     } else {
       setAmountLP(Number(balanceOfLP));
     }

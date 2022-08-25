@@ -29,6 +29,7 @@ module.exports = {
       'blueswapbuttonOn' : '#0C2F6B',
       'removeToggle' : '#740000',
       'addToggle' : '#153A15',
+      'test' : '#CFDDF1',
     }
     
   }

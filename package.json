@@ -22,6 +22,7 @@
     "react-router-dom": "^6.3.0",
     "react-select": "^5.4.0",
     "react-toastify": "^9.0.7",
+    "recharts": "2.1.10",
     "utilities": "^1.0.6"
   },
   "devDependencies": {

@@ -16,6 +16,7 @@ import { pairModule, poolList } from '../components/pairModule';
 import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
+import CustomPaginationActionsTable from '../components/table/CustomPaginationActionsTable';
 
 const pool = () => {
   const [dataList, setDataList] = useState([{}]);
@@ -58,7 +59,7 @@ const pool = () => {
         // console.log("You are on the browser");
 
         let savedDataList = window.localStorage.getItem('ownerDataList');
-        // console.log(savedDataList);
+        console.log(JSON.parse(savedDataList));
 
         if (savedDataList) {
           // console.log(JSON.parse(savedDataList));
@@ -105,7 +106,7 @@ const pool = () => {
 
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
-      <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
+      <div className="justify-self-center bg-blueWidget rounded-3xl w-7/12">
         {/* <div className="rounded-lg  font-bold"></div> */}
 
         <input
@@ -185,6 +186,7 @@ const pool = () => {
               })
             : 'no items'}
         </div> */}
+        <CustomPaginationActionsTable />
       </div>
       <div className="py-10"></div>
       <div className="py-10"></div>

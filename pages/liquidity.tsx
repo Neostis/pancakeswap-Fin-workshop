@@ -77,23 +77,8 @@ const liquidity = () => {
       await changeNetwork();
     } else {
     }
-    console.log();
-    // const filterList = (addr, index) => {
-    //   console.log('addr', Object.keys(addr));
-    // };
-    // const dataFiler = await Object.keys(dataList).map(async (key, index) => {
-    //   return console.log(await Object.keys(dataList[key]));
-    // });
   };
-  // function obPromise(){
-  //   return new Promise((resolve, reject) =>{
-  //     setTimeout(async()=>{
-  //       const balance = formatEther(
-  //         await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
-  //       );
-  //     })
-  //   })
-  // }
+
   const getData = async () => {
     const obPromise = (key: any, savedDataList: any) => {
       return new Promise((resolve, reject) => {
@@ -101,14 +86,9 @@ const liquidity = () => {
           const balance = formatEther(
             await getBalanceOf(Object.keys(JSON.parse(savedDataList)[key])[0], getWalletAddress()),
           );
-          console.log('balance', balance);
-          // const balance: any = formatEther(Object.values(JSON.parse(savedDataList)[key])[0].balance);
-          // console.log(Object.keys(JSON.parse(savedDataList)[key])[0]);
-          // console.log('value:', Object.values(JSON.parse(savedDataList)[key])[0].balance);
 
           if (Number(balance) > 0) {
             resolve({ [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance });
-            // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
           } else {
           }
         }, 1000);
@@ -117,10 +97,7 @@ const liquidity = () => {
 
     try {
       if (typeof window !== 'undefined') {
-        // console.log("You are on the browser");
-
         let savedDataList = window.localStorage.getItem('ownerDataList');
-        // console.log(savedDataList);
 
         if (savedDataList) {
           const a = Promise.all(
@@ -145,7 +122,6 @@ const liquidity = () => {
               //   // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
               // }
               const mappingData = [...dataList, ob];
-              console.log('mappingData:', mappingData);
               setDataList(mappingData);
               return ob;
             }),
@@ -159,34 +135,22 @@ const liquidity = () => {
           // ob.shift();
 
           // console.log(JSON.parse(savedDataList));
-
-          console.log(1);
         } else {
           setDataList(JSON.parse('{}'));
-          console.log(2);
         }
-      } else {
-        // console.log("You are on the server");
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const getDataList = () => {
-    console.log(dataList.length);
-    dataList.map((e) => {
-      // console.log('e: ', e);
-    });
-    console.log(...dataList);
-    console.log(Object.keys(dataList[0]).toString());
-    const mapped = Object.fromEntries(Object.entries(dataList).map(([key, value]) => [key, [value]]));
+  // const getDataList = () => {
+  //   console.log(dataList.length);
 
-    // console.log(...mapped);
+  //   console.log(...dataList);
+  //   console.log(Object.keys(dataList[0]).toString());
+  //   const mapped = Object.fromEntries(Object.entries(dataList).map(([key, value]) => [key, [value]]));
 
-    // console.log(Object.keys(dataList[0])[1].toString());
-    // console.log(Object.keys(dataList[0])[2].toString());
-    // console.log(Object.keys(dataList[0])[3].toString());
-  };
+  // };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -217,13 +181,6 @@ const liquidity = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
     <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
@@ -247,45 +204,6 @@ const liquidity = () => {
                   Add Liquidity
                 </Link>
               </button>
-
-              <br />
-              <br />
-              <button
-                className="outlined justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                from-blueswapdark  to-blueswapbutton 
-     text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-                onClick={handleClickOpen}
-              ></button>
-
-              <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                  bobo
-                </BootstrapDialogTitle>
-                <DialogContent dividers>
-                  <Typography gutterBottom>loading....</Typography>
-                </DialogContent>
-                <DialogActions>
-                  <button autoFocus onClick={handleClose}>
-                    OK
-                  </button>
-                </DialogActions>
-              </BootstrapDialog>
-
-              {/* <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-              <Box sx={{ display: 'flex' }}>
-                <CircularProgress />
-              </Box>
-            </BootstrapDialogTitle>
-            <DialogContent dividers>
-              <Typography gutterBottom>Waiting for confirmation</Typography>
-            </DialogContent>
-            <DialogActions>
-              <button autoFocus onClick={handleClose}>
-                OK
-              </button>
-            </DialogActions>
-          </BootstrapDialog> */}
             </div>
             <div className="flex-column w-auto grid ">
               <div className="py-10"></div>
@@ -294,19 +212,6 @@ const liquidity = () => {
               <div className="py-10"></div>
               <div>{dataList.length}</div>
 
-              {/* 
-              <div>
-                {Object.keys(dataList).length >= 1
-                  ? Object.keys(dataList).map((key, index) => {
-                      return (
-                        <div key={key}>
-                          <a>Pool:{Object.keys(dataList[key])[0]}</a>
-           
-                        </div>
-                      );
-                    })
-                  : 'no items'}
-              </div> */}
               <div className="py-2"></div>
             </div>
           </div>
@@ -330,18 +235,13 @@ const liquidity = () => {
                 </div>
               );
             })}
-            {/* <h1>{Object.keys(dataList[1])}</h1>
-            <h1>{Object.keys(dataList[2])}</h1> */}
-            {/* <h1>{Object.keys(dataList[1])}</h1>
-            <h1>{Object.keys(dataList[2])}</h1> */}
-            {/* console.log(Object.keys(dataList[0]).toString()); */}
           </div>
         ) : (
           <h2>no item</h2>
         )}
       </div>
       <div className="py-10"></div>
-      <button onClick={getDataList}>checkData</button>
+      {/* <button onClick={getDataList}>checkData</button> */}
       <div className="py-10"></div>
       <div className="py-10"></div>
     </div>

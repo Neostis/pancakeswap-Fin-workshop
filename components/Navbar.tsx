@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import Link from 'next/link';
 import * as ethers from 'ethers';
-import Image from 'next/image';
-import Logo from '../public/fin-logo.png';
 import {
   connectWallet,
   getBalance,
@@ -69,19 +67,25 @@ function Navbar() {
 
   useEffect(() => {
     const fetchData = async () => {
-      let savedDataList = window.localStorage.getItem('ownerDataList');
+      // let savedDataList = window.localStorage.getItem('ownerDataList');
 
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
 
         let savedDataList = window.localStorage.getItem('ownerDataList');
+
         if (savedDataList) {
           const dataParse = JSON.parse(savedDataList);
         }
-        window.localStorage.setItem('ownerDataList', JSON.stringify(await pairModule()));
+
+        if (savedDataList) window.localStorage.setItem('ownerDataList', JSON.stringify(await pairModule()));
       }
     };
-    fetchData();
+    try {
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   // // interval

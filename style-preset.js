@@ -9,6 +9,7 @@ module.exports = {
     },
     colors:{
       'darkbg': '#0C1831',
+      'lightbluebg': '#0059B6',
       'lightbg': '#ECF2FF',
       'lightblue': '#4EABDD',
       'textwhite': '#FFFFFF',

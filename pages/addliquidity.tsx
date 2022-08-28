@@ -174,14 +174,6 @@ export default function addliquidity({
     setNetwork(chainId);
   };
 
-  const defaultValue = () => {
-    setToken1(null);
-    setToken2(null);
-    setAmountADesired(null);
-    setAmountBDesired(null);
-    // setTestOut(null);
-  };
-
   useEffect(() => {
     loadAccountData();
     const handleAccountChange = async (addresses: string[]) => {
@@ -199,6 +191,13 @@ export default function addliquidity({
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
   }, []);
+
+  const defaultValue = () => {
+    setToken1(null);
+    setToken2(null);
+    setAmountADesired(null);
+    setAmountBDesired(null);
+  };
 
   const checkHandle = async () => {
     // address
@@ -563,7 +562,7 @@ export default function addliquidity({
   };
 
   return (
-    <div className="bg-bgtheme py-10 flex-column w-auto grid">
+    <div className="h-screen flex-column w-auto grid">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
         {/* <div>{address}</div> */}
         <div className="rounded-lg  font-bold">
@@ -842,17 +841,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         <br />
       </div>
       <div className="py-10"></div>
-      {/* <div className="py-4 flex-column w-auto grid text-textblack "> */}
 
-      {/* <div> */}
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
     </div>
   );
 }

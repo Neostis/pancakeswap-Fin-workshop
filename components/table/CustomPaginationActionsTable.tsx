@@ -184,10 +184,6 @@ const getImageToken = (tokenAddress: string) => {
 
 const test = [].sort((a, b) => (a.liquidity < b.liquidity ? -1 : 1));
 
-const testFun = () => {
-  console.log(test);
-};
-
 export default function CustomPaginationActionsTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);

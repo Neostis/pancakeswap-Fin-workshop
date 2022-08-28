@@ -7,7 +7,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Navbar />
+      <div className='min-h-screen bg-gradient-to-b
+    from-blueswapdark to-lightbluebg '>
+      
       <Component {...pageProps} />
+      <img src="/BG.png" className=''></img>
+        </div>
     </>
   );
 }

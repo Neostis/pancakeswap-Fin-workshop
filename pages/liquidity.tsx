@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { pairModule, poolList } from '../components/pairModule';
 import { getBalanceOf } from '../services/pair-service';
 import { formatEther, getAddress } from 'ethers/lib/utils';
@@ -20,43 +13,6 @@ import {
   changeNetwork,
 } from '../services/wallet-service';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
-  },
-}));
-
-export interface DialogTitleProps {
-  id: string;
-  children?: React.ReactNode;
-  onClose: () => void;
-}
-
-const BootstrapDialogTitle = (props: DialogTitleProps) => {
-  const { children, onClose, ...other } = props;
-
-  return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-      {children}
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        ></IconButton>
-      ) : null}
-    </DialogTitle>
-  );
-};
-
 const liquidity = () => {
   const [open, setOpen] = React.useState(false);
 
@@ -66,18 +22,21 @@ const liquidity = () => {
   const [network, setNetwork] = useState<string | null>(null);
 
   const loadAccountData = async () => {
+
     const addr = getWalletAddress();
     const chainId = await getChainId();
-
     if (addr === null) {
+
       await connectWallet();
-    } else {
+
     }
     if (chainId !== '0x4') {
       await changeNetwork();
-    } else {
-    }
+    } 
+    setAddress(addr);
+    setNetwork(chainId);
   };
+  
 
   const getData = async () => {
     const obPromise = (key: any, savedDataList: any) => {
@@ -121,6 +80,7 @@ const liquidity = () => {
               //   ob.push({ [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance });
               //   // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
               // }
+              
               const mappingData = [...dataList, ob];
               setDataList(mappingData);
               return ob;
@@ -143,20 +103,13 @@ const liquidity = () => {
       console.log(error);
     }
   };
-  // const getDataList = () => {
-  //   console.log(dataList.length);
 
-  //   console.log(...dataList);
-  //   console.log(Object.keys(dataList[0]).toString());
-  //   const mapped = Object.fromEntries(Object.entries(dataList).map(([key, value]) => [key, [value]]));
-
-  // };
 
   useEffect(() => {
+    loadAccountData();
     const interval = setInterval(() => {
-      console.log('dataList', ...dataList);
       const fetchData = async () => {
-        await getData();
+        // await getData();
         await loadAccountData();
       };
       fetchData();
@@ -164,25 +117,23 @@ const liquidity = () => {
       const handleAccountChange = async (addresses: string[]) => {
         setAddress(addresses[0]);
         await loadAccountData();
-        //   defaultValue();
       };
 
       const handleNetworkChange = async (networkId: string) => {
-        // console.log('handle change ' + networkId);
         setNetwork(networkId);
         await loadAccountData();
-        //   defaultValue();
       };
 
       getEthereum()?.on('accountsChanged', handleAccountChange);
 
       getEthereum()?.on('chainChanged', handleNetworkChange);
     }, 3000);
+    
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
+    <div className=" py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
         <div className="rounded-lg  font-bold">
           <div>
@@ -205,33 +156,16 @@ const liquidity = () => {
                 </Link>
               </button>
             </div>
-            <div className="flex-column w-auto grid ">
-              <div className="py-10"></div>
-              <div className="py-10"></div>
-              <div className="py-10"></div>
-              <div className="py-10"></div>
-              <div>{dataList.length}</div>
-
-              <div className="py-2"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div>
-        <div>Pool</div>
+            <div>Pool</div>
         {dataList ? (
           <div>
             {' '}
-            {Object.keys(dataList).map((key, index) => {
+            {Object.keys(dataList).map((key) => {
+              
               return (
                 <div key={key}>
-                  <a>Pool:{Object.keys(dataList[key])[0]}</a>
-                  <a>Pool:{Object.values(dataList[key])[0]}</a>
+                  <a>{Object.keys(dataList[key])[0]}</a>
+                  <a>{Object.values(dataList[key])[0]}</a>
                 </div>
               );
             })}
@@ -239,24 +173,24 @@ const liquidity = () => {
         ) : (
           <h2>no item</h2>
         )}
+            <div className="flex-column w-auto grid ">
+              <div className="py-10"></div>
+              <div className="py-10"></div>
+              <div className="py-10"></div>
+              <div className="py-10"></div>
+
+              <div className="py-2"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="py-10"></div>
+
+      <div>
+      </div>
       {/* <button onClick={getDataList}>checkData</button> */}
-      <div className="py-10"></div>
-      <div className="py-10"></div>
+
     </div>
   );
 };
 
 export default liquidity;
-// {dataList.length >= 1
-//   ? dataList.map((e, index) => {
-//       return (
-//         <div key={index}>
-
-//           <h1>{Object.keys(e)[0]}</h1>
-
-//         </div>
-//       );
-//     })
-//     : 'no items'}

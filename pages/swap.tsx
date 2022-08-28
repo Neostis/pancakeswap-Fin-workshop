@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import Navbar from '../components/Navbar';
 import { useEffect, useState, useRef } from 'react';
 import * as ethers from 'ethers';
@@ -177,16 +177,9 @@ const swap = () => {
   const defaultValue = () => {
     setToken1(null);
     setToken2(null);
-    // setToken1List([]);
-    // setToken2List([]);
     setAmountIn(null);
-    // setAmountIn(null);
     setAmountOut(null);
 
-    // setShowToken1(null);
-    // setShowToken2(null);
-    // setToken1(null);
-    // setToken2(null);
   };
 
   const checkHandle = async () => {
@@ -426,12 +419,14 @@ const swap = () => {
     const details = getTokenPairsDetails(tokenAddress).symbol;
     return details;
   };
+
   const getImageToken = (tokenAddress: string) => {
     const details = getTokenPairsDetails(tokenAddress).imageUrl;
     return details;
   };
+  
   return (
-    <div className="bg-bgtheme py-10 w-auto grid min-h-screen">
+    <div className="py-10 w-auto grid">
       {/* แก้grid for set width */}
       <div className="justify-self-center bg-blueWidget rounded-3xl ">
         {/* <div>{address}</div> */}
@@ -503,7 +498,61 @@ const swap = () => {
               Swap
             </button>
           </div>
-          <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+
+          <div className="py-2"></div>
+        </div>
+      </div>
+      <br />
+      <div className="justify-self-center bg-blueWidget rounded-3xl ">
+        <div className="py-12">
+          <div>
+          {token1 && token2 ? (
+              <div>
+                <div className="grid grid-cols-4 gap-4 px-5 text-textwhite ">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="flex space-x-px">
+                      <img src={getImageToken(token1)} height="50px" width="60px" />
+                    </div>
+                    <div className="flex space-x-px">
+                      <img src={getImageToken(token2)} height="50px" width="60px" />
+                    </div>
+                    <div>{getSymbolToken(token1)}</div>
+                    <div>{getSymbolToken(token2)}</div>
+                  </div>
+                  <div></div>
+                  <div></div>
+                  <div className="grid grid-cols-4 gap-4">
+                    {amountOutState ? <div>{amountOutState}</div> : <div>0</div>}
+
+                    <div></div>
+                    <div>{getSymbolToken(token1)}</div>
+                    <div>{getSymbolToken(token2)}</div>
+                    <div></div>
+                  </div>
+                </div>
+                <div className="py-12 px-8">{Areachart(true)}</div>
+              </div>
+            ) : (
+              <div>
+                {/* <div className="grid grid-cols-4 gap-4 px-5 text-textwhite">
+                  <div>Select Token</div>
+                  <div></div>
+                  <div></div>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div></div>
+                    <div>a</div>
+                    <div>b</div>
+                    <div>c</div> 
+                  </div>
+                </div>
+                <div className="py-12 px-8">{Areachart(false)}</div> */}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
               {status === Status.PENDING && (
                 <Box sx={{ display: 'flex' }}>
@@ -562,70 +611,8 @@ const swap = () => {
             pauseOnHover
             limit={1}
           />
-          <div className="py-2"></div>
-        </div>
-      </div>
-
-      <div>{balanceOfToken1}</div>
-      <div>{address}</div>
-      {/* <div>tokenAllowance1:{tokenAllowance1}</div> */}
-      <div className="justify-self-center bg-blueWidget rounded-3xl ">
-        <div className="py-12">
-          <div>
-            {token1 && token2 ? (
-              <div>
-                <div className="grid grid-cols-4 gap-4 px-5 text-textwhite ">
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="flex space-x-px">
-                      <img src={getImageToken(token1)} height="50px" width="60px" />
-                    </div>
-                    <div className="flex space-x-px">
-                      <img src={getImageToken(token2)} height="50px" width="60px" />
-                    </div>
-                    <div>{getSymbolToken(token1)}</div>
-                    <div>{getSymbolToken(token2)}</div>
-                  </div>
-                  <div>02</div>
-                  <div>03</div>
-                  <div className="grid grid-cols-4 gap-4">
-                    {amountOutState ? <div>{amountOutState}</div> : <div>0</div>}
-
-                    <div>token1</div>
-                    <div>{getSymbolToken(token1)}</div>
-                    <div>{getSymbolToken(token2)}</div>
-                    <div></div>
-                  </div>
-                </div>
-                <div className="py-12 px-8">{Areachart(true)}</div>
-              </div>
-            ) : (
-              <div>
-                <div className="grid grid-cols-4 gap-4 px-5 text-textwhite">
-                  <div>01</div>
-                  <div>02</div>
-                  <div>03</div>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div>token1</div>
-                    <div>a</div>
-                    <div>b</div>
-                    <div>c</div>
-                  </div>
-                </div>
-                <div className="py-12 px-8">{Areachart(false)}</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
     </div>
+    
   );
 };
 

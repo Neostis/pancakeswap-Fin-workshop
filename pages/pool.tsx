@@ -110,7 +110,7 @@ const pool = () => {
   const [query, setQuery] = useState('');
 
   return (
-    <div className="bg-bgtheme py-10 flex-column w-auto grid h-auto">
+    <div className="py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-7/12">
         {/* <div className="rounded-lg  font-bold"></div> */}
 
@@ -152,14 +152,7 @@ const pool = () => {
 
         <TableConstants />
       </div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
-      <div className="py-10"></div>
+
     </div>
   );
 };

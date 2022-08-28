@@ -17,6 +17,7 @@ import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
 import CustomPaginationActionsTable from '../components/table/CustomPaginationActionsTable';
+import TableConstants from '../components/table/TableFilter';
 
 const pool = () => {
   const [dataList, setDataList] = useState([{}]);
@@ -58,14 +59,18 @@ const pool = () => {
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
 
-        let savedDataList = window.localStorage.getItem('ownerDataList');
-        console.log(JSON.parse(savedDataList));
-
-        if (savedDataList) {
+        try {
+          let savedDataList = window.localStorage.getItem('ownerDataList');
           // console.log(JSON.parse(savedDataList));
-          setDataList(JSON.parse(savedDataList));
-        } else {
-          setDataList(JSON.parse('{}'));
+
+          if (savedDataList) {
+            // console.log(JSON.parse(savedDataList));
+            setDataList(JSON.parse(savedDataList));
+          } else {
+            setDataList(JSON.parse('{}'));
+          }
+        } catch (error) {
+          console.log(error);
         }
       } else {
         // console.log("You are on the server");
@@ -109,7 +114,7 @@ const pool = () => {
       <div className="justify-self-center bg-blueWidget rounded-3xl w-7/12">
         {/* <div className="rounded-lg  font-bold"></div> */}
 
-        <input
+        {/* <input
           type="text"
           placeholder="SEARCH..."
           className=" text-textblack"
@@ -143,50 +148,9 @@ const pool = () => {
                 );
               })
             : 'no items'}
-        </ul>
+        </ul> */}
 
-        {/* <button
-          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                from-blueswapdark  to-blueswapbutton 
-     text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-        >
-          <Link
-            href="/liquidity"
-            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
-                  from-blueswapdark  to-blueswapbutton
-         text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-          >
-            Back
-          </Link>
-        </button> */}
-        <br />
-        <br />
-        {/* <div>
-          {Object.keys(dataList).length >= 1
-            ? Object.keys(dataList).map((key, index) => {
-                return (
-                  <div key={key}>
-                    <a>Pool:{Object.keys(dataList[key])}</a>
-                    {Object.values(dataList[key]).map((e) => {
-                      return (
-                        <div>
-                          <div className="flex space-x-px">
-                            <img src={e.token0.imageUrl} height="30px" width="30px" />
-                            <h1>{e.token0.name}</h1>
-                          </div>
-                          <div className="flex">
-                            <img src={e.token1.imageUrl} height="30px" width="30px" />
-                            <h1>{e.token1.name}</h1>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })
-            : 'no items'}
-        </div> */}
-        <CustomPaginationActionsTable />
+        <TableConstants />
       </div>
       <div className="py-10"></div>
       <div className="py-10"></div>

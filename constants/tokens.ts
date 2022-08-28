@@ -53,6 +53,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/pancakeswap-cake-logo.png?v=023',
       address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
     },
+    total: '8460577025660220784',
   },
   {
     addressPair: '0xAF966C9B55c71919d2c800232ea83E5baB89Be4E',
@@ -70,6 +71,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
       address: '0x3485Ebf13d8292E8C78F442bc4Eb198d47f58723',
     },
+    total: '1000000000000000000',
   },
   {
     addressPair: '0x8620bd005f8979Dd300118101136284a7F30fE21',
@@ -87,6 +89,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/power-ledger-powr-logo.png?v=002',
       address: '0xcc0Cb628E826F557E2273EC3412e370B474b9120',
     },
+    total: '3100000000000000000000',
   },
   {
     addressPair: '0xc10F159bfDa35b7eA7f3B88f432cCdA26C63d7C8',
@@ -104,6 +107,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/power-ledger-powr-logo.png?v=002',
       address: '0xcc0Cb628E826F557E2273EC3412e370B474b9120',
     },
+    total: '1000',
   },
   {
     addressPair: '0xC96fF23AA569BE6adD743762A01CCDD101fa3c87',
@@ -121,6 +125,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/aelf-elf-logo.png?v=002',
       address: '0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B',
     },
+    total: '100000000000000000000',
   },
   {
     addressPair: '0x9f10cf10F492CC38d1Ca938a7fE206f6Da13D6f3',
@@ -138,6 +143,7 @@ export const PairsList = [
       imageUrl: 'https://cryptologos.cc/logos/pancakeswap-cake-logo.png?v=023',
       address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
     },
+    total: '1000000000000000000',
   },
 ];
 //

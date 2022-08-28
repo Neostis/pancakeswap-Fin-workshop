@@ -16,6 +16,7 @@ function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [network, setNetwork] = useState<string | null>(null);
+
   // const [dataListObject, setDataListObject] = useState([{}]);
 
   // const getData = async () => {
@@ -71,21 +72,23 @@ function Navbar() {
 
       if (typeof window !== 'undefined') {
         // console.log("You are on the browser");
-
         let savedDataList = window.localStorage.getItem('ownerDataList');
 
         if (savedDataList) {
           const dataParse = JSON.parse(savedDataList);
         }
 
-        if (savedDataList) window.localStorage.setItem('ownerDataList', JSON.stringify(await pairModule()));
+        // if (savedDataList)
+        try {
+          const temp = await pairModule();
+
+          if (JSON.stringify(temp) !== null) {
+            window.localStorage.setItem('ownerDataList', JSON.stringify(temp));
+          }
+        } catch (error) {}
       }
     };
-    try {
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
+    fetchData();
   }, []);
 
   // // interval

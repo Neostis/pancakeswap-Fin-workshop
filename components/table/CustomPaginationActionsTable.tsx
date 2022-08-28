@@ -14,6 +14,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import { ETH_TOKENS, getTokenPairsDetails } from '../../constants/tokens';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -68,14 +69,16 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-function createData(image1: string, image2: string, name: string, calories: number, fat: number) {
-  return { image1, image2, name, calories, fat };
+function createData(image1: string, image2: string, name: string, liquidity: number, fat: number) {
+  return { image1, image2, name, liquidity, fat };
 }
+
 {
   /* <div className="flex space-x-px text-textwhite">
 <img src={item.token0.imageUrl} height="30px" width="30px" />
 <h1>{item.token0.name}</h1> */
 }
+
 const rows = [
   createData(
     'https://cryptologos.cc/logos/tether-usdt-logo.png?v=022',
@@ -168,7 +171,22 @@ const rows = [
     437,
     18.0,
   ),
-].sort((a, b) => (a.calories < b.calories ? -1 : 1));
+].sort((a, b) => (a.liquidity < b.liquidity ? -1 : 1));
+
+const getSymbolToken = (tokenAddress: string) => {
+  const details = getTokenPairsDetails(tokenAddress).symbol;
+  return details;
+};
+const getImageToken = (tokenAddress: string) => {
+  const details = getTokenPairsDetails(tokenAddress).imageUrl;
+  return details;
+};
+
+const test = [].sort((a, b) => (a.liquidity < b.liquidity ? -1 : 1));
+
+const testFun = () => {
+  console.log(test);
+};
 
 export default function CustomPaginationActionsTable() {
   const [page, setPage] = React.useState(0);
@@ -179,6 +197,7 @@ export default function CustomPaginationActionsTable() {
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
+    console.log(rows);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -203,7 +222,7 @@ export default function CustomPaginationActionsTable() {
                 {row.name}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.calories}
+                {row.liquidity}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.fat}

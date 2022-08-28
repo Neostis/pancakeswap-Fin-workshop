@@ -10,7 +10,7 @@ import {
 } from '../services/wallet-service';
 import { useEffect, useState } from 'react';
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
-import { ETH_TOKENS, RINKEBY_TOKENS, KOVAN_TOKENS } from '../constants/tokens';
+import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 import { getTokenPairsDetails } from '../constants/tokens';
 // import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';

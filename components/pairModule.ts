@@ -53,14 +53,11 @@ export const pairModule = async ()=> {
     const addr = getWalletAddress();
     const length = await _allPairsLength();
     const data = [];
-
+  
     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
     let ordersData = (
       await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
     ).map(async (e,index) => {
-      ///
-      // const balances = await getBalanceOf(allPair[index],addr);
-      // console.log(balances);
       const balances = 10;
       return (
             dataList.push(   {   [`${allPair[index]}`] :
@@ -73,6 +70,7 @@ export const pairModule = async ()=> {
       )
      }
     );
+
   return dataList
 }
 // export const pairModule = async () => {

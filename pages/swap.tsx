@@ -435,22 +435,18 @@ const swap = () => {
           Swap
         </h1>
         {/* <div>{address}</div> */}
-        <div className="justify-self-center w-11/12 rounded-lg font-bold">
-          <div className="py-2 m-3 flex-column w-auto grid text-textblack ">
-            <Select
-              // defaultValue={token1}
-              value={showToken1}
-              onChange={(e) => {
-                getSelectTokens1(e);
-              }}
-              options={token1List}
-              autoFocus
-              placeholder="Select Token 1"
-            />
+        {/* <div className="justify-self-center w-11/12 rounded-lg font-bold"> */}
+          
+        <div className="flex-column w-auto grid">
+
+        <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
+        <div className="grid grid-cols-5 text-textblack ">
+                    
+          {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
 
             {token1 ? (
               <input
-                className="w-full h-14 rounded-lg justify-self-center"
+                className="col-span-4 h-20 rounded-3xl"
                 type="number"
                 value={amountIn}
                 placeholder={balanceOfToken1}
@@ -461,11 +457,25 @@ const swap = () => {
             ) : (
 
               <input
-                className="w-full h-14 rounded-lg justify-self-center bg-textwhite"
+                className="col-span-4 h-20 rounded-3xl"
                 value={'Select Token'}
                 disabled
               ></input>
             )}
+                   <div className="grid grid-cols-6 col-span-1 ">
+            <Select
+              // defaultValue={token1}
+              value={showToken1}
+              onChange={(e) => {
+                getSelectTokens1(e);
+              }}
+              options={token1List}
+              autoFocus
+              placeholder="Select Token 1"
+              className="col-span-6 w-auto h-auto cursor-pointer"
+            />
+ </div>
+          </div>
           </div>
           <div className="flex-column w-auto grid text-textblack ">
             <button
@@ -475,7 +485,14 @@ const swap = () => {
               ↓
             </button>
           </div>
-          <div className="py-2 m-3 flex-column w-auto grid text-textblack ">
+
+
+          <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
+        <div className="grid grid-cols-5 text-textblack ">
+
+            <span className="col-span-4 h-20 rounded-3xl ml-5 mt-5"> {amountOutState}</span>
+                    {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
+            <div className="grid grid-cols-6 col-span-1 ">
             <Select
               value={showToken2}
               onChange={(e) => {
@@ -484,10 +501,17 @@ const swap = () => {
               options={token2List}
               autoFocus
               placeholder="Select Token 2"
+              className="col-span-6 w-auto h-auto cursor-pointer"
             />
 
-            <span className="w-full h-14 rounded-lg justify-self-center bg-textwhite"> {amountOutState}</span>
+          
+          
           </div>
+          </div>
+          </div>
+
+
+
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button
               className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -501,6 +525,11 @@ const swap = () => {
               Swap
             </button>
           </div>
+
+
+
+
+
 
           <div className="py-2"></div>
         </div>

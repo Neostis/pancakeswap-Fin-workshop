@@ -49,6 +49,7 @@ type Keyop = {
   address: any;
 };
 
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -57,7 +58,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-
 export interface DialogTitleProps {
   id: string;
   children?: React.ReactNode;
@@ -152,6 +152,26 @@ export default function addliquidity() {
       return 'REMOVE Liquidity';
     }
   };
+  const customStyles = {
+    menu: (provided, state) => ({
+      ...provided,
+      width: state.selectProps.width,
+      borderBottom: '1px dotted pink',
+      color: state.selectProps.menuColor,
+      padding: 20,
+    }),
+  
+    control: (_, { selectProps: { width }}) => ({
+      width: width
+    }),
+  
+    singleValue: (provided, state) => {
+      const opacity = state.isDisabled ? 0.5 : 1;
+      const transition = 'opacity 300ms';
+  
+      return { ...provided, opacity, transition };
+    }
+  }
 
   const loadAccountData = async () => {
     setShowToken1(null);
@@ -699,6 +719,7 @@ export default function addliquidity() {
                       </div>
                     </div>
                   </div>
+
                   <div className=" flex-column w-auto grid text-textblack h-12">
                     <button className="">+</button>
                   </div>
@@ -735,7 +756,6 @@ export default function addliquidity() {
                           options={token2List}
                           autoFocus
                           placeholder="Select Token 2"
-                          // isClearable
                           className="col-span-6 w-auto h-auto cursor-pointer"
                         />
 
@@ -805,16 +825,36 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                 //remove Zone
                 <div>
                   {' '}
-                  <div className="flex-column w-auto grid text-textblack">
-                    <Select
+                  <div className="flex-column w-auto grid text-textblack rounded-3xl">
+               
+                    {/* <div className="">
+
+                    <div className="grid grid-cols-5 text-textblack ">
+                      <div className="col-span-4 h-20 rounded-3xl">
+         
+                      </div>
+                   
+                      </div> */}
+                      <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
+                        <div className="grid grid-cols-5 text-textblack">
+                          <div className="col-span-4 h-20 rounded-3xl"></div>
+                        <div className="grid grid-cols-6 col-span-1">
+                      <Select
                       value={showLP}
                       onChange={(e) => {
                         getSelectRemoveLiq(e);
                       }}
+                      // styles={customStyles}
                       options={pairLPList}
                       autoFocus
                       placeholder="Select pair"
-                    />
+                      className="col-span-6 w-full h-auto cursor-pointer relative"                      
+                      />
+                      
+                      </div>
+                      </div>
+                      </div>
+                      <div className="m-5 justify-self-center">
                     {pairLP ? (
                       <Box width={300}>
                         <Slider
@@ -825,12 +865,15 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                           onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
                         />
                       </Box>
+                      // </div>
                     ) : (
                       // <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
+                      // <div className="justify-self-center">
                       <Box width={300}>
                         <Slider defaultValue={50} aria-label="Disabled slider" valueLabelDisplay="auto" disabled />
                       </Box>
                     )}
+                      </div>
                   </div>
                   {pairLP && amountLP ? (
                     <div className="py-10 flex-column w-auto grid text-textblack ">

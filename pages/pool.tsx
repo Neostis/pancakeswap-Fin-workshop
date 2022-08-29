@@ -12,11 +12,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory-service';
-import { pairModule, poolList } from '../components/pairModule';
+import { pairModule } from '../components/pairModule';
 import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
-import CustomPaginationActionsTable from '../components/table/CustomPaginationActionsTable';
 import TablePool from '../components/table/TableFilter';
 
 const pool = () => {

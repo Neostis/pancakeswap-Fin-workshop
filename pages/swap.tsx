@@ -111,18 +111,17 @@ const swap = () => {
 
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-  const [token1, setToken1] = useState();
-  const [token2, setToken2] = useState();
+  const [token1, setToken1] = useState<string | null>(null);
+  const [token2, setToken2] = useState<string | null>(null);
   const [amountIn, setAmountIn] = useState<number | null>(null);
   const [balanceOfToken1, setBalanceOfToken1] = useState<string | null>(null);
-  const amountOut = useRef(0);
   const [amountOutState, setAmountOut] = useState<string | null>(null);
 
   const [token1List, setToken1List] = useState<Keyop[]>([]);
   const [token2List, setToken2List] = useState<Keyop[]>([]);
 
-  const [showToken1, setShowToken1] = useState();
-  const [showToken2, setShowToken2] = useState();
+  const [showToken1, setShowToken1] = useState<Keyop[] | null>(null);
+  const [showToken2, setShowToken2] = useState<Keyop[] | null>(null);
 
   const loadAccountData = async () => {
     setShowToken1(null);
@@ -171,7 +170,6 @@ const swap = () => {
     getEthereum()?.on('chainChanged', handleNetworkChange);
 
     // if (token1 !== undefined && token2 !== undefined && amountIn !== null) {
-    amountOut.current = Number(getSwapAmountsOut(amountIn, token1, token2));
     // }
   }, []);
 
@@ -316,7 +314,7 @@ const swap = () => {
 
     // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
-      const allowance = formatEther(await getAllowance(path1, address, addr_Router));
+      const allowance = formatEther(await getAllowance(path1, address!, addr_Router));
       if (Number(allowance) > amountIn) {
         console.log('Allowance');
         try {
@@ -398,19 +396,21 @@ const swap = () => {
       // setAmountOut(await getSwapAmountsOut());
     }
     if (token2 !== null) {
-      try {
-        let amountOut;
+              let amountOut:number = 0 as const;
 
+      try {
         if (event > 0) {
           if (event > Number(balanceOfToken1)) {
-            amountOut = await getSwapAmountsOut(Number(balanceOfToken1), token1, token2);
-          } else if (Number(balanceOfToken1) !== 0) {
-            amountOut = await getSwapAmountsOut(event, token1, token2);
+             amountOut = Number(await getSwapAmountsOut(Number(balanceOfToken1), token1, token2));
+          } 
+          else if (Number(balanceOfToken1) !== 0) {
+             amountOut = Number(await getSwapAmountsOut(event, token1, token2));
           }
-        } else {
-          amountOut = 0;
+        } 
+        else {
+           amountOut = 0;
         }
-        setAmountOut(amountOut);
+        setAmountOut(amountOut.toString());
       } catch (CALL_EXCEPTION) {
         console.log('CALL_EXCEPTION ERROR');
       }
@@ -418,13 +418,13 @@ const swap = () => {
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-    const details = getTokenPairsDetails(tokenAddress).symbol;
-    return details;
+    const details:any = getTokenPairsDetails(tokenAddress);
+    return details.symbol;
   };
 
   const getImageToken = (tokenAddress: string) => {
-    const details = getTokenPairsDetails(tokenAddress).imageUrl;
-    return details;
+    const details:any = getTokenPairsDetails(tokenAddress);
+    return details.imageUrl;
   };
   
   return (
@@ -448,8 +448,8 @@ const swap = () => {
               <input
                 className="col-span-4 h-20 rounded-3xl ml-5 mt-1"
                 type="number"
-                value={amountIn}
-                placeholder={balanceOfToken1}
+                value={amountIn!}
+                placeholder={balanceOfToken1!}
                 onChange={(e) => {
                   onChangeToken1Handle(Number(e.target.value));
                 }}
@@ -519,7 +519,7 @@ const swap = () => {
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
               type="button"
               onClick={(e) => {
-                handleSwap(Number(amountIn), token1, token2);
+                handleSwap(Number(amountIn), token1!, token2!);
               }}
             >
               Swap
@@ -581,7 +581,7 @@ const swap = () => {
                   <DialogContent>
                     Waiting For Confirmation
                     <Typography gutterBottom>
-                      Swapping {amountIn} {getSymbolToken(token1)} for {amountOutState} {getSymbolToken(token2)}
+                      Swapping {amountIn} {getSymbolToken(token1!)} for {amountOutState} {getSymbolToken(token2!)}
                     </Typography>
                   </DialogContent>
                 </Box>
@@ -591,7 +591,7 @@ const swap = () => {
                     <CheckCircleIcon color="success" fontSize="large" />
                   <DialogContent >
                     Transaction Submitted
-                    <Typography gutterBottom>ADD {getSymbolToken(token2)}</Typography>
+                    <Typography gutterBottom>ADD {getSymbolToken(token2!)}</Typography>
                   </DialogContent>
                 </Box>
               )}

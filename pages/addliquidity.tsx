@@ -122,25 +122,25 @@ export default function addliquidity() {
   const [approveLoading, setApproveLoading] = useState(false);
   const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
 
-  const [token1, setToken1] = useState();
-  const [token2, setToken2] = useState();
+  const [token1, setToken1] = useState<string | null>(null);
+  const [token2, setToken2] = useState<string | null>(null);
 
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const [token1List, setToken1List] = useState<Keyop[]>([]);
-  const [token2List, setToken2List] = useState<Keyop[]>([]);
+  const [token1List, setToken1List] = useState<Keyop[]| null>([]);
+  const [token2List, setToken2List] = useState<Keyop[]| null>([]);
+  const [pairLPList, setPairLPList] = useState<any[]| null>([]);
 
-  const [showToken1, setShowToken1] = useState();
-  const [showToken2, setShowToken2] = useState();
+  const [showToken1, setShowToken1] = useState<Keyop[] | null>(null);
+  const [showToken2, setShowToken2] = useState<Keyop[] | null>(null);
 
-  const [pairLPList, setPairLPList] = useState<Keyop[]>([]);
-  const [pairLP, setPairLP] = useState();
+  const [pairLP, setPairLP] = useState<string | null>(null);
   const [amountLP, setAmountLP] = useState<number | null>(null);
   const [balanceOfLP, setBalanceOfLP] = useState<string | null>(null);
   const [LPAllowance, setLPAllowance] = useState<string | null>(null);
 
-  const [showLP, setShowLP] = useState();
+  const [showLP, setShowLP] = useState<string | null>(null);
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
@@ -152,26 +152,27 @@ export default function addliquidity() {
       return 'REMOVE Liquidity';
     }
   };
-  const customStyles = {
-    menu: (provided, state) => ({
-      ...provided,
-      width: state.selectProps.width,
-      borderBottom: '1px dotted pink',
-      color: state.selectProps.menuColor,
-      padding: 20,
-    }),
+
+  // const customStyles = {
+  //   menu: (provided, state) => ({
+  //     ...provided,
+  //     width: state.selectProps.width,
+  //     borderBottom: '1px dotted pink',
+  //     color: state.selectProps.menuColor,
+  //     padding: 20,
+  //   }),
   
-    control: (_, { selectProps: { width }}) => ({
-      width: width
-    }),
+  //   control: (_, { selectProps: { width }}) => ({
+  //     width: width
+  //   }),
   
-    singleValue: (provided, state) => {
-      const opacity = state.isDisabled ? 0.5 : 1;
-      const transition = 'opacity 300ms';
+  //   singleValue: (provided, state) => {
+  //     const opacity = state.isDisabled ? 0.5 : 1;
+  //     const transition = 'opacity 300ms';
   
-      return { ...provided, opacity, transition };
-    }
-  }
+  //     return { ...provided, opacity, transition };
+  //   }
+  // }
 
   const loadAccountData = async () => {
     setShowToken1(null);
@@ -420,14 +421,22 @@ export default function addliquidity() {
       //   ethers.utils.parseEther(amountBDesired.toString()),
       // );
 
+      if( token1 !== undefined &&
+        token2 !== undefined &&
+        amountADesired !== null &&
+        amountBDesired !== null &&
+        amountADesired > 0 &&
+        amountBDesired > 0){
+
+        
       if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await addLiquidityETH(amountADesired /*WETH is token1*/, token2 /*address other token*/, amountBDesired);
+        const tx = await addLiquidityETH(Number(amountADesired) /*WETH is token1*/, token2! /*address other token*/, Number(amountBDesired));
         await tx.wait();
       } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await addLiquidityETH(amountBDesired /*WETH is token2*/, token1 /*address other token*/, amountADesired);
+        const tx = await addLiquidityETH(Number(amountBDesired) /*WETH is token2*/, token1! /*address other token*/, Number(amountADesired));
         await tx.wait();
       } else {
-        const tx = await addLiquidity(token1, token2, amountADesired, amountBDesired);
+        const tx = await addLiquidity(token1!, token2!, amountADesired, amountBDesired);
         await tx.wait();
       }
 
@@ -441,7 +450,7 @@ export default function addliquidity() {
         draggable: true,
         progress: undefined,
       });
-    } catch (error: any) {
+    }} catch (error: any) {
       setStatus(Status.FAILED);
       if (error.code == 4001) {
         toast.warn('Transaction Cancelled', {
@@ -472,18 +481,18 @@ export default function addliquidity() {
     setStatus(Status.PENDING);
     setOpen(true);
     try {
-      const token0 = await getToken0(pairLP);
-      const token1 = await getToken1(pairLP);
+      const token0 = await getToken0(pairLP!);
+      const token1 = await getToken1(pairLP!);
       // console.log(pairLP, token0, token1, amountLP);
 
       if (token0 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await _removeLiquidityETH(token1, amountLP);
+        const tx = await _removeLiquidityETH(token1, amountLP!);
         tx.wait();
       } else if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await _removeLiquidityETH(token0, amountLP);
+        const tx = await _removeLiquidityETH(token0, amountLP!);
         tx.wait();
       } else {
-        const tx = await _removeLiquidity(token0, token1, amountLP);
+        const tx = await _removeLiquidity(token0, token1, amountLP!);
         tx.wait();
       }
       setStatus(Status.SUCCESS);
@@ -553,12 +562,12 @@ export default function addliquidity() {
         amountADesired > 0 &&
         amountBDesired > 0
       ) {
-        const allowance = formatEther(await getAllowance(token1, address!, addr_Router));
-        const allowance2 = formatEther(await getAllowance(token2, address!, addr_Router));
+        const allowance = formatEther(await getAllowance(token1!, address!, addr_Router));
+        const allowance2 = formatEther(await getAllowance(token2!, address!, addr_Router));
         if (Number(allowance) < amountADesired) {
-          const tx = await callApprove(token1, addr_Router);
+          const tx = await callApprove(token1!, addr_Router);
           await tx.wait();
-          const newAllowance = formatEther(await getAllowance(pairLP, address!, addr_Router));
+          const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
           setLPAllowance(newAllowance);
           toast.success('Approve Success!', {
             position: 'top-right',
@@ -571,9 +580,9 @@ export default function addliquidity() {
           });
         }
         if (Number(allowance2) < amountBDesired) {
-          const tx = await callApprove(token2, addr_Router);
+          const tx = await callApprove(token2!, addr_Router);
           await tx.wait();
-          const newAllowance = formatEther(await getAllowance(pairLP, address!, addr_Router));
+          const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
           setLPAllowance(newAllowance);
           toast.success('Approve Success!', {
             position: 'top-right',
@@ -589,11 +598,11 @@ export default function addliquidity() {
     }
     else if (!toggle) {
       if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
-        const allowance = formatEther(await getAllowance(pairLP, address!, addr_Router));
+        const allowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
         if (Number(allowance) < amountLP) {
-          const tx = await callApprove(pairLP, addr_Router);
+          const tx = await callApprove(pairLP!, addr_Router);
           await tx.wait();
-          const newAllowance = formatEther(await getAllowance(pairLP, address!, addr_Router));
+          const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
           setLPAllowance(newAllowance);
           toast.success('Approve Success!', {
             position: 'top-right',
@@ -642,8 +651,8 @@ export default function addliquidity() {
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-    const details = getTokenPairsDetails(tokenAddress).symbol;
-    return details;
+    const details:any = getTokenPairsDetails(tokenAddress);
+    return details.symbol;
   };
 
   const getPendingLiquidity = () =>{{}
@@ -698,7 +707,7 @@ export default function addliquidity() {
                         <input
                           className="col-span-4 h-20 rounded-3xl"
                           type="number"
-                          value={amountADesired}
+                          value={amountADesired!}
                           onChange={(e) => onChangeToken1Handle(Number(e.target.value))}
                         ></input>
                       ) : (
@@ -711,7 +720,7 @@ export default function addliquidity() {
                           onChange={(e) => {
                             getSelectTokens1(e);
                           }}
-                          options={token1List}
+                          options={token1List!}
                           autoFocus
                           placeholder="Select Token 1"
                           className="col-span-6 w-auto h-auto cursor-pointer"
@@ -729,7 +738,7 @@ export default function addliquidity() {
                         <input
                           className="col-span-4 h-20 rounded-3xl"
                           type="number"
-                          value={amountBDesired}
+                          value={amountBDesired!}
                           onChange={
                             (e) => {
                               onChangeToken2Handle(Number(e.target.value));
@@ -753,7 +762,7 @@ export default function addliquidity() {
                           onChange={(e) => {
                             getSelectTokens2(e);
                           }}
-                          options={token2List}
+                          options={token2List!}
                           autoFocus
                           placeholder="Select Token 2"
                           className="col-span-6 w-auto h-auto cursor-pointer"
@@ -845,7 +854,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                         getSelectRemoveLiq(e);
                       }}
                       // styles={customStyles}
-                      options={pairLPList}
+                      options={pairLPList!}
                       autoFocus
                       placeholder="Select pair"
                       className="col-span-6 w-full h-auto cursor-pointer relative"                      
@@ -862,7 +871,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                           aria-label="Default"
                           valueLabelDisplay="auto"
                           // value={amountLP}
-                          onChange={(e) => onChangePairLPHandle(Number(e.target.value))}
+                          onChange={(e) => onChangePairLPHandle(Number((e.target as HTMLInputElement).value))}
                         />
                       </Box>
                       // </div>
@@ -943,7 +952,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   <DialogContent>
                     Waiting For Confirmation
                     <Typography gutterBottom>
-                      {getPendingLiquidity()} {amountADesired} {getSymbolToken(token1)} and {amountBDesired} {getSymbolToken(token2)}
+                      {getPendingLiquidity()} {amountADesired!} {getSymbolToken(token1!)} and {amountBDesired} {getSymbolToken(token2!)}
                     </Typography>
                   </DialogContent>
                 </Box>
@@ -954,7 +963,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   <DialogContent >
                     Transaction Submitted
                     <Typography gutterBottom>
-                    {getSuccessLiquidity()} {getSymbolToken(token1)}/{getSymbolToken(token2)} liquidity
+                    {getSuccessLiquidity()} {getSymbolToken(token1!)}/{getSymbolToken(token2!)} liquidity
                     </Typography>
                   </DialogContent>
                 </Box>

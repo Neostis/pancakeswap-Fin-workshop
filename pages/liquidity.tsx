@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { pairModule, poolList } from '../components/pairModule';
+import { pairModule } from '../components/pairModule';
 import { getBalanceOf } from '../services/pair-service';
 import { formatEther, getAddress } from 'ethers/lib/utils';
 import {
@@ -16,7 +16,7 @@ import {
 const liquidity = () => {
   const [open, setOpen] = React.useState(false);
 
-  const [dataList, setDataList] = useState([{}]);
+  const [dataList, setDataList] = useState<any[]>([{}]);
   // const [dataList, setDataList] = useState<[{}] | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
@@ -81,7 +81,7 @@ const liquidity = () => {
               //   // return { [`${Object.keys(JSON.parse(savedDataList)[key])[0]}`]: balance };
               // }
               
-              const mappingData = [...dataList, ob];
+              const mappingData:any = [...dataList, ob];
               setDataList(mappingData);
               return ob;
             }),
@@ -159,15 +159,16 @@ const liquidity = () => {
         {dataList ? (
           <div>
             {' '}
-            {Object.keys(dataList).map((key) => {
-              
+            {/* {Object.keys(dataList).map((key) => {
+              if (typeof key !== null){
               return (
                 <div key={key}>
-                  <a>{Object.keys(dataList[key])[0]}</a>
+                  <a>{Object.keys(dataList[key as unknown as number])[0]}</a>
                   <a>{Object.values(dataList[key])[0]}</a>
                 </div>
               );
-            })}
+            }
+            })} */}
           </div>
         ) : (
           <h2>no item</h2>

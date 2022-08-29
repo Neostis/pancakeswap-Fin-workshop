@@ -17,7 +17,7 @@ import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
 import CustomPaginationActionsTable from '../components/table/CustomPaginationActionsTable';
-import TableConstants from '../components/table/TableFilter';
+import TablePool from '../components/table/TableFilter';
 
 const pool = () => {
   const [dataList, setDataList] = useState([{}]);
@@ -26,33 +26,17 @@ const pool = () => {
   const [network, setNetwork] = useState<string | null>(null);
   // SEARCH
   const loadAccountData = async () => {
-    // setToken1(null);
-    // setToken2(null);
+
     const addr = getWalletAddress();
     const chainId = await getChainId();
-    const length = await _allPairsLength();
 
-    // setDataList(await pairModule());
-    // setDataList(await poolList());
-    // const balances = await dataTokenBalance(token1!, address!);
-    // setBalanceOfToken1(formatEther(balances));
     if (addr === null) {
       await connectWallet();
-      //   defaultValue();
-    } else {
-      //   setToken1List(getDataList(token2!));
-      //   setToken2List(getDataList(token1!));
-    }
+    } 
     if (chainId !== '0x4') {
       await changeNetwork();
-      //   defaultValue();
-    } else {
-      //   setToken1List(getDataList(token2!));
-      //   setToken2List(getDataList(token1!));
-    }
-    // setAddress(addr);
-    // setNetwork(chainId);
-    // console.log(dataList);
+    } 
+
   };
   const getData = async () => {
     try {
@@ -91,14 +75,11 @@ const pool = () => {
       const handleAccountChange = async (addresses: string[]) => {
         setAddress(addresses[0]);
         await loadAccountData();
-        //   defaultValue();
       };
 
       const handleNetworkChange = async (networkId: string) => {
-        // console.log('handle change ' + networkId);
         setNetwork(networkId);
         await loadAccountData();
-        //   defaultValue();
       };
 
       getEthereum()?.on('accountsChanged', handleAccountChange);
@@ -150,7 +131,7 @@ const pool = () => {
             : 'no items'}
         </ul> */}
 
-        <TableConstants />
+      <TablePool />
       </div>
 
     </div>

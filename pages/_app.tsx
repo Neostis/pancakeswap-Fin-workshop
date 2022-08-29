@@ -7,12 +7,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Navbar />
-      <div className='min-h-screen bg-gradient-to-b
+      <div className='flex flex-col justify-between min-h-screen bg-gradient-to-b
     from-blueswapdark to-lightbluebg '>
       
       <Component {...pageProps} />
-      <img src="/BG.png" className=''></img>
-        </div>
+      <img src="/BG.png" className='w-full object-cover'></img>
+      </div>
     </>
   );
 }

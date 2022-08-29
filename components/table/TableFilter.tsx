@@ -78,7 +78,7 @@ function TableConstants() {
     fetchData();
   }, []);
   return (
-    <>
+    <div>
       <Paper className="rounded-lg shrink hover:shrink-0">
         <SearchBar
           value={searched}
@@ -89,11 +89,11 @@ function TableConstants() {
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Icon</TableCell>
-                <TableCell align="inherit">Token 1</TableCell>
-                <TableCell align="inherit">Token 2&nbsp;</TableCell>
-                <TableCell align="inherit">Carbs&nbsp;</TableCell>
-                <TableCell align="inherit">Protein&nbsp;</TableCell>
+                <TableCell align="left"><div className="text-lg">Token&nbsp;</div></TableCell>
+                {/* <TableCell align="center">Token 1</TableCell> */}
+                {/* <TableCell align="center">Token&nbsp;</TableCell> */}
+                <TableCell align="center"><div className="text-lg">Address&nbsp;</div></TableCell>
+                <TableCell align="right"><div className="text-lg">Liquidity&nbsp;</div></TableCell>
                 {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
               </TableRow>
             </TableHead>
@@ -103,27 +103,26 @@ function TableConstants() {
                   {/* <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell> */}
-                  <TableCell align="inherit">
-                    <div className="flex space-x-px">
-                      <img src={row.img1} height="30px" width="30px" />
-                      <img src={row.img2} height="30px" width="30px" />
+                  <TableCell align="left">
+                    <div className="flex space-x-px text-base">
+                      <img src={row.img1} height="35px" width="35px" />
+                      <img src={row.img2} height="35px" width="35px" />
+ 
+                      {row.token1}/{row.token2}
                     </div>
                   </TableCell>
-                  <TableCell align="inherit">{row.token1}</TableCell>
-                  <TableCell align="justify">{row.token2}</TableCell>
-                  <TableCell align="justify">{row.addrPair}</TableCell>
-                  <TableCell align="justify">{row.total}</TableCell>
+                  {/* <TableCell align="center">{row.token1}/{row.token2}</TableCell> */}
+                  {/* <TableCell align="center">{row.token2}</TableCell> */}
+                  <TableCell align="center"><div className="text-base">{row.addrPair}</div></TableCell>
+                  <TableCell align="right"><div className="text-base">{row.total}</div></TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
-      {/* <br /> */}
-      {/* <a target="_blank" href="https://smartdevpreneur.com/the-easiest-way-to-implement-material-ui-table-search/">
-        Learn how to add search and filter to Material-UI Table here.
-      </a> */}
-    </>
+
+    </div>
   );
 }
 

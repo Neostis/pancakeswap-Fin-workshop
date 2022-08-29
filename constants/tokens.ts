@@ -29,6 +29,13 @@ export const ETH_TOKENS = [
     address: '0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B',
   },
   {
+    name: 'E Coin',
+    symbol: 'EC',
+    decimals: 18,
+    imageUrl: 'https://cryptologos.cc/logos/smartcash-smart-logo.png?v=023',
+    address: '0x8118eB8761F9F0DC2c87b77ca17C269c4Eb9a457',
+  },
+  {
     name: 'Wrapped Ether',
     symbol: 'WETH',
     decimals: 18,
@@ -177,6 +184,13 @@ export const getTokenPairsDetails = (addrToken: string) => {
         decimals: 18,
         imageUrl: 'https://cryptologos.cc/logos/aelf-elf-logo.png?v=002',
         address: '0x65Fe4b1ea18b548AeAEb9b9AEA21732AC34c717B',
+      },
+      '0x8118eB8761F9F0DC2c87b77ca17C269c4Eb9a457': {
+        name: 'E Coin',
+        symbol: 'EC',
+        decimals: 18,
+        imageUrl: 'https://cryptologos.cc/logos/smartcash-smart-logo.png?v=023',
+        address: '0x8118eB8761F9F0DC2c87b77ca17C269c4Eb9a457',
       },
       '0xc778417E063141139Fce010982780140Aa0cD5Ab': {
         name: 'Wrapped Ether',

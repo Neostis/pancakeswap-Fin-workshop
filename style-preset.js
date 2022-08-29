@@ -29,7 +29,7 @@ module.exports = {
       'roundedbuttonswap' : '#2A5295',
       'blueswapbuttonOn' : '#0C2F6B',
       'removeToggle' : '#740000',
-      'addToggle' : '#153A15',
+      'addToggle' : '#023489',
       'test' : '#CFDDF1',
     }
     

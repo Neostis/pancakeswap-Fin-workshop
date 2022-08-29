@@ -74,12 +74,12 @@ export const callApprove = async (tokenAddress: string, spender: string) => {
 
   // const abi = ['function approve(address spender, uint256 amount) view returns (bool)'];
   const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
-  const txResponse = await contract.approve(
+  return await contract.approve(
     spender,
     '115792089237316195423570985008687907853269984665640564039457584007913129639935',
   );
 
-  await txResponse.wait();
+  // await txResponse.wait();
   // .then((r)=>{setIsApprove(true)})
 };
 export const getAllowance = async (tokenAddress: string, ownerAddress: string, spenderAddress: string) => {

@@ -11,15 +11,15 @@ const Home: NextPage = () => {
     <div className='h-auto w-auto '>
 
 <div className='grid grid-cols-1 gap-4 py-20'>
-  <div className='justify-self-center'>
-    <h3 className='text-textwhite text-5xl font-bold'>Welcome to Fin Swap</h3>
-    <div className="flex py-20 font-bold">
+  <div className='justify-self-center grid grid-cols-1'>
+    <h3 className='justify-self-center text-textwhite text-5xl font-bold'>Welcome to Fin Swap</h3>
+    <div className="justify-self-center flex py-20 font-bold">
         <h3 className='text-lightbluebg text-5xl mr-4'>swap</h3>
         <h3 className='text-textwhite text-5xl mr-4'>and</h3>
         <h3 className='text-lightbluebg text-5xl mr-4'>liquidity</h3>
         <h3 className='text-textwhite text-5xl mr-4'>platfrom</h3>
       </div>
-      <div className="">
+      <div className="justify-self-center">
 
         <button
           className="m-8 justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -38,24 +38,6 @@ const Home: NextPage = () => {
       </div>
 
   </div>
-
-
-
-  <div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
 
 
 </div>

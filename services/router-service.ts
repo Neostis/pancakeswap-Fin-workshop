@@ -72,7 +72,7 @@ export const addLiquidity = async (token1: string, token2: string, amountADesire
   const to = signer.getAddress(); // should be a checksummed recipient address
   const deadline: any = Math.floor(Date.now() / 1000) + 60 * 20000; // 20000 minutes from the current Unix time
 
-  const txResponse = await contract.addLiquidity(
+  return await contract.addLiquidity(
     token1,
     token2,
     ethers.utils.parseEther(amountADesired.toString()),
@@ -98,7 +98,7 @@ export const addLiquidityETH = async (weth: number, token: string, amountTokenDe
   const signer = provider.getSigner();
   const to = signer.getAddress();
   const contract = new ethers.Contract(addr_Router, abi_Router, signer);
-  const tx = await contract.addLiquidityETH(
+  return await contract.addLiquidityETH(
     token,
     ethers.utils.parseEther(amountTokenDesired.toString()),
     0,
@@ -130,7 +130,7 @@ export const _removeLiquidity = async (tokenA: string, tokenB: string, liquidity
   const signer = provider.getSigner();
   const to = signer.getAddress();
   const contract = new ethers.Contract(addr_Router, abi_Router, signer);
-  const tx = await contract.removeLiquidity(
+  return await contract.removeLiquidity(
     tokenA,
     tokenB,
     ethers.utils.parseEther(liquidity.toString()),
@@ -156,7 +156,7 @@ export const _removeLiquidityETH = async (token: string, liquidity: number) => {
   const signer = provider.getSigner();
   const to = signer.getAddress();
   const contract = new ethers.Contract(addr_Router, abi_Router, signer);
-  const tx = await contract.removeLiquidityETH(
+  return await contract.removeLiquidityETH(
     token,
     // liquidity.toString(),
     ethers.utils.parseEther(liquidity.toString()),

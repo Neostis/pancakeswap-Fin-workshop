@@ -44,6 +44,7 @@ type Keyop = {
   label: any;
   address: any;
 };
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -311,7 +312,7 @@ const swap = () => {
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
     setStatus(Status.PENDING);
     setOpen(true);
-    console.log(amountIn, path1, path2);
+    // console.log(amountIn, path1, path2);
 
     // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
@@ -334,7 +335,7 @@ const swap = () => {
         } catch (error: any) {
           setStatus(Status.FAILED);
           if (error.code == 4001) {
-            toast.warn('Transaction Cancelled', {
+            toast.warn('Transaction rejected', {
               position: 'top-right',
               autoClose: 2500,
               hideProgressBar: false,
@@ -370,6 +371,7 @@ const swap = () => {
         callApprove(path1, addr_Router);
       }
     } else {
+      setOpen(false);
       toast.error('Something Wrong', {
         position: 'top-right',
         autoClose: 2000,
@@ -428,10 +430,13 @@ const swap = () => {
   return (
     <div className="py-10 w-auto grid">
       {/* แก้grid for set width */}
-      <div className="justify-self-center bg-blueWidget rounded-3xl ">
+      <div className="font-bold justify-self-center bg-blueWidget rounded-3xl w-5/12 grid">
+        <h1 className="px-5 text-textwhite h-12">
+          Swap
+        </h1>
         {/* <div>{address}</div> */}
-        <div className="w-96 rounded-lg  font-bold">
-          <div className="py-2 flex-column w-auto grid text-textblack ">
+        <div className="justify-self-center w-11/12 rounded-lg font-bold">
+          <div className="py-2 m-3 flex-column w-auto grid text-textblack ">
             <Select
               // defaultValue={token1}
               value={showToken1}
@@ -445,7 +450,7 @@ const swap = () => {
 
             {token1 ? (
               <input
-                className="w-11/12 h-14 rounded-lg justify-self-center"
+                className="w-full h-14 rounded-lg justify-self-center"
                 type="number"
                 value={amountIn}
                 placeholder={balanceOfToken1}
@@ -454,25 +459,23 @@ const swap = () => {
                 }}
               ></input>
             ) : (
-              //   )}
-              // </div>
+
               <input
-                className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"
+                className="w-full h-14 rounded-lg justify-self-center bg-textwhite"
                 value={'Select Token'}
                 disabled
-                // onChange={0}
               ></input>
             )}
           </div>
-          <div className=" flex-column w-auto grid text-textblack ">
+          <div className="flex-column w-auto grid text-textblack ">
             <button
-              className="w-6 h-6 rounded-full justify-self-center
-                       bg-textwhite hover:bg-bluesky outline outline-[#f3991c] absolute"
+              className="w-6 h-auto rounded-full justify-self-center
+                       bg-textwhite hover:bg-bluesky outline outline-[#f3991c]"
             >
               ↓
             </button>
           </div>
-          <div className="flex-column w-auto grid text-textblack">
+          <div className="py-2 m-3 flex-column w-auto grid text-textblack ">
             <Select
               value={showToken2}
               onChange={(e) => {
@@ -483,7 +486,7 @@ const swap = () => {
               placeholder="Select Token 2"
             />
 
-            <span className="w-11/12 h-14 rounded-lg justify-self-center bg-textwhite"> {amountOutState}</span>
+            <span className="w-full h-14 rounded-lg justify-self-center bg-textwhite"> {amountOutState}</span>
           </div>
           <div className="py-4 flex-column w-auto grid text-textblack ">
             <button
@@ -534,18 +537,7 @@ const swap = () => {
               </div>
             ) : (
               <div>
-                {/* <div className="grid grid-cols-4 gap-4 px-5 text-textwhite">
-                  <div>Select Token</div>
-                  <div></div>
-                  <div></div>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div></div>
-                    <div>a</div>
-                    <div>b</div>
-                    <div>c</div> 
-                  </div>
-                </div>
-                <div className="py-12 px-8">{Areachart(false)}</div> */}
+
               </div>
             )}
           </div>
@@ -555,12 +547,10 @@ const swap = () => {
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
               {status === Status.PENDING && (
-                <Box sx={{ display: 'flex' }}>
-                  <div className="absolute inset-0">
+                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
                     <CircularProgress />
-                  </div>
                   <DialogContent>
-                    Waiting for confirmation
+                    Waiting For Confirmation
                     <Typography gutterBottom>
                       Swapping {amountIn} {getSymbolToken(token1)} for {amountOutState} {getSymbolToken(token2)}
                     </Typography>
@@ -568,35 +558,31 @@ const swap = () => {
                 </Box>
               )}
               {status === Status.SUCCESS && (
-                <Box sx={{ display: 'flex' }}>
-                  <div>
+                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
                     <CheckCircleIcon color="success" fontSize="large" />
-                  </div>
-                  <DialogContent dividers>
-                    Transaction submitted
+                  <DialogContent >
+                    Transaction Submitted
                     <Typography gutterBottom>ADD {getSymbolToken(token2)}</Typography>
                   </DialogContent>
                 </Box>
               )}
               {status === Status.FAILED && (
-                <Box sx={{ display: 'flex' }}>
-                  <div>
-                    <WarningAmberIcon color="secondary" fontSize="large" />
-                  </div>
-
-                  <DialogContent dividers>
-                    Transaction rejected
-                    {/* <Typography gutterBottom>Fail</Typography> */}
+                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
+                    <WarningAmberIcon color="warning" fontSize="large" />
+                  <DialogContent >
+                    Transaction Rejected
                   </DialogContent>
                 </Box>
-              )}
-            </BootstrapDialogTitle>
 
-            <DialogActions>
-              <button autoFocus onClick={handleClose}>
-                OK
+              )}
+              <DialogActions>
+              <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
+       text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300">
+                Close
               </button>
             </DialogActions>
+            </BootstrapDialogTitle>
+
           </BootstrapDialog>
 
           <ToastContainer

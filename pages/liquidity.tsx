@@ -133,7 +133,7 @@ const liquidity = () => {
   }, []);
 
   return (
-    <div className=" py-10 flex-column w-auto grid h-auto">
+    <div className="py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-5/12">
         <div className="rounded-lg  font-bold">
           <div>

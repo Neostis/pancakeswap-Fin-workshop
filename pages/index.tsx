@@ -26,7 +26,7 @@ const Home: NextPage = () => {
           from-blueswapdark  to-blueswapbutton 
           text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
           >
-          <Link href="/swap">swap Now</Link>
+          <Link href="/swap">Swap Now</Link>
         </button>
         <button
           className="m-8 justify-self-center w-32 h-10 rounded-full bg-gradient-to-r

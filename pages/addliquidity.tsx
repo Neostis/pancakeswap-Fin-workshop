@@ -702,11 +702,11 @@ export default function addliquidity() {
                   <div className=" flex-column w-auto grid text-textblack h-12">
                     <button className="">+</button>
                   </div>
-                  <div className="bg-textwhite rounded-lg w-11/12 justify-self-center">
+                  <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
                     <div className="grid grid-cols-5 text-textblack ">
                       {token2 ? (
                         <input
-                          className="col-span-4 h-20 rounded-lg"
+                          className="col-span-4 h-20 rounded-3xl"
                           type="number"
                           value={amountBDesired}
                           onChange={
@@ -720,7 +720,7 @@ export default function addliquidity() {
                         ></input>
                       ) : (
                         <input
-                          className="col-span-4 h-20 rounded-lg"
+                          className="col-span-4 h-20 rounded-3xl"
                           placeholder={'Select Token 2'}
                           value={'Select Token2'}
                           disabled

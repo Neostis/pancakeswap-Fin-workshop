@@ -446,7 +446,7 @@ const swap = () => {
 
             {token1 ? (
               <input
-                className="col-span-4 h-20 rounded-3xl"
+                className="col-span-4 h-20 rounded-3xl ml-5 mt-1"
                 type="number"
                 value={amountIn}
                 placeholder={balanceOfToken1}
@@ -457,7 +457,7 @@ const swap = () => {
             ) : (
 
               <input
-                className="col-span-4 h-20 rounded-3xl"
+                className="col-span-4 h-20 rounded-3xl ml-5 mt-3"
                 value={'Select Token'}
                 disabled
               ></input>

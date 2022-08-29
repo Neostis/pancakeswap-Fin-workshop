@@ -156,7 +156,6 @@ const liquidity = () => {
                 </Link>
               </button>
             </div>
-            <div>Pool</div>
         {dataList ? (
           <div>
             {' '}

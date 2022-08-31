@@ -188,9 +188,10 @@ function Navbar() {
                   >
                     Pool
                   </Link>
+                  <div>[address]: {address}</div>
                   {address ? (
                     <div>
-                      {network === '0x4' ? (
+                      {network == '0x4' ? (
                         <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
                           {address}
                         </div>

@@ -63,38 +63,21 @@ function Navbar() {
   //   setAddress(addr);
   //   setNetwork(chainId);
   // };
-  const loadAccountData = async () => {
-    console.log(2)
-    const addr = getWalletAddress();
-    console.log("addr: ",addr)
-    console.log("getWalletAddress:",getWalletAddress());
-    setAddress(addr);
-    const chainId = await getChainId();
-    setNetwork(chainId);
-  };
+
 
   useEffect(() => {
     console.log(1)
-    loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
-
-      loadAccountData();
+    const loadAccountData = async () => {
+      console.log(2)
+      const addr = getWalletAddress();
+      console.log("addr: ",addr)
+      console.log("getWalletAddress:",getWalletAddress());
+      setAddress(addr);
+      const chainId = await getChainId();
+      setNetwork(chainId);
     };
-
-    const handleNetworkChange = (networkId: string) => {
-      setNetwork(networkId);
-
-      loadAccountData();
-    };
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-  }, []);
-
-  useEffect(() => {
-    console.log(3)
     const fetchData = async () => {
+      console.log(3)
       // let savedDataList = window.localStorage.getItem('ownerDataList');
 
       if (typeof window !== 'undefined') {
@@ -115,7 +98,27 @@ function Navbar() {
         } catch (error) {}
       }
     };
-    fetchData();
+    const loadingData = async()=>{
+
+      await fetchData();
+      await loadAccountData();
+    }
+    const handleAccountChange = (addresses: string[]) => {
+      setAddress(addresses[0]);
+
+      loadAccountData();
+    };
+    const handleNetworkChange = (networkId: string) => {
+      setNetwork(networkId);
+
+      loadAccountData();
+    };
+    getEthereum()?.on('accountsChanged', handleAccountChange);
+
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+    
+    loadingData();
+    
   }, []);
 
   // // interval
@@ -154,10 +157,6 @@ function Navbar() {
   //   // return () => clearInterval(interval);
   // }, []);
 
-  const getAddress = () => {
-    
-    return address
-  }
 
   return (
     <div>
@@ -199,12 +198,11 @@ function Navbar() {
                   >
                     Pool
                   </Link>
-                  <div>[address]: {getAddress()}</div>
                   {address ? (
                     <div> 
                       {network == '0x4' ? (
                         <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
-                          {getAddress()}
+                          {address}
                         </div>
                       ) : (
                         <div className="p-4  font-serif bg-gradient-to-r from-redbg via-darkbg to-redbg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">

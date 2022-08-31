@@ -15,6 +15,7 @@ import {
   getTokenBalance,
 } from '../services/wallet-service';
 import { pairModule } from './pairModule';
+import { ContactlessOutlined } from '@material-ui/icons';
 
 function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
@@ -65,6 +66,8 @@ function Navbar() {
   const loadAccountData = async () => {
     console.log(2)
     const addr = getWalletAddress();
+    console.log("addr: ",addr)
+    console.log("getWalletAddress:",getWalletAddress());
     setAddress(addr);
     const chainId = await getChainId();
     setNetwork(chainId);
@@ -152,7 +155,8 @@ function Navbar() {
   // }, []);
 
   const getAddress = () => {
-    return address;
+    
+    return address
   }
 
   return (

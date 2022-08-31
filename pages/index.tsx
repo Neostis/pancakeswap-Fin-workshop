@@ -1,13 +1,154 @@
 import type { NextPage } from 'next';
+import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import Navbar from '../components/Navbar';
 // import HomeModule from '../components/HomeModule';
-
+import {
+  connectWallet,
+  getBalance,
+  getChainId,
+  getEthereum,
+  getProvider,
+  getWalletAddress,
+  getAllowance,
+  changeNetwork,
+  callApprove,
+  getTokenBalance,
+} from '../services/wallet-service';
 import Link from 'next/link';
+import { ToastContainer, toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 const Home: NextPage = () => {
-  return (
+  if (typeof window !== 'undefined') {
+    let tempWindow = window.ethereum;
+
+    injectStyle();
+    if (typeof tempWindow == 'undefined') {
+      toast.error('Not have Metamask', {
+        position: 'top-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const [address, setAddress] = useState<string | null>(null);
+  const [network, setNetwork] = useState<string | null>(null);
+
+  
+  const loadAccountData = async () => {
+
+    // setToken1(null);
+    // setToken2(null);
+    const addr = getWalletAddress();
+    const chainId = await getChainId();
+
+    if (addr === null) {
+      await connectWallet();
+    } else {
+
+    }
+    if (chainId !== '0x4') {
+      await changeNetwork();
+    } else {
+      // setNetwork(chainId);
+    }
+    setAddress(addr);
+    setNetwork(chainId);
+  };
+
+  useEffect(() => {
+    loadAccountData();
+    const handleAccountChange = async (addresses: string[]) => {
+      setAddress(addresses[0]);
+      await loadAccountData();
+    };
+
+    const handleNetworkChange = async (/*networkId: string*/) => {
+      await loadAccountData();
+    };
+
+    getEthereum()?.on('accountsChanged', handleAccountChange);
+
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+  }, []);
+
+  const checkHandle = async () => {
+    // address
+    if (getWalletAddress() === null) {
+      await connectWallet();
+
+      // network
+      if ((await getChainId()) === '0x4') {
+        console.log('is 0x4');
+        return true;
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) === '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return true;
+        } else {
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return false;
+        }
+      }
+    } else {
+      // network
+      if ((await getChainId()) === '0x4') {
+        console.log('is 0x4');
+        return true;
+      } else {
+        console.log('change');
+        await changeNetwork();
+        if ((await getChainId()) === '0x4') {
+          toast.success('network have changed!', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return true;
+        } else {
+          toast.error('network not change', {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return false;
+        }
+      }
+    }
+  };  return (
     <div className='h-auto w-auto '>
 
 <div className='grid grid-cols-1 gap-4 py-20'>
@@ -25,18 +166,29 @@ const Home: NextPage = () => {
           className="m-8 justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
           from-blueswapdark  to-blueswapbutton 
           text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-          >
+          onClick={checkHandle}>
           <Link href="/swap">Swap Now</Link>
         </button>
         <button
           className="m-8 justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
           from-blueswapdark  to-blueswapbutton 
           text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300"
-          >
+          onClick={checkHandle}>
           <Link href="/addliquidity">Liquidity Now</Link>
         </button>
       </div>
-
+      <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                limit={1}
+              />
   </div>
 
 

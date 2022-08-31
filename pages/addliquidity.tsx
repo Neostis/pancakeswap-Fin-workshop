@@ -153,27 +153,6 @@ export default function addliquidity() {
     }
   };
 
-  // const customStyles = {
-  //   menu: (provided, state) => ({
-  //     ...provided,
-  //     width: state.selectProps.width,
-  //     borderBottom: '1px dotted pink',
-  //     color: state.selectProps.menuColor,
-  //     padding: 20,
-  //   }),
-  
-  //   control: (_, { selectProps: { width }}) => ({
-  //     width: width
-  //   }),
-  
-  //   singleValue: (provided, state) => {
-  //     const opacity = state.isDisabled ? 0.5 : 1;
-  //     const transition = 'opacity 300ms';
-  
-  //     return { ...provided, opacity, transition };
-  //   }
-  // }
-
   const loadAccountData = async () => {
     setShowToken1(null);
     setShowToken2(null);
@@ -463,7 +442,7 @@ export default function addliquidity() {
           progress: undefined,
         });
       } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
-        toast.error('UNPREDICTABLE_GAS_LIMIT', {
+        toast.error('something wrong', {
           position: 'top-right',
           autoClose: 2000,
           hideProgressBar: false,
@@ -567,8 +546,8 @@ export default function addliquidity() {
         if (Number(allowance) < amountADesired) {
           const tx = await callApprove(token1!, addr_Router);
           await tx.wait();
-          const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
-          setLPAllowance(newAllowance);
+          const newAllowance = formatEther(await getAllowance(token1!, address!, addr_Router));
+          setTokenAllowance1(newAllowance);
           toast.success('Approve Success!', {
             position: 'top-right',
             autoClose: 2500,
@@ -582,8 +561,8 @@ export default function addliquidity() {
         if (Number(allowance2) < amountBDesired) {
           const tx = await callApprove(token2!, addr_Router);
           await tx.wait();
-          const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
-          setLPAllowance(newAllowance);
+          const newAllowance = formatEther(await getAllowance(token2!, address!, addr_Router));
+          setTokenAllowance2(newAllowance);
           toast.success('Approve Success!', {
             position: 'top-right',
             autoClose: 2500,
@@ -674,10 +653,7 @@ export default function addliquidity() {
         <div className="py-5 font-bold">
           <div>
             <div className="flex justify-between mr-5">
-
               <h1 className="px-5 text-textwhite h-12">{modeName()}</h1>
-
-
             <div
               className={
                 toggle
@@ -795,7 +771,7 @@ export default function addliquidity() {
                       )}
 
                       <div className="py-10 flex-column w-auto grid text-textblack ">
-                        {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
+                        {(Number(tokenAllowance1) > 0 ) && (Number(tokenAllowance2) > 0) ? (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 

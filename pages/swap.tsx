@@ -132,6 +132,7 @@ const swap = () => {
     const chainId = await getChainId();
     const balances = await getTokenBalance(token1!, address!);
     setBalanceOfToken1(formatEther(balances));
+    
     if (addr === null) {
       await connectWallet();
       defaultValue();
@@ -308,15 +309,15 @@ const swap = () => {
   };
 
   const handleSwap = async (amountIn: number, path1: string, path2: string) => {
-    setStatus(Status.PENDING);
-    setOpen(true);
+
     // console.log(amountIn, path1, path2);
 
     // setAmountOut(Number(getSwapAmountsOut(token1, token2)));
     if (amountIn !== null && path1 !== undefined && path2 !== undefined && amountIn > 0) {
       const allowance = formatEther(await getAllowance(path1, address!, addr_Router));
       if (Number(allowance) > amountIn) {
-        console.log('Allowance');
+        setStatus(Status.PENDING);
+        setOpen(true);
         try {
           const tx = await swapExactTokensForTokens(amountIn, path1, path2);
           await tx.wait();
@@ -365,8 +366,17 @@ const swap = () => {
           }
         }
       } else {
-        console.log('approve');
-        callApprove(path1, addr_Router);
+        const tx = await callApprove(path1, addr_Router);
+        await tx.wait();
+        toast.success('Approve Success!', {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
     } else {
       setOpen(false);

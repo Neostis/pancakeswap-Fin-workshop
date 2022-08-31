@@ -66,18 +66,13 @@ function Navbar() {
 
 
   useEffect(() => {
-    console.log(1)
     const loadAccountData = async () => {
-      console.log(2)
       const addr = getWalletAddress();
-      console.log("addr: ",addr)
-      console.log("getWalletAddress:",getWalletAddress());
       setAddress(addr);
       const chainId = await getChainId();
       setNetwork(chainId);
     };
     const fetchData = async () => {
-      console.log(3)
       // let savedDataList = window.localStorage.getItem('ownerDataList');
 
       if (typeof window !== 'undefined') {
@@ -100,8 +95,8 @@ function Navbar() {
     };
     const loadingData = async()=>{
 
-      await fetchData();
       await loadAccountData();
+      await fetchData();
     }
     const handleAccountChange = (addresses: string[]) => {
       setAddress(addresses[0]);

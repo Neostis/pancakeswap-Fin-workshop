@@ -63,6 +63,7 @@ function Navbar() {
   //   setNetwork(chainId);
   // };
   const loadAccountData = async () => {
+    console.log(2)
     const addr = getWalletAddress();
     setAddress(addr);
     const chainId = await getChainId();
@@ -70,6 +71,7 @@ function Navbar() {
   };
 
   useEffect(() => {
+    console.log(1)
     loadAccountData();
     const handleAccountChange = (addresses: string[]) => {
       setAddress(addresses[0]);
@@ -88,6 +90,7 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
+    console.log(3)
     const fetchData = async () => {
       // let savedDataList = window.localStorage.getItem('ownerDataList');
 
@@ -148,6 +151,10 @@ function Navbar() {
   //   // return () => clearInterval(interval);
   // }, []);
 
+  const getAddress = () => {
+    return address;
+  }
+
   return (
     <div>
       <nav className=" shadow-sm w-full z-10">
@@ -188,12 +195,12 @@ function Navbar() {
                   >
                     Pool
                   </Link>
-                  <div>[address]: {address}</div>
+                  <div>[address]: {getAddress()}</div>
                   {address ? (
-                    <div>
+                    <div> 
                       {network == '0x4' ? (
                         <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
-                          {address}
+                          {getAddress()}
                         </div>
                       ) : (
                         <div className="p-4  font-serif bg-gradient-to-r from-redbg via-darkbg to-redbg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">

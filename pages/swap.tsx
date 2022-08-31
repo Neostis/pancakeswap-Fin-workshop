@@ -302,7 +302,10 @@ const swap = () => {
         setToken2(e.address);
         setShowToken2(e);
         setToken1List(getDataList(e.address));
-        await checkHandle();
+        console.log(balanceOfToken1);
+        
+        onChangeToken1Handle(amountIn)
+        await checkHandle(); 
       }
       // }
     }

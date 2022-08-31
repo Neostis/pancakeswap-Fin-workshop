@@ -9,6 +9,10 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
+  getAllowance,
+  changeNetwork,
+  callApprove,
+  getTokenBalance,
 } from '../services/wallet-service';
 import { pairModule } from './pairModule';
 
@@ -41,6 +45,23 @@ function Navbar() {
   //   }
   // };
 
+  // const loadAccountData = async () => {
+  //   const addr = getWalletAddress();
+  //   const chainId = await getChainId();
+
+  //   if (addr === null) {
+  //     await connectWallet();
+  //   } else {
+
+  //   }
+  //   if (chainId !== '0x4') {
+  //     await changeNetwork();
+  //   } else {
+  //     // setNetwork(chainId);
+  //   }
+  //   setAddress(addr);
+  //   setNetwork(chainId);
+  // };
   const loadAccountData = async () => {
     const addr = getWalletAddress();
     setAddress(addr);

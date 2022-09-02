@@ -72,6 +72,7 @@ function Navbar() {
       const chainId = await getChainId();
       setNetwork(chainId);
     };
+
     const fetchData = async () => {
       // let savedDataList = window.localStorage.getItem('ownerDataList');
 

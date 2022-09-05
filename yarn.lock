@@ -480,7 +480,7 @@
   dependencies:
     "@ethersproject/logger" "^5.6.0"
 
-"@ethersproject/providers@5.6.8":
+"@ethersproject/providers@^5.0.10", "@ethersproject/providers@5.6.8":
   "integrity" "sha512-Wf+CseT/iOJjrGtAOf3ck9zS7AgPmr2fZ3N97r4+YXN3mBePTG2/bJ8DApl9mVwYL+RpYbNxMEkEp4mPGdwG/w=="
   "resolved" "https://registry.npmjs.org/@ethersproject/providers/-/providers-5.6.8.tgz"
   "version" "5.6.8"
@@ -1853,7 +1853,15 @@
   "resolved" "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   "version" "2.0.3"
 
-"ethers@^5.6.9":
+"ethereum-multicall@^2.14.1":
+  "integrity" "sha512-uJ0B8E7Qu1PXdIWydoPJ9BD0tMGgcO7ruZruY7yo+1xZD7evKi/I19aX88xnYuoBhW9v5rx/CnACpD9ooVMFww=="
+  "resolved" "https://registry.npmjs.org/ethereum-multicall/-/ethereum-multicall-2.14.1.tgz"
+  "version" "2.14.1"
+  dependencies:
+    "@ethersproject/providers" "^5.0.10"
+    "ethers" "^5.0.15"
+
+"ethers@^5.0.15", "ethers@^5.6.9":
   "integrity" "sha512-lMGC2zv9HC5EC+8r429WaWu3uWJUCgUCt8xxKCFqkrFuBDZXDYIdzDUECxzjf2BMF8IVBByY1EBoGSL3RTm8RA=="
   "resolved" "https://registry.npmjs.org/ethers/-/ethers-5.6.9.tgz"
   "version" "5.6.9"

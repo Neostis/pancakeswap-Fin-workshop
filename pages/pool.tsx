@@ -17,12 +17,15 @@ import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
 import TablePool from '../components/table/TableFilter';
+import { getAccounts } from '../services/pairToken.service';
+
 
 const pool = () => {
   const [dataList, setDataList] = useState([{}]);
   // const [dataList, setDataList] = useState([{}]);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
+  getAccounts()
   // SEARCH
   const loadAccountData = async () => {
 

@@ -76,7 +76,9 @@ export const callApprove = async (tokenAddress: string, spender: string) => {
   const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
   return await contract.approve(
     spender,
-    '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    // '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    ethers.constants.MaxUint256,
+    // '115792089237316195423570985008687907853269984665640564039457584007913129639935',
   );
 
   // await txResponse.wait();

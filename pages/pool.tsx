@@ -70,7 +70,7 @@ const pool = () => {
     const interval = setInterval(() => {
       const fetchData = async () => {
         const a = await getDataPair();
-        console.log("a: ",a);
+        // console.log("a: ",a);
         await getData();
         await loadAccountData();
       };

@@ -51,6 +51,8 @@ function TableConstants() {
       ) {
         // return ob;
         mappingData.push(ob);
+        console.log('ob',ob);
+        
       }
     });
     setRows(mappingData);
@@ -65,30 +67,31 @@ function TableConstants() {
     // const interval = setInterval(() => {
     const fetchData =  async() => {
       const temp = await getDataPair();
-      const testArr = temp.map((x, i) => {
-        array.forEach(element => {
-          
-        });
-        return {"name": x, "state": riskWorkflowStateArr[i]}        
-    });
-                    
-      const dataAll =  PairsList.map((item) => {
+      const dataAll = temp.map((x) => {
+        let ob;
+        PairsList.forEach(element => {
+        if (element.addressPair == x.address){
+           ob = {
+            img1: element.token0.imageUrl,
+            img2: element.token1.imageUrl,
+            token1: element.token0.symbol,
+            token2: element.token1.symbol,
+            addrPair: element.addressPair,
+            total: x.totalSupply,
+            // total: element.total,
 
-        const ob = {
-          img1: item.token0.imageUrl,
-          img2: item.token1.imageUrl,
-          token1: item.token0.symbol,
-          token2: item.token1.symbol,
-          addrPair: item.addressPair,
-          total: item.total,
-        };
+          };
+          //  console.log('element',ob);
+          }
         
-        // const mappingData = [...rows, ob];
+        });
+        const mappingData = [...rows, ob];
 
         return ob;
-      }
-      );
+    });
+
       setRows(dataAll);
+
     };
 
 

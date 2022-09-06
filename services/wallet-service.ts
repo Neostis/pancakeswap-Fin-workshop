@@ -9,10 +9,21 @@ declare global {
 }
 
 export const getEthereum = () => {
-  if (typeof window.ethereum !== 'undefined') {
-    return window.ethereum;
+  // if (typeof window.ethereum !== 'undefined') {
+  //   return window.ethereum;
+  // }
+  // return null;
+  
+  if (typeof window !== 'undefined') {
+    let tempWindow = window.ethereum;
+
+    if (typeof tempWindow !== 'undefined') {
+      return tempWindow
+    }
+    else{
+      return null
+    }
   }
-  return null;
 };
 
 export const getProvider = () => {

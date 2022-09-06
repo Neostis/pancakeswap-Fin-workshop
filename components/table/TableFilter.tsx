@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from 'material-ui-search-bar';
+import { getDataPair  } from '../../services/pairToken.service';
 
 interface pairsToken {
   img1: string;
@@ -28,6 +29,9 @@ function TableConstants() {
 
   const [searched, setSearched] = useState<string>('');
   const classes = useStyles();
+
+  // const a = getDataPair().then((e) => (console.log(e)
+  // ))
 
   const requestSearch = (searchedVal: string) => {
     let mappingData: pairsToken[] = [];
@@ -59,8 +63,17 @@ function TableConstants() {
 
   useEffect(() => {
     // const interval = setInterval(() => {
-    const fetchData = async () => {
-      const dataAll = await PairsList.map((item) => {
+    const fetchData =  async() => {
+      const temp = await getDataPair();
+      const testArr = temp.map((x, i) => {
+        array.forEach(element => {
+          
+        });
+        return {"name": x, "state": riskWorkflowStateArr[i]}        
+    });
+                    
+      const dataAll =  PairsList.map((item) => {
+
         const ob = {
           img1: item.token0.imageUrl,
           img2: item.token1.imageUrl,
@@ -69,12 +82,16 @@ function TableConstants() {
           addrPair: item.addressPair,
           total: item.total,
         };
+        
         // const mappingData = [...rows, ob];
 
         return ob;
-      });
+      }
+      );
       setRows(dataAll);
     };
+
+
     fetchData();
   }, []);
   return (

@@ -17,7 +17,7 @@ import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
 import TablePool from '../components/table/TableFilter';
-import { getAccounts } from '../services/pairToken.service';
+import { getPairsFilter, getDataPair } from '../services/pairToken.service';
 
 
 const pool = () => {
@@ -25,7 +25,7 @@ const pool = () => {
   // const [dataList, setDataList] = useState([{}]);
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-  getAccounts()
+
   // SEARCH
   const loadAccountData = async () => {
 
@@ -69,6 +69,8 @@ const pool = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const fetchData = async () => {
+        const a = await getDataPair();
+        console.log("a: ",a);
         await getData();
         await loadAccountData();
       };
@@ -95,43 +97,6 @@ const pool = () => {
   return (
     <div className="py-10 flex-column w-auto grid h-auto">
       <div className="justify-self-center bg-blueWidget rounded-3xl w-7/12">
-        {/* <div className="rounded-lg  font-bold"></div> */}
-
-        {/* <input
-          type="text"
-          placeholder="SEARCH..."
-          className=" text-textblack"
-          onChange={(e) => setQuery(e.target.value.toLowerCase())}
-        />
-        <ul className="list">
-          {Object.keys(dataList).length >= 1
-            ? Object.keys(dataList).map((key) => {
-                return (
-                  <div key={key}>
-                    {Object.values(dataList[key])
-                      .filter(
-                        (e) =>
-                          e.token0.symbol.toLowerCase().includes(query) ||
-                          e.token1.symbol.toLowerCase().includes(query),
-                      )
-                      .map((item) => (
-                        <div>
-                          <a className=" text-textwhite">Pool:{Object.keys(dataList[key])}</a>
-                          <div className="flex space-x-px text-textwhite">
-                            <img src={item.token0.imageUrl} height="30px" width="30px" />
-                            <h1>{item.token0.name}</h1>
-                          </div>
-                          <div className="flex space-x-px text-textwhite">
-                            <img src={item.token1.imageUrl} height="30px" width="30px" />
-                            <h1>{item.token1.name}</h1>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                );
-              })
-            : 'no items'}
-        </ul> */}
 
       <TablePool />
       </div>

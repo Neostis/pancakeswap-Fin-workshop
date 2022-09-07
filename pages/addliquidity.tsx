@@ -28,7 +28,7 @@ import Select from 'react-select';
 import { addLiquidity, addLiquidityETH, _removeLiquidity, _removeLiquidityETH } from '../services/router-service';
 
 import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider'; 
+import Slider from '@mui/material/Slider';
 import { getBalanceOf, getToken0, getToken1 } from '../services/pair-service';
 
 import { styled } from '@mui/material/styles';
@@ -42,6 +42,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Status } from '../types/status';
+import { getPairsFilter } from '../services/pairToken.service';
+
 
 type Keyop = {
   value: any;
@@ -128,9 +130,9 @@ export default function addliquidity() {
   const [amountADesired, setAmountADesired] = useState<number | null>(null);
   const [amountBDesired, setAmountBDesired] = useState<number | null>(null);
 
-  const [token1List, setToken1List] = useState<Keyop[]| null>([]);
-  const [token2List, setToken2List] = useState<Keyop[]| null>([]);
-  const [pairLPList, setPairLPList] = useState<any[]| null>([]);
+  const [token1List, setToken1List] = useState<Keyop[] | null>([]);
+  const [token2List, setToken2List] = useState<Keyop[] | null>([]);
+  const [pairLPList, setPairLPList] = useState<any[] | null>([]);
 
   const [showToken1, setShowToken1] = useState<Keyop[] | null>(null);
   const [showToken2, setShowToken2] = useState<Keyop[] | null>(null);
@@ -141,6 +143,8 @@ export default function addliquidity() {
   const [LPAllowance, setLPAllowance] = useState<string | null>(null);
 
   const [showLP, setShowLP] = useState<string | null>(null);
+  const [dataPair, setDataPair] = useState<any[]>([]);
+
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
@@ -152,7 +156,37 @@ export default function addliquidity() {
       return 'REMOVE Liquidity';
     }
   };
+  const getPoolList = async() => {
+    let option: Keyop[] = [];
+    console.log('dataPair', dataPair);
 
+    const temp = await getPairsFilter();
+    const dataAll = temp.map((x) => {
+
+      PairsList.forEach(element => {
+
+        if (element.addressPair == x.address) {
+          option.push({
+            value: element.token0.symbol + '/' + element.token1.symbol,
+            // value: Object.keys(event),
+            label: (
+              <div className="flex space-x-px">
+                <img className=" space-x-px" src={element.token0.imageUrl} height="30px" width="30px" />
+                <img className=" space-x-px" src={element.token1.imageUrl} height="30px" width="30px" />
+
+                {element.token0.symbol + '/' + element.token1.symbol}
+              </div>
+            ),
+            address: element.addressPair,
+          });
+        }
+
+      });
+
+    });
+    console.log('option remove', option);
+    return option;
+  };
   const loadAccountData = async () => {
     setShowToken1(null);
     setShowToken2(null);
@@ -173,7 +207,7 @@ export default function addliquidity() {
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
 
-      setPairLPList(getPoolList());
+      setPairLPList(await getPoolList()!);
     }
     if (chainId !== '0x4') {
       await changeNetwork();
@@ -182,14 +216,30 @@ export default function addliquidity() {
       // setNetwork(chainId);
       setToken1List(getDataList(token2!));
       setToken2List(getDataList(token1!));
-      setPairLPList(getPoolList());
+      setPairLPList(await getPoolList()!);
     }
     setAddress(addr);
     setNetwork(chainId);
   };
 
+  const loadDataPair = async () => {
+    setDataPair(await getPairsFilter())
+
+  }
+
   useEffect(() => {
-    loadAccountData();
+    
+  
+    const fetchData = async () => {
+      // await getData();
+      // await loadAccountData();
+      await loadDataPair();
+      await loadAccountData();
+
+    };
+    fetchData()
+
+
     const handleAccountChange = async (addresses: string[]) => {
       setAddress(addresses[0]);
       await loadAccountData();
@@ -287,28 +337,6 @@ export default function addliquidity() {
     }
   };
 
-  const getPoolList = () => {
-    let option: Keyop[] = [];
-
-    PairsList.filter((event) => {
-      if (event.addressPair !== address) {
-        option.push({
-          value: event.token0.symbol + '/' + event.token1.symbol,
-          // value: Object.keys(event),
-          label: (
-            <div className="flex space-x-px">
-              <img className=" space-x-px" src={event.token0.imageUrl} height="30px" width="30px" />
-              <img className=" space-x-px" src={event.token1.imageUrl} height="30px" width="30px" />
-
-              {event.token0.symbol + '/' + event.token1.symbol}
-            </div>
-          ),
-          address: event.addressPair,
-        });
-      }
-    });
-    return option;
-  };
 
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
@@ -385,6 +413,9 @@ export default function addliquidity() {
         }
         setPairLP(e.address);
         setShowLP(e);
+        setToken1(e.value.split('/')[0])
+        setToken2(e.value.split('/')[1])
+        
         await checkHandle();
       }
     }
@@ -400,36 +431,37 @@ export default function addliquidity() {
       //   ethers.utils.parseEther(amountBDesired.toString()),
       // );
 
-      if( token1 !== undefined &&
+      if (token1 !== undefined &&
         token2 !== undefined &&
         amountADesired !== null &&
         amountBDesired !== null &&
         amountADesired > 0 &&
-        amountBDesired > 0){
+        amountBDesired > 0) {
 
-        
-      if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await addLiquidityETH(Number(amountADesired) /*WETH is token1*/, token2! /*address other token*/, Number(amountBDesired));
-        await tx.wait();
-      } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-        const tx = await addLiquidityETH(Number(amountBDesired) /*WETH is token2*/, token1! /*address other token*/, Number(amountADesired));
-        await tx.wait();
-      } else {
-        const tx = await addLiquidity(token1!, token2!, amountADesired, amountBDesired);
-        await tx.wait();
+
+        if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+          const tx = await addLiquidityETH(Number(amountADesired) /*WETH is token1*/, token2! /*address other token*/, Number(amountBDesired));
+          await tx.wait();
+        } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
+          const tx = await addLiquidityETH(Number(amountBDesired) /*WETH is token2*/, token1! /*address other token*/, Number(amountADesired));
+          await tx.wait();
+        } else {
+          const tx = await addLiquidity(token1!, token2!, amountADesired, amountBDesired);
+          await tx.wait();
+        }
+
+        setStatus(Status.SUCCESS);
+        toast.success('Transaction Success!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
-
-      setStatus(Status.SUCCESS);
-      toast.success('Transaction Success!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }} catch (error: any) {
+    } catch (error: any) {
       setStatus(Status.FAILED);
       if (error.code == 4001) {
         toast.warn('Transaction Cancelled', {
@@ -513,23 +545,23 @@ export default function addliquidity() {
   const handleModeCheck = async () => {
     if (toggle) {
       if (
-      token1 !== undefined &&
-      token2 !== undefined &&
-      amountADesired !== null &&
-      amountBDesired !== null &&
-      amountADesired > 0 &&
-      amountBDesired > 0
-    ) {
-      handleAddLiquidity();
-    } 
-  }
-    else if (!toggle) {
-    if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
-      handleRemoveLiquidity();
-
+        token1 !== undefined &&
+        token2 !== undefined &&
+        amountADesired !== null &&
+        amountBDesired !== null &&
+        amountADesired > 0 &&
+        amountBDesired > 0
+      ) {
+        handleAddLiquidity();
+      }
     }
-  }
-};
+    else if (!toggle) {
+      if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
+        handleRemoveLiquidity();
+
+      }
+    }
+  };
 
   const handleApprove = async () => {
     if (toggle) {
@@ -630,21 +662,26 @@ export default function addliquidity() {
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-    const details:any = getTokenPairsDetails(tokenAddress);
+  console.log('tokenAddress',tokenAddress);
+  
+    const details: any = getTokenPairsDetails(tokenAddress);
+
     return details.symbol;
   };
 
-  const getPendingLiquidity = () =>{{}
-    if (toggle){return 'Supplying'}
-    else if (!toggle){return 'Removing'}
+  const getPendingLiquidity = () => {
+    { }
+    if (toggle) { return 'Supplying' }
+    else if (!toggle) { return 'Removing' }
 
   }
 
-  const getSuccessLiquidity = () =>{{}
-  if (toggle){return 'Supplied'}
-  else if (!toggle){return 'Removed'}
+  const getSuccessLiquidity = () => {
+    { }
+    if (toggle) { return 'Supplied' }
+    else if (!toggle) { return 'Removed' }
 
-}
+  }
 
   return (
     <div className="py-10 flex-column w-auto grid">
@@ -654,23 +691,23 @@ export default function addliquidity() {
           <div>
             <div className="flex justify-between mr-5">
               <h1 className="px-5 text-textwhite h-12">{modeName()}</h1>
-            <div
-              className={
-                toggle
-                  ? 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-addToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
-                  : 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-removeToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
-              }
-              onClick={() => {
-                setToggle(!toggle);
-              }}
-            >
               <div
                 className={
-                  ' bg-textwhite md:w-6 md:h-6 h-5 w-5 rounded-full shadow-md transform duration-300 ease-in-out' +
-                  (toggle ? null : toggleClass)
+                  toggle
+                    ? 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-addToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
+                    : 'md:w-14 md:h-7 w-12 h-6 flex items-center bg-removeToggle rounded-full p-1 transform cursor-pointer top-0 right-0  space-x-px'
                 }
-              ></div>
-            </div>
+                onClick={() => {
+                  setToggle(!toggle);
+                }}
+              >
+                <div
+                  className={
+                    ' bg-textwhite md:w-6 md:h-6 h-5 w-5 rounded-full shadow-md transform duration-300 ease-in-out' +
+                    (toggle ? null : toggleClass)
+                  }
+                ></div>
+              </div>
             </div>
 
             <div className="justify-self-center ">
@@ -771,7 +808,7 @@ export default function addliquidity() {
                       )}
 
                       <div className="py-10 flex-column w-auto grid text-textblack ">
-                        {(Number(tokenAllowance1) > 0 ) && (Number(tokenAllowance2) > 0) ? (
+                        {(Number(tokenAllowance1) > 0) && (Number(tokenAllowance2) > 0) ? (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 
@@ -811,7 +848,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                 <div>
                   {' '}
                   <div className="flex-column w-auto grid text-textblack rounded-3xl">
-               
+
                     {/* <div className="">
 
                     <div className="grid grid-cols-5 text-textblack ">
@@ -820,45 +857,45 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                       </div>
                    
                       </div> */}
-                      <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
-                        <div className="grid grid-cols-5 text-textblack">
-                          <div className="col-span-4 h-20 rounded-3xl"></div>
+                    <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
+                      <div className="grid grid-cols-5 text-textblack">
+                        <div className="col-span-4 h-20 rounded-3xl"></div>
                         <div className="grid grid-cols-6 col-span-1">
-                      <Select
-                      value={showLP}
-                      onChange={(e) => {
-                        getSelectRemoveLiq(e);
-                      }}
-                      // styles={customStyles}
-                      options={pairLPList!}
-                      autoFocus
-                      placeholder="Select pair"
-                      className="col-span-6 w-full h-auto cursor-pointer relative"                      
-                      />
-                      
+                          <Select
+                            value={showLP}
+                            onChange={(e) => {
+                              getSelectRemoveLiq(e);
+                            }}
+                            // styles={customStyles}
+                            options={pairLPList!}
+                            autoFocus
+                            placeholder="Select pair"
+                            className="col-span-6 w-full h-auto cursor-pointer relative"
+                          />
+
+                        </div>
                       </div>
-                      </div>
-                      </div>
-                      <div className="m-5 justify-self-center">
-                    {pairLP ? (
-                      <Box width={300}>
-                        <Slider
-                          defaultValue={50}
-                          aria-label="Default"
-                          valueLabelDisplay="auto"
-                          // value={amountLP}
-                          onChange={(e) => onChangePairLPHandle(Number((e.target as HTMLInputElement).value))}
-                        />
-                      </Box>
-                      // </div>
-                    ) : (
-                      // <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
-                      // <div className="justify-self-center">
-                      <Box width={300}>
-                        <Slider defaultValue={50} aria-label="Disabled slider" valueLabelDisplay="auto" disabled />
-                      </Box>
-                    )}
-                      </div>
+                    </div>
+                    <div className="m-5 justify-self-center">
+                      {pairLP ? (
+                        <Box width={300}>
+                          <Slider
+                            defaultValue={50}
+                            aria-label="Default"
+                            valueLabelDisplay="auto"
+                            // value={amountLP}
+                            onChange={(e) => onChangePairLPHandle(Number((e.target as HTMLInputElement).value))}
+                          />
+                        </Box>
+                        // </div>
+                      ) : (
+                        // <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
+                        // <div className="justify-self-center">
+                        <Box width={300}>
+                          <Slider defaultValue={50} aria-label="Disabled slider" valueLabelDisplay="auto" disabled />
+                        </Box>
+                      )}
+                    </div>
                   </div>
                   {pairLP && amountLP ? (
                     <div className="py-10 flex-column w-auto grid text-textblack ">
@@ -919,49 +956,60 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   )}
                 </div>
               )}
-              
+
               <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-              {status === Status.PENDING && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
-                    <CircularProgress />
-                  <DialogContent>
-                    Waiting For Confirmation
-                    <Typography gutterBottom>
-                      {getPendingLiquidity()} {amountADesired!} {getSymbolToken(token1!)} and {amountBDesired} {getSymbolToken(token2!)}
-                    </Typography>
-                  </DialogContent>
-                </Box>
-              )}
-              {status === Status.SUCCESS && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
-                    <CheckCircleIcon color="success" fontSize="large" />
-                  <DialogContent >
-                    Transaction Submitted
-                    <Typography gutterBottom>
-                    {getSuccessLiquidity()} {getSymbolToken(token1!)}/{getSymbolToken(token2!)} liquidity
-                    </Typography>
-                  </DialogContent>
-                </Box>
-              )}
-              {status === Status.FAILED && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
-                    <WarningAmberIcon color="warning" fontSize="large" />
-                  <DialogContent >
-                    Transaction Rejected
-                  </DialogContent>
-                </Box>
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                  {status === Status.PENDING && toggle &&(
+                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
+                      <CircularProgress />
+                      <DialogContent>
+                        Waiting For Confirmation
+                        <Typography gutterBottom>
+                          {getPendingLiquidity()} {amountADesired!} {getSymbolToken(token1!)} and {amountBDesired!} {getSymbolToken(token2!)}
+                        </Typography>
+                      </DialogContent>
+                    </Box>
+                  )}
+                  {status === Status.PENDING && !toggle &&(
+                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
+                      <CircularProgress />
+                      <DialogContent>
+                        Waiting For Confirmation
+                        <Typography gutterBottom>
+                          {getPendingLiquidity()} {amountLP!} {token1!} and {amountLP!} {token2!}
+                        </Typography>
+                      </DialogContent>
+                    </Box>
+                  )}
+                  {status === Status.SUCCESS && (
+                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
+                      <CheckCircleIcon color="success" fontSize="large" />
+                      <DialogContent >
+                        Transaction Submitted
+                        <Typography gutterBottom>
+                          {getSuccessLiquidity()} {getSymbolToken(token1!)}/{getSymbolToken(token2!)} liquidity
+                        </Typography>
+                      </DialogContent>
+                    </Box>
+                  )}
+                  {status === Status.FAILED && (
+                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
+                      <WarningAmberIcon color="warning" fontSize="large" />
+                      <DialogContent >
+                        Transaction Rejected
+                      </DialogContent>
+                    </Box>
 
-              )}
-              <DialogActions>
-              <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
+                  )}
+                  <DialogActions>
+                    <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300">
-                Close
-              </button>
-            </DialogActions>
-            </BootstrapDialogTitle>
+                      Close
+                    </button>
+                  </DialogActions>
+                </BootstrapDialogTitle>
 
-          </BootstrapDialog>
+              </BootstrapDialog>
 
               <ToastContainer
                 position="top-right"
@@ -981,7 +1029,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
         </div>
       </div>
 
-      </div>
-    
+    </div>
+
   );
 }

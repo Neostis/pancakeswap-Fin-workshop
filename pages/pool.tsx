@@ -16,7 +16,7 @@ import { pairModule } from '../components/pairModule';
 import { ETH_TOKENS } from '../constants/tokens';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
 // import { getAllPairsDetails } from '../constants/tokens';
-import TablePool from '../components/table/TableFilter';
+import TablePool from '../components/table/TableConstants';
 import { getPairsFilter, getDataPair } from '../services/pairToken.service';
 
 
@@ -69,8 +69,8 @@ const pool = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const fetchData = async () => {
-        const a = await getDataPair();
-        console.log("a: ",a);
+        // const a = await getDataPair();
+        // console.log("a: ",a);
         await getData();
         await loadAccountData();
       };

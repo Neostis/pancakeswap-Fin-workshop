@@ -1,4 +1,5 @@
-import getProvider from "../utils/getProvider";
+// import getProvider from "../utils/getProvider";
+import { getProvider } from "../services/wallet-service";
 import * as ethers from 'ethers';
 // import abi_Factory from '../abi/ABI_FACTORY.json';
 import { PancakeFactory__factory, PancakePair__factory, PancakeRouter__factory } from "../typechain";

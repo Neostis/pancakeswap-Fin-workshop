@@ -12,6 +12,8 @@ import {
   getWalletAddress,
   changeNetwork,
 } from '../services/wallet-service';
+import TableAccountFilter from '../components/table/TableAccountFilter';
+import { getPairsFilter } from "../services/pairToken.service";
 
 const liquidity = () => {
   const [open, setOpen] = React.useState(false);
@@ -156,10 +158,10 @@ const liquidity = () => {
                 </Link>
               </button>
             </div>
-        {dataList ? (
+        {/* {dataList ? (
           <div>
             {' '}
-            {/* {Object.keys(dataList).map((key) => {
+            {Object.keys(dataList).map((key) => {
               if (typeof key !== null){
               return (
                 <div key={key}>
@@ -168,18 +170,19 @@ const liquidity = () => {
                 </div>
               );
             }
-            })} */}
+            })}
           </div>
         ) : (
           <h2>no item</h2>
-        )}
+        )} */}
+        <TableAccountFilter />
             <div className="flex-column w-auto grid ">
+              {/* <div className="py-10"></div>
               <div className="py-10"></div>
               <div className="py-10"></div>
-              <div className="py-10"></div>
-              <div className="py-10"></div>
+              <div className="py-10"></div> */}
 
-              <div className="py-2"></div>
+              {/* <div className="py-2"></div> */}
             </div>
           </div>
         </div>

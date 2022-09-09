@@ -132,7 +132,7 @@ const swap = () => {
     const chainId = await getChainId();
     const balances = await getTokenBalance(token1!, address!);
     setBalanceOfToken1(formatEther(balances));
-    
+
     if (addr === null) {
       await connectWallet();
       defaultValue();
@@ -303,9 +303,9 @@ const swap = () => {
         setShowToken2(e);
         setToken1List(getDataList(e.address));
         console.log(balanceOfToken1);
-        
+
         onChangeToken1Handle(amountIn)
-        await checkHandle(); 
+        await checkHandle();
       }
       // }
     }
@@ -396,7 +396,6 @@ const swap = () => {
   };
 
   const onChangeToken1Handle = async (event: any) => {
-    // e.prevent;
 
     if (Number(balanceOfToken1) === 0) {
       setAmountIn(0);
@@ -409,19 +408,19 @@ const swap = () => {
       // setAmountOut(await getSwapAmountsOut());
     }
     if (token2 !== null) {
-              let amountOut:number = 0 as const;
+      let amountOut: number = 0 as const;
 
       try {
         if (event > 0) {
           if (event > Number(balanceOfToken1)) {
-             amountOut = Number(await getSwapAmountsOut(Number(balanceOfToken1), token1, token2));
-          } 
-          else if (Number(balanceOfToken1) !== 0) {
-             amountOut = Number(await getSwapAmountsOut(event, token1, token2));
+            amountOut = Number(await getSwapAmountsOut(Number(balanceOfToken1), token1, token2));
           }
-        } 
+          else if (Number(balanceOfToken1) !== 0) {
+            amountOut = Number(await getSwapAmountsOut(event, token1, token2));
+          }
+        }
         else {
-           amountOut = 0;
+          amountOut = 0;
         }
         setAmountOut(amountOut.toString());
       } catch (CALL_EXCEPTION) {
@@ -431,15 +430,21 @@ const swap = () => {
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-    const details:any = getTokenPairsDetails(tokenAddress);
+    const details: any = getTokenPairsDetails(tokenAddress);
     return details.symbol;
   };
 
   const getImageToken = (tokenAddress: string) => {
-    const details:any = getTokenPairsDetails(tokenAddress);
+    const details: any = getTokenPairsDetails(tokenAddress);
     return details.imageUrl;
   };
-  
+  const swicthToken =  () => {
+     setToken2(token1)
+     setToken1(token2)
+    setShowToken1(showToken2)
+    setShowToken2(showToken1)
+    onChangeToken1Handle(amountOutState)
+  }
   return (
     <div className="py-10 w-auto grid">
       {/* แก้grid for set width */}
@@ -449,78 +454,94 @@ const swap = () => {
         </h1>
         {/* <div>{address}</div> */}
         {/* <div className="justify-self-center w-11/12 rounded-lg font-bold"> */}
-          
+
         <div className="flex-column w-auto grid">
 
-        <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
-        <div className="grid grid-cols-5 text-textblack ">
-                    
-          {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
+          <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
+            <div className="grid grid-cols-5 text-textblack ">
 
-            {token1 ? (
-              <input
-                className="col-span-4 h-20 rounded-3xl ml-5 mt-1"
-                type="number"
-                value={amountIn!}
-                placeholder={balanceOfToken1!}
-                onChange={(e) => {
-                  onChangeToken1Handle(Number(e.target.value));
-                }}
-              ></input>
-            ) : (
+              {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
 
-              <input
-                className="col-span-4 h-20 rounded-3xl ml-5 mt-3"
-                value={'Select Token'}
-                disabled
-              ></input>
-            )}
-                   <div className="grid grid-cols-6 col-span-1 ">
-            <Select
-              // defaultValue={token1}
-              value={showToken1}
-              onChange={(e) => {
-                getSelectTokens1(e);
-              }}
-              options={token1List}
-              autoFocus
-              placeholder="Select Token 1"
-              className="col-span-6 w-auto h-auto cursor-pointer"
-            />
- </div>
+              {token1 ? (
+                <input
+                  className="col-span-4 h-20 rounded-3xl ml-5 mt-1"
+                  type="number"
+                  value={amountIn!}
+                  placeholder={balanceOfToken1!}
+                  onChange={(e) => {
+                    onChangeToken1Handle(Number(e.target.value));
+                  }}
+                ></input>
+              ) : (
+
+                <input
+                  className="col-span-4 h-20 rounded-3xl ml-5 mt-3"
+                  value={'Select Token'}
+                  disabled
+                ></input>
+              )}
+              <div className="grid grid-cols-6 col-span-1 ">
+                <Select
+                  // defaultValue={token1}
+                  value={showToken1}
+                  onChange={(e) => {
+                    getSelectTokens1(e);
+                  }}
+                  options={token1List}
+                  autoFocus
+                  placeholder="Select Token 1"
+                  className="col-span-6 w-auto h-auto cursor-pointer"
+                />
+              </div>
+            </div>
           </div>
-          </div>
-          <div className="flex-column w-auto grid text-textblack ">
+
+
+
+
+
+          {token1 && token2 ? (
+            <div className="flex-column w-auto grid text-textblack ">
+              <button
+                className="w-6 h-auto rounded-full justify-self-center
+                       bg-textwhite hover:bg-bluesky outline outline-blueWidget"
+                onClick={swicthToken}
+              >
+                ↓↑
+              </button>
+            </div>
+          ) : (<div className="flex-column w-auto grid text-textblack ">
             <button
               className="w-6 h-auto rounded-full justify-self-center
-                       bg-textwhite hover:bg-bluesky outline outline-[#f3991c]"
+                     bg-textwhite hover:bg-bluesky outline outline-blueWidget"
+              onClick={swicthToken}
+              disabled
             >
-              ↓
+              ↓↑
             </button>
-          </div>
-
+          </div>)}
 
           <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
-        <div className="grid grid-cols-5 text-textblack ">
+            <div className="grid grid-cols-5 text-textblack ">
 
-            <span className="col-span-4 h-20 rounded-3xl ml-5 mt-5"> {amountOutState}</span>
-                    {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
-            <div className="grid grid-cols-6 col-span-1 ">
-            <Select
-              value={showToken2}
-              onChange={(e) => {
-                getSelectTokens2(e);
-              }}
-              options={token2List}
-              autoFocus
-              placeholder="Select Token 2"
-              className="col-span-6 w-auto h-auto cursor-pointer"
-            />
+              <span className="col-span-4 h-20 rounded-3xl ml-5 mt-5"> {amountOutState}</span>
+              {/* <div className="py-2 m-3 flex-column w-auto grid text-textblack "> */}
+              <div className="grid grid-cols-6 col-span-1 ">
+                <Select
+                  value={showToken2}
+                  onChange={(e) => {
+                    getSelectTokens2(e);
+                  }}
+                  options={token2List}
+                  autoFocus
+                  placeholder="Select Token 2"
+                  className="col-span-6 w-auto h-auto cursor-pointer"
+                />
 
-          
-          
-          </div>
-          </div>
+
+
+              </div>
+            </div>
           </div>
 
 
@@ -551,7 +572,7 @@ const swap = () => {
       <div className="justify-self-center bg-blueWidget rounded-3xl ">
         <div className="py-12">
           <div>
-          {token1 && token2 ? (
+            {token1 && token2 ? (
               <div>
                 <div className="grid grid-cols-4 gap-4 px-5 text-textwhite ">
                   <div className="grid grid-cols-4 gap-4">
@@ -587,60 +608,60 @@ const swap = () => {
       </div>
 
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-              {status === Status.PENDING && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
-                    <CircularProgress />
-                  <DialogContent>
-                    Waiting For Confirmation
-                    <Typography gutterBottom>
-                      Swapping {amountIn} {getSymbolToken(token1!)} for {amountOutState} {getSymbolToken(token2!)}
-                    </Typography>
-                  </DialogContent>
-                </Box>
-              )}
-              {status === Status.SUCCESS && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
-                    <CheckCircleIcon color="success" fontSize="large" />
-                  <DialogContent >
-                    Transaction Submitted
-                    <Typography gutterBottom>ADD {getSymbolToken(token2!)}</Typography>
-                  </DialogContent>
-                </Box>
-              )}
-              {status === Status.FAILED && (
-                <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
-                    <WarningAmberIcon color="warning" fontSize="large" />
-                  <DialogContent >
-                    Transaction Rejected
-                  </DialogContent>
-                </Box>
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+          {status === Status.PENDING && (
+            <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
+              <CircularProgress />
+              <DialogContent>
+                Waiting For Confirmation
+                <Typography gutterBottom>
+                  Swapping {amountIn} {getSymbolToken(token1!)} for {amountOutState} {getSymbolToken(token2!)}
+                </Typography>
+              </DialogContent>
+            </Box>
+          )}
+          {status === Status.SUCCESS && (
+            <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
+              <CheckCircleIcon color="success" fontSize="large" />
+              <DialogContent >
+                Transaction Submitted
+                <Typography gutterBottom>ADD {getSymbolToken(token2!)}</Typography>
+              </DialogContent>
+            </Box>
+          )}
+          {status === Status.FAILED && (
+            <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
+              <WarningAmberIcon color="warning" fontSize="large" />
+              <DialogContent >
+                Transaction Rejected
+              </DialogContent>
+            </Box>
 
-              )}
-              <DialogActions>
-              <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
+          )}
+          <DialogActions>
+            <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300">
-                Close
-              </button>
-            </DialogActions>
-            </BootstrapDialogTitle>
+              Close
+            </button>
+          </DialogActions>
+        </BootstrapDialogTitle>
 
-          </BootstrapDialog>
+      </BootstrapDialog>
 
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            limit={1}
-          />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        limit={1}
+      />
     </div>
-    
+
   );
 };
 

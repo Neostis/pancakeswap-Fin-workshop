@@ -28,33 +28,75 @@ function TableConstants() {
   const [rows, setRows] = useState<pairsToken[]>([]);
 
   const [searched, setSearched] = useState<string>('');
+  const [dataPair, setDataPair] = useState<pairsToken[]>([]);
+
   const classes = useStyles();
 
-  // const a = getDataPair().then((e) => (console.log(e)
-  // ))
+  // const requestSearch = (searchedVal: string) => {
+  //   let mappingData: pairsToken[] = [];
+  //   const filteredRows = PairsList.filter((item) => {
+  //     const ob = {
+  //       img1: item.token0.imageUrl,
+  //       img2: item.token1.imageUrl,
+  //       token1: item.token0.symbol,
+  //       token2: item.token1.symbol,
+  //       addrPair: item.addressPair,
+  //       total: item.total,
+  //     };
+  //     // const mappingData = [...rows, ob];
+  //     if (
+  //       ob.token1.toLowerCase().includes(searchedVal.toLowerCase()) ||
+  //       ob.token2.toLowerCase().includes(searchedVal.toLowerCase())
+  //     ) {
+  //       // return ob;
+  //       mappingData.push(ob);
+  //       console.log('ob',ob);
+        
+  //     }
+  //   });
+  //   setRows(mappingData);
+  // };
 
-  const requestSearch = (searchedVal: string) => {
+  const loadDataPair =async () => {
+    setDataPair(await getDataPair())
+  }
+
+  const requestSearch = async(searchedVal: string) => {
+    
     let mappingData: pairsToken[] = [];
-    const filteredRows = PairsList.filter((item) => {
-      const ob = {
-        img1: item.token0.imageUrl,
-        img2: item.token1.imageUrl,
-        token1: item.token0.symbol,
-        token2: item.token1.symbol,
-        addrPair: item.addressPair,
-        total: item.total,
-      };
-      // const mappingData = [...rows, ob];
+    const filteredRows = dataPair!.filter((x) => {      
+      let ob;
+      PairsList.forEach(element => {
+      if (element.addressPair == x!.address){
+         ob = {
+          img1: element.token0.imageUrl,
+          img2: element.token1.imageUrl,
+          token1: element.token0.symbol,
+          token2: element.token1.symbol,
+          addrPair: element.addressPair,
+          total: x.totalSupply,
+
+        };
+        }
+      
+      });
+      
       if (
         ob.token1.toLowerCase().includes(searchedVal.toLowerCase()) ||
         ob.token2.toLowerCase().includes(searchedVal.toLowerCase())
       ) {
-        // return ob;
-        mappingData.push(ob);
-        console.log('ob',ob);
+        if (Array.isArray(mappingData)){
+          // return ob;
+          mappingData.push(ob);      
+          }
+
+        
         
       }
-    });
+      return ob;
+  });
+
+
     setRows(mappingData);
   };
 
@@ -64,6 +106,7 @@ function TableConstants() {
   };
 
   useEffect(() => {
+    
     // const interval = setInterval(() => {
     const fetchData =  async() => {
       const temp = await getDataPair();
@@ -78,10 +121,8 @@ function TableConstants() {
             token2: element.token1.symbol,
             addrPair: element.addressPair,
             total: x.totalSupply,
-            // total: element.total,
 
           };
-          //  console.log('element',ob);
           }
         
         });
@@ -94,7 +135,7 @@ function TableConstants() {
 
     };
 
-
+    loadDataPair()
     fetchData();
   }, []);
   return (

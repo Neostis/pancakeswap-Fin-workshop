@@ -69,7 +69,7 @@ const pool = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const fetchData = async () => {
-        const a = await getDataPair();
+        // const a = await getDataPair();
         // console.log("a: ",a);
         await getData();
         await loadAccountData();

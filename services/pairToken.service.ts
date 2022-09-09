@@ -86,19 +86,6 @@ export const getDataPair = async () => {
   };
 
 
-  // return Object.entries(response.results).map(([name, data]) =>  {
-  //   const ob = {
-  //     balanceOf: formatEther(data.callsReturnContext[0].returnValues[0]),
-  //     token0: data.callsReturnContext[1].returnValues[0],
-  //     token1: data.callsReturnContext[2].returnValues[0],
-  //     totalSupply: formatEther(data.callsReturnContext[3].returnValues[0])
-  //   }
-  //   return{
-  //     [`${name}`]:ob
-
-        
-      
-  //   }
 
 
 export const getPairsFilter = async () => {
@@ -168,12 +155,20 @@ export const getPairsFilter = async () => {
           // }
 
       })
+      // const dataFilter = dataList.filter(item =>
+      //   // const a = ethers.BigNumber.from((data.callsReturnContext[0].returnValues[0]).hex.toString())
+      //     Number((ethers.BigNumber.from((item.balanceOf).hex.toString())).toString()) > 0
+     
+      // );
+
       const dataFilter = dataList.filter(item =>
         // const a = ethers.BigNumber.from((data.callsReturnContext[0].returnValues[0]).hex.toString())
-
           Number((ethers.BigNumber.from((item.balanceOf).hex.toString())).toString()) > 0
      
       );
+
+      dataFilter.map(item=>{formatEther(item.balanceOf)});
+      
       return dataFilter;
   
       // if(Number(a.toString()) > 0){

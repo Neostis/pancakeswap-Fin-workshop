@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from 'material-ui-search-bar';
-import { getDataPair  } from '../../services/pairToken.service';
+import { getDataPair } from '../../services/pairToken.service';
 
 interface pairsToken {
   img1: string;
@@ -29,6 +29,7 @@ function TableConstants() {
 
   const [searched, setSearched] = useState<string>('');
   const [dataPair, setDataPair] = useState<pairsToken[]>([]);
+
 
   const classes = useStyles();
 
@@ -51,50 +52,50 @@ function TableConstants() {
   //       // return ob;
   //       mappingData.push(ob);
   //       console.log('ob',ob);
-        
+
   //     }
   //   });
   //   setRows(mappingData);
   // };
 
-  const loadDataPair =async () => {
-    setDataPair(await getDataPair())
-  }
 
-  const requestSearch = async(searchedVal: string) => {
-    
+
+
+  const requestSearch = async (searchedVal: string) => {
+
     let mappingData: pairsToken[] = [];
-    const filteredRows = dataPair!.filter((x) => {      
+    const filteredRows = dataPair!.filter((x) => {
       let ob;
       PairsList.forEach(element => {
-      if (element.addressPair == x!.address){
-         ob = {
-          img1: element.token0.imageUrl,
-          img2: element.token1.imageUrl,
-          token1: element.token0.symbol,
-          token2: element.token1.symbol,
-          addrPair: element.addressPair,
-          total: x.totalSupply,
+        if (element.addressPair == x!.address) {
+          ob = {
+            img1: element.token0.imageUrl,
+            img2: element.token1.imageUrl,
+            token1: element.token0.symbol,
+            token2: element.token1.symbol,
+            addrPair: element.addressPair,
+            total: x.totalSupply,
 
-        };
+          };
         }
-      
+
       });
-      
+
       if (
         ob.token1.toLowerCase().includes(searchedVal.toLowerCase()) ||
         ob.token2.toLowerCase().includes(searchedVal.toLowerCase())
       ) {
-        if (Array.isArray(mappingData)){
-          // return ob;
-          mappingData.push(ob);      
-          }
 
-        
-        
+        if (Array.isArray(mappingData)) {
+          // return ob;
+          mappingData.push(ob);
+        }
+
+
+
       }
       return ob;
-  });
+    });
 
 
     setRows(mappingData);
@@ -106,37 +107,45 @@ function TableConstants() {
   };
 
   useEffect(() => {
-    
     // const interval = setInterval(() => {
-    const fetchData =  async() => {
+    const fetchData = async () => {
+
       const temp = await getDataPair();
+
+      console.log('temp',temp);
+      
+
       const dataAll = temp.map((x) => {
         let ob;
         PairsList.forEach(element => {
-        if (element.addressPair == x.address){
-           ob = {
-            img1: element.token0.imageUrl,
-            img2: element.token1.imageUrl,
-            token1: element.token0.symbol,
-            token2: element.token1.symbol,
-            addrPair: element.addressPair,
-            total: x.totalSupply,
+          if (element.addressPair == x.address) {
+            ob = {
+              img1: element.token0.imageUrl,
+              img2: element.token1.imageUrl,
+              token1: element.token0.symbol,
+              token2: element.token1.symbol,
+              addrPair: element.addressPair,
+              total: x.totalSupply,
 
-          };
+            };
           }
-        
+
         });
-        const mappingData = [...rows, ob];
+        // const mappingData = [...rows, ob];
 
         return ob;
-    });
+      });
 
       setRows(dataAll);
 
     };
 
+    const loadDataPair = async () => {
+      setDataPair(await getDataPair())
+    }
+
     loadDataPair()
-    fetchData();
+     fetchData();
   }, []);
   return (
     <div>
@@ -168,7 +177,7 @@ function TableConstants() {
                     <div className="flex space-x-px text-base">
                       <img src={row.img1} height="35px" width="35px" />
                       <img src={row.img2} height="35px" width="35px" />
- 
+
                       {row.token1}/{row.token2}
                     </div>
                   </TableCell>

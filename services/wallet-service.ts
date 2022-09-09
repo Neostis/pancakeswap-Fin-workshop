@@ -33,6 +33,10 @@ export const getProvider = () => {
   }
   return null;
 };
+export const getProviderMulticall = () => {
+  const url = `https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`;
+  return new ethers.providers.JsonRpcProvider(url);
+};
 
 export const connectWallet = () => {
   return getEthereum()?.request({

@@ -652,6 +652,10 @@ export default function addliquidity() {
   };
 
   const onChangePairLPHandle = async (e: any) => {
+    console.log('e',e);
+    console.log('Number(balanceOfLP)',Number(balanceOfLP));
+    
+
     if (e == 0) {
       setAmountLP(0);
     } else if (e > 0 && e < 100) {
@@ -659,6 +663,8 @@ export default function addliquidity() {
     } else {
       setAmountLP(Number(balanceOfLP));
     }
+        console.log('amountLP',amountLP);
+
   };
 
   const getSymbolToken = (tokenAddress: string) => {

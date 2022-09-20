@@ -110,11 +110,8 @@ function TableConstants() {
     // const interval = setInterval(() => {
     const fetchData = async () => {
 
-      const temp = await getDataPair();
-
-      console.log('temp',temp);
-      
-
+      try{
+      const temp = await getDataPair();      
       const dataAll = temp.map((x) => {
         let ob;
         PairsList.forEach(element => {
@@ -137,11 +134,17 @@ function TableConstants() {
       });
 
       setRows(dataAll);
+    }
+    catch(error){}
 
     };
 
     const loadDataPair = async () => {
-      setDataPair(await getDataPair())
+      try{
+          setDataPair(await getDataPair())
+
+      }
+      catch(error){}
     }
 
     loadDataPair()

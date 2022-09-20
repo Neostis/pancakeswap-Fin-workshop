@@ -21,20 +21,33 @@ import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 const Home: NextPage = () => {
+  const toastOptions = {
+    // onOpen: props => console.log(props.foo),
+    // onClose: props => console.log(props.foo),
+    // autoClose: 2500,
+    // closeButton: FontAwesomeCloseButton,
+    // type: toast.TYPE.INFO,
+    // hideProgressBar: false,
+    // position: toast.POSITION.TOP_LEFT,
+    // pauseOnHover: true,
+    // transition: MyCustomTransition,
+    // progress: 0.2
+    // // and so on ...
+    position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+};
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
 
     injectStyle();
     if (typeof tempWindow == 'undefined') {
-      toast.error('Not have Metamask', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Not have Metamask', toastOptions);
+      toast.clearWaitingQueue()
     }
   }
 
@@ -92,26 +105,10 @@ const Home: NextPage = () => {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }
@@ -124,26 +121,10 @@ const Home: NextPage = () => {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }

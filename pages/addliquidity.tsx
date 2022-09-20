@@ -29,7 +29,7 @@ import { addLiquidity, addLiquidityETH, _removeLiquidity, _removeLiquidityETH } 
 
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-import { getBalanceOf, getToken0, getToken1 } from '../services/pair-service';
+import { getBalanceOf, getToken0, getToken1, getTotalSupply, getReserves } from '../services/pair-service';
 
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -60,6 +60,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
 export interface DialogTitleProps {
   id: string;
   children?: React.ReactNode;
@@ -89,21 +90,36 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 };
 
 export default function addliquidity() {
+  const toastOptions = {
+    // onOpen: props => console.log(props.foo),
+    // onClose: props => console.log(props.foo),
+    // autoClose: 2500,
+    // closeButton: FontAwesomeCloseButton,
+    // type: toast.TYPE.INFO,
+    // hideProgressBar: false,
+    // position: toast.POSITION.TOP_LEFT,
+    // pauseOnHover: true,
+    // transition: MyCustomTransition,
+    // progress: 0.2
+    // // and so on ...
+    position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+};
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
 
     injectStyle();
+
     if (typeof tempWindow == 'undefined') {
-      toast.error('Not have Metamask', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Not have Metamask', toastOptions);
+      toast.clearWaitingQueue()
     }
+    
   }
 
   const handleClose = () => {
@@ -120,9 +136,7 @@ export default function addliquidity() {
   const [tokenAllowance1, setTokenAllowance1] = useState<string | null>(null);
   const [tokenAllowance2, setTokenAllowance2] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
-  const [addliquidityLoading, setAddliquidityLoading] = useState(false);
-  const [approveLoading, setApproveLoading] = useState(false);
-  const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
+  // const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
 
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
@@ -145,6 +159,10 @@ export default function addliquidity() {
   const [showLP, setShowLP] = useState<string | null>(null);
   const [dataPair, setDataPair] = useState<any[]>([]);
 
+  const [amountMyToken1, setAmountMyToken1] = useState<number | null>(null);
+  const [amountMyToken2, setAmountMyToken2] = useState<number | null>(null);
+
+
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
@@ -158,8 +176,8 @@ export default function addliquidity() {
   };
   const getPoolList = async() => {
     let option: Keyop[] = [];
-    console.log('dataPair', dataPair);
 
+    try{
     const temp = await getPairsFilter();
     const dataAll = temp.map((x) => {
 
@@ -184,6 +202,14 @@ export default function addliquidity() {
       });
 
     });
+
+    }
+    catch(error){
+      // console.log(error);
+      
+    }
+
+
     console.log('option remove', option);
     return option;
   };
@@ -223,7 +249,12 @@ export default function addliquidity() {
   };
 
   const loadDataPair = async () => {
+    try{      
     setDataPair(await getPairsFilter())
+    }
+    catch(error){
+      // console.log(error);
+    }
 
   }
 
@@ -277,27 +308,11 @@ export default function addliquidity() {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
           defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }
@@ -310,27 +325,11 @@ export default function addliquidity() {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
           defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }
@@ -451,38 +450,14 @@ export default function addliquidity() {
         }
 
         setStatus(Status.SUCCESS);
-        toast.success('Transaction Success!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.success('Transaction Success!', toastOptions);
       }
     } catch (error: any) {
       setStatus(Status.FAILED);
       if (error.code == 4001) {
-        toast.warn('Transaction Cancelled', {
-          position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.warn('Transaction Cancelled', toastOptions);
       } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
-        toast.error('something wrong', {
-          position: 'top-right',
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error('something wrong', toastOptions);
       }
       // }
     }
@@ -507,37 +482,13 @@ export default function addliquidity() {
         tx.wait();
       }
       setStatus(Status.SUCCESS);
-      toast.success('Transaction Success!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success('Transaction Success!', toastOptions);
     } catch (error: any) {
       setStatus(Status.FAILED);
       if (error.code == 4001) {
-        toast.warn('Transaction Cancelled', {
-          position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.warn('Transaction Cancelled', toastOptions);
       } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
-        toast.error('UNPREDICTABLE_GAS_LIMIT', {
-          position: 'top-right',
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error('UNPREDICTABLE_GAS_LIMIT', toastOptions);
       }
     }
   };
@@ -580,30 +531,14 @@ export default function addliquidity() {
           await tx.wait();
           const newAllowance = formatEther(await getAllowance(token1!, address!, addr_Router));
           setTokenAllowance1(newAllowance);
-          toast.success('Approve Success!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('Approve Success!', toastOptions);
         }
         if (Number(allowance2) < amountBDesired) {
           const tx = await callApprove(token2!, addr_Router);
           await tx.wait();
           const newAllowance = formatEther(await getAllowance(token2!, address!, addr_Router));
           setTokenAllowance2(newAllowance);
-          toast.success('Approve Success!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('Approve Success!', toastOptions);
         }
       }
     }
@@ -615,15 +550,7 @@ export default function addliquidity() {
           await tx.wait();
           const newAllowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
           setLPAllowance(newAllowance);
-          toast.success('Approve Success!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('Approve Success!', toastOptions);
         }
       }
 
@@ -652,9 +579,23 @@ export default function addliquidity() {
   };
 
   const onChangePairLPHandle = async (e: any) => {
-    console.log('e',e);
-    console.log('Number(balanceOfLP)',Number(balanceOfLP));
+    // console.log('e',e);
+    // console.log('Number(balanceOfLP)',Number(balanceOfLP));
+
+    const totalSupply:Number = Number(ethers.utils.formatEther(await getTotalSupply(pairLP!)))
+    const reserves1:Number  = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve0))
+    const reserves2:Number  = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve1))
+    const balances:Number  =   Number(ethers.utils.formatEther(await getBalanceOf(pairLP!, address!)))
+
+    // console.log('reserves1', reserves1);
+    // console.log('reserves2',reserves2);
     
+    setAmountMyToken1((balances/totalSupply*reserves1)* e /100)
+    setAmountMyToken2((balances/totalSupply*reserves2)* e / 100)
+
+    // console.log('our 1: ',(balances/totalSupply*reserves1)* e /100);
+    // console.log('our 2: ',(balances/totalSupply*reserves2)* e / 100);
+
 
     if (e == 0) {
       setAmountLP(0);
@@ -663,7 +604,7 @@ export default function addliquidity() {
     } else {
       setAmountLP(Number(balanceOfLP));
     }
-        console.log('amountLP',amountLP);
+        console.log('amountLP',(Number(balanceOfLP) * e) / 100);
 
   };
 
@@ -906,6 +847,9 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   {pairLP && amountLP ? (
                     <div className="py-10 flex-column w-auto grid text-textblack ">
                       {Number(LPAllowance) > 0 ? (
+                        <div>Output {amountMyToken1} {token1} and {amountMyToken2} {token2}
+                        <br />
+                        <br />
                         <button
                           className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                      from-blueswapdark  to-blueswapbutton 
@@ -914,6 +858,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                         >
                           Approve
                         </button>
+                        </div>
                       ) : (
                         <button
                           className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -935,6 +880,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                           >
                             Supply
                           </button>
+                          
                         ) : (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -982,7 +928,7 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                       <DialogContent>
                         Waiting For Confirmation
                         <Typography gutterBottom>
-                          {getPendingLiquidity()} {amountLP!} {token1!} and {amountLP!} {token2!}
+                          {getPendingLiquidity()} {amountMyToken1!} {token1!} and {amountMyToken2!} {token2!}
                         </Typography>
                       </DialogContent>
                     </Box>

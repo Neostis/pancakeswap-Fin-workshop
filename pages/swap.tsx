@@ -83,20 +83,35 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 };
 
 const swap = () => {
+
+  const toastOptions = {
+    // onOpen: props => console.log(props.foo),
+    // onClose: props => console.log(props.foo),
+    // autoClose: 2500,
+    // closeButton: FontAwesomeCloseButton,
+    // type: toast.TYPE.INFO,
+    // hideProgressBar: false,
+    // position: toast.POSITION.TOP_LEFT,
+    // pauseOnHover: true,
+    // transition: MyCustomTransition,
+    // progress: 0.2
+    // // and so on ...
+    position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+};
+
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
 
     injectStyle();
     if (typeof tempWindow == 'undefined') {
-      toast.error('Not have Metamask', {
-        position: 'top-right',
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Not have Metamask', toastOptions);
+      toast.clearWaitingQueue()
     }
   }
 
@@ -196,27 +211,11 @@ const swap = () => {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
           defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }
@@ -229,27 +228,11 @@ const swap = () => {
         console.log('change');
         await changeNetwork();
         if ((await getChainId()) === '0x4') {
-          toast.success('network have changed!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('network have changed!', toastOptions);
           return true;
         } else {
           defaultValue();
-          toast.error('network not change', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error('network not change', toastOptions);
           return false;
         }
       }
@@ -325,73 +308,25 @@ const swap = () => {
           const tx = await swapExactTokensForTokens(amountIn, path1, path2);
           await tx.wait();
           setStatus(Status.SUCCESS);
-          toast.success('Swap Success!', {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success('Swap Success!', toastOptions);
         } catch (error: any) {
           setStatus(Status.FAILED);
           if (error.code == 4001) {
-            toast.warn('Transaction rejected', {
-              position: 'top-right',
-              autoClose: 2500,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+            toast.warn('Transaction rejected', toastOptions);
           } else if (error.code == 'UNPREDICTABLE_GAS_LIMIT') {
-            toast.error('UNPREDICTABLE_GAS_LIMIT', {
-              position: 'top-right',
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+            toast.error('UNPREDICTABLE_GAS_LIMIT', toastOptions);
           } else {
-            toast.error('Insufficient liquidity for this trade', {
-              position: 'top-right',
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+            toast.error('Insufficient liquidity for this trade', toastOptions);
           }
         }
       } else {
         const tx = await callApprove(path1, addr_Router);
         await tx.wait();
-        toast.success('Approve Success!', {
-          position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.success('Approve Success!', toastOptions);
       }
     } else {
       setOpen(false);
-      toast.error('Something Wrong', {
-        position: 'top-right',
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Something Wrong', toastOptions);
     }
   };
 

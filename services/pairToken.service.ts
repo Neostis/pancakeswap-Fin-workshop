@@ -85,9 +85,6 @@ export const getDataPair = async () => {
     })
   };
 
-
-
-
 export const getPairsFilter = async () => {
 
 // [0x01, 0x02, 0x03, ...]

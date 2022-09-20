@@ -323,6 +323,7 @@ const swap = () => {
         const tx = await callApprove(path1, addr_Router);
         await tx.wait();
         toast.success('Approve Success!', toastOptions);
+
       }
     } else {
       setOpen(false);
@@ -345,6 +346,7 @@ const swap = () => {
     if (token2 !== null) {
       let amountOut: number = 0 as const;
 
+
       try {
         if (event > 0) {
           if (event > Number(balanceOfToken1)) {
@@ -356,6 +358,7 @@ const swap = () => {
         }
         else {
           amountOut = 0;
+
         }
         setAmountOut(amountOut.toString());
       } catch (CALL_EXCEPTION) {
@@ -366,11 +369,13 @@ const swap = () => {
 
   const getSymbolToken = (tokenAddress: string) => {
     const details: any = getTokenPairsDetails(tokenAddress);
+
     return details.symbol;
   };
 
   const getImageToken = (tokenAddress: string) => {
     const details: any = getTokenPairsDetails(tokenAddress);
+
     return details.imageUrl;
   };
   const swicthToken =  () => {
@@ -391,6 +396,7 @@ const swap = () => {
         {/* <div className="justify-self-center w-11/12 rounded-lg font-bold"> */}
 
         <div className="flex-column w-auto grid">
+
 
           <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
             <div className="grid grid-cols-5 text-textblack ">
@@ -477,6 +483,7 @@ const swap = () => {
 
               </div>
             </div>
+
           </div>
 
 
@@ -575,6 +582,7 @@ const swap = () => {
           )}
           <DialogActions>
             <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
+
        text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300">
               Close
             </button>

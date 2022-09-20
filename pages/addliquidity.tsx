@@ -44,13 +44,11 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Status } from '../types/status';
 import { getPairsFilter } from '../services/pairToken.service';
 
-
 type Keyop = {
   value: any;
   label: any;
   address: any;
 };
-
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -103,13 +101,13 @@ export default function addliquidity() {
     // progress: 0.2
     // // and so on ...
     position: 'top-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-};
+    autoClose: 2500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  };
   if (typeof window !== 'undefined') {
     let tempWindow = window.ethereum;
 
@@ -117,9 +115,8 @@ export default function addliquidity() {
 
     if (typeof tempWindow == 'undefined') {
       toast.error('Not have Metamask', toastOptions);
-      toast.clearWaitingQueue()
+      toast.clearWaitingQueue();
     }
-    
   }
 
   const handleClose = () => {
@@ -157,12 +154,10 @@ export default function addliquidity() {
   const [LPAllowance, setLPAllowance] = useState<string | null>(null);
 
   const [showLP, setShowLP] = useState<string | null>(null);
-  const [dataPair, setDataPair] = useState<any[]>([]);
+  // const [dataPair, setDataPair] = useState<any[]>([]);
 
   const [amountMyToken1, setAmountMyToken1] = useState<number | null>(null);
   const [amountMyToken2, setAmountMyToken2] = useState<number | null>(null);
-
-
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
@@ -174,46 +169,38 @@ export default function addliquidity() {
       return 'REMOVE Liquidity';
     }
   };
-  const getPoolList = async() => {
+  const getPoolList = async () => {
     let option: Keyop[] = [];
 
-    try{
-    const temp = await getPairsFilter();
-    const dataAll = temp.map((x) => {
+    try {
+      const temp = await getPairsFilter();
+      const dataAll = temp.map((x) => {
+        PairsList.forEach((element) => {
+          if (element.addressPair == x.address) {
+            option.push({
+              value: element.token0.symbol + '/' + element.token1.symbol,
+              // value: Object.keys(event),
+              label: (
+                <div className="flex space-x-px">
+                  <img className=" space-x-px" src={element.token0.imageUrl} height="30px" width="30px" />
+                  <img className=" space-x-px" src={element.token1.imageUrl} height="30px" width="30px" />
 
-      PairsList.forEach(element => {
-
-        if (element.addressPair == x.address) {
-          option.push({
-            value: element.token0.symbol + '/' + element.token1.symbol,
-            // value: Object.keys(event),
-            label: (
-              <div className="flex space-x-px">
-                <img className=" space-x-px" src={element.token0.imageUrl} height="30px" width="30px" />
-                <img className=" space-x-px" src={element.token1.imageUrl} height="30px" width="30px" />
-
-                {element.token0.symbol + '/' + element.token1.symbol}
-              </div>
-            ),
-            address: element.addressPair,
-          });
-        }
-
+                  {element.token0.symbol + '/' + element.token1.symbol}
+                </div>
+              ),
+              address: element.addressPair,
+            });
+          }
+        });
       });
-
-    });
-
-    }
-    catch(error){
+    } catch (error) {
       // console.log(error);
-      
     }
-
 
     console.log('option remove', option);
     return option;
   };
-  const loadAccountData = async () => {
+  const loadAccountData = async () => {    
     setShowToken1(null);
     setShowToken2(null);
     setShowLP(null);
@@ -230,46 +217,47 @@ export default function addliquidity() {
       await connectWallet();
       defaultValue();
     } else {
-      setToken1List(getDataList(token2!));
-      setToken2List(getDataList(token1!));
+      if (chainId !== '0x4') {
+        await changeNetwork();
+        defaultValue();
+      } else {
+        setToken1List(getDataList(token2!));
+        setToken2List(getDataList(token1!));
 
-      setPairLPList(await getPoolList()!);
-    }
-    if (chainId !== '0x4') {
-      await changeNetwork();
-      defaultValue();
-    } else {
+        setPairLPList(await getPoolList()!);
+      }
+
       // setNetwork(chainId);
-      setToken1List(getDataList(token2!));
-      setToken2List(getDataList(token1!));
-      setPairLPList(await getPoolList()!);
+
+      // setToken1List(getDataList(token2!));
+      // setToken2List(getDataList(token1!));
+      // setPairLPList(await getPoolList()!);
     }
     setAddress(addr);
     setNetwork(chainId);
   };
 
-  const loadDataPair = async () => {
-    try{      
-    setDataPair(await getPairsFilter())
-    }
-    catch(error){
-      // console.log(error);
-    }
+  // const loadDataPair = async () => {
+  //   try{
+  //   setDataPair(await getPairsFilter())
+  //   }
+  //   catch(error){
+  //     // console.log(error);
+  //   }
 
-  }
+  // }
 
   useEffect(() => {
-    
-  
-    const fetchData = async () => {
-      // await getData();
-      // await loadAccountData();
-      await loadDataPair();
-      await loadAccountData();
+    // await loadAccountData();
+    loadAccountData();
 
-    };
-    fetchData()
+    // const fetchData = async () => {
+    //   // await getData();
+    //   // await loadAccountData();
+    //   // await loadDataPair();
 
+    // };
+    // fetchData()
 
     const handleAccountChange = async (addresses: string[]) => {
       setAddress(addresses[0]);
@@ -285,6 +273,8 @@ export default function addliquidity() {
     getEthereum()?.on('accountsChanged', handleAccountChange);
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
+
+    console.log('i fire once');
   }, []);
 
   const defaultValue = () => {
@@ -335,7 +325,6 @@ export default function addliquidity() {
       }
     }
   };
-
 
   const getDataList = (address: any) => {
     let option: Keyop[] = [];
@@ -412,9 +401,9 @@ export default function addliquidity() {
         }
         setPairLP(e.address);
         setShowLP(e);
-        setToken1(e.value.split('/')[0])
-        setToken2(e.value.split('/')[1])
-        
+        setToken1(e.value.split('/')[0]);
+        setToken2(e.value.split('/')[1]);
+
         await checkHandle();
       }
     }
@@ -430,19 +419,27 @@ export default function addliquidity() {
       //   ethers.utils.parseEther(amountBDesired.toString()),
       // );
 
-      if (token1 !== undefined &&
+      if (
+        token1 !== undefined &&
         token2 !== undefined &&
         amountADesired !== null &&
         amountBDesired !== null &&
         amountADesired > 0 &&
-        amountBDesired > 0) {
-
-
+        amountBDesired > 0
+      ) {
         if (token1 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-          const tx = await addLiquidityETH(Number(amountADesired) /*WETH is token1*/, token2! /*address other token*/, Number(amountBDesired));
+          const tx = await addLiquidityETH(
+            Number(amountADesired) /*WETH is token1*/,
+            token2! /*address other token*/,
+            Number(amountBDesired),
+          );
           await tx.wait();
         } else if (token2 == '0xc778417E063141139Fce010982780140Aa0cD5Ab') {
-          const tx = await addLiquidityETH(Number(amountBDesired) /*WETH is token2*/, token1! /*address other token*/, Number(amountADesired));
+          const tx = await addLiquidityETH(
+            Number(amountBDesired) /*WETH is token2*/,
+            token1! /*address other token*/,
+            Number(amountADesired),
+          );
           await tx.wait();
         } else {
           const tx = await addLiquidity(token1!, token2!, amountADesired, amountBDesired);
@@ -505,11 +502,9 @@ export default function addliquidity() {
       ) {
         handleAddLiquidity();
       }
-    }
-    else if (!toggle) {
+    } else if (!toggle) {
       if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
         handleRemoveLiquidity();
-
       }
     }
   };
@@ -541,8 +536,7 @@ export default function addliquidity() {
           toast.success('Approve Success!', toastOptions);
         }
       }
-    }
-    else if (!toggle) {
+    } else if (!toggle) {
       if (pairLP !== undefined && amountLP !== null && amountLP > 0) {
         const allowance = formatEther(await getAllowance(pairLP!, address!, addr_Router));
         if (Number(allowance) < amountLP) {
@@ -553,9 +547,7 @@ export default function addliquidity() {
           toast.success('Approve Success!', toastOptions);
         }
       }
-
     }
-
   };
 
   const onChangeToken1Handle = (e: any) => {
@@ -582,20 +574,19 @@ export default function addliquidity() {
     // console.log('e',e);
     // console.log('Number(balanceOfLP)',Number(balanceOfLP));
 
-    const totalSupply:Number = Number(ethers.utils.formatEther(await getTotalSupply(pairLP!)))
-    const reserves1:Number  = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve0))
-    const reserves2:Number  = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve1))
-    const balances:Number  =   Number(ethers.utils.formatEther(await getBalanceOf(pairLP!, address!)))
+    const totalSupply: Number = Number(ethers.utils.formatEther(await getTotalSupply(pairLP!)));
+    const reserves1: Number = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve0));
+    const reserves2: Number = Number(ethers.utils.formatEther((await getReserves(pairLP!))._reserve1));
+    const balances: Number = Number(ethers.utils.formatEther(await getBalanceOf(pairLP!, address!)));
 
     // console.log('reserves1', reserves1);
     // console.log('reserves2',reserves2);
-    
-    setAmountMyToken1((balances/totalSupply*reserves1)* e /100)
-    setAmountMyToken2((balances/totalSupply*reserves2)* e / 100)
+
+    setAmountMyToken1(((balances / totalSupply) * reserves1 * e) / 100);
+    setAmountMyToken2(((balances / totalSupply) * reserves2 * e) / 100);
 
     // console.log('our 1: ',(balances/totalSupply*reserves1)* e /100);
     // console.log('our 2: ',(balances/totalSupply*reserves2)* e / 100);
-
 
     if (e == 0) {
       setAmountLP(0);
@@ -604,31 +595,36 @@ export default function addliquidity() {
     } else {
       setAmountLP(Number(balanceOfLP));
     }
-        console.log('amountLP',(Number(balanceOfLP) * e) / 100);
-
+    console.log('amountLP', (Number(balanceOfLP) * e) / 100);
   };
 
   const getSymbolToken = (tokenAddress: string) => {
-  console.log('tokenAddress',tokenAddress);
-  
+    console.log('tokenAddress', tokenAddress);
+
     const details: any = getTokenPairsDetails(tokenAddress);
 
     return details.symbol;
   };
 
   const getPendingLiquidity = () => {
-    { }
-    if (toggle) { return 'Supplying' }
-    else if (!toggle) { return 'Removing' }
-
-  }
+    {
+    }
+    if (toggle) {
+      return 'Supplying';
+    } else if (!toggle) {
+      return 'Removing';
+    }
+  };
 
   const getSuccessLiquidity = () => {
-    { }
-    if (toggle) { return 'Supplied' }
-    else if (!toggle) { return 'Removed' }
-
-  }
+    {
+    }
+    if (toggle) {
+      return 'Supplied';
+    } else if (!toggle) {
+      return 'Removed';
+    }
+  };
 
   return (
     <div className="py-10 flex-column w-auto grid">
@@ -688,7 +684,6 @@ export default function addliquidity() {
                       </div>
                     </div>
                   </div>
-
                   <div className=" flex-column w-auto grid text-textblack h-12">
                     <button className="">+</button>
                   </div>
@@ -755,7 +750,7 @@ export default function addliquidity() {
                       )}
 
                       <div className="py-10 flex-column w-auto grid text-textblack ">
-                        {(Number(tokenAllowance1) > 0) && (Number(tokenAllowance2) > 0) ? (
+                        {Number(tokenAllowance1) > 0 && Number(tokenAllowance2) > 0 ? (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                         from-blueswapdark  to-blueswapbutton 
@@ -795,7 +790,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                 <div>
                   {' '}
                   <div className="flex-column w-auto grid text-textblack rounded-3xl">
-
                     {/* <div className="">
 
                     <div className="grid grid-cols-5 text-textblack ">
@@ -819,7 +813,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                             placeholder="Select pair"
                             className="col-span-6 w-full h-auto cursor-pointer relative"
                           />
-
                         </div>
                       </div>
                     </div>
@@ -834,8 +827,8 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                             onChange={(e) => onChangePairLPHandle(Number((e.target as HTMLInputElement).value))}
                           />
                         </Box>
-                        // </div>
                       ) : (
+                        // </div>
                         // <input className="col-span-4 h-20  rounded-lg " value={'Select pair'} disabled></input>
                         // <div className="justify-self-center">
                         <Box width={300}>
@@ -847,17 +840,18 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                   {pairLP && amountLP ? (
                     <div className="py-10 flex-column w-auto grid text-textblack ">
                       {Number(LPAllowance) > 0 ? (
-                        <div>Output {amountMyToken1} {token1} and {amountMyToken2} {token2}
-                        <br />
-                        <br />
-                        <button
-                          className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
+                        <div>
+                          Output {amountMyToken1} {token1} and {amountMyToken2} {token2}
+                          <br />
+                          <br />
+                          <button
+                            className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
                      from-blueswapdark  to-blueswapbutton 
                      text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
-                          disabled
-                        >
-                          Approve
-                        </button>
+                            disabled
+                          >
+                            Approve
+                          </button>
                         </div>
                       ) : (
                         <button
@@ -880,7 +874,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                           >
                             Supply
                           </button>
-                          
                         ) : (
                           <button
                             className="justify-self-center w-32 h-10 rounded-full bg-gradient-to-r
@@ -911,19 +904,20 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
 
               <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                 <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                  {status === Status.PENDING && toggle &&(
-                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
+                  {status === Status.PENDING && toggle && (
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{ color: 'primary.main' }}>
                       <CircularProgress />
                       <DialogContent>
                         Waiting For Confirmation
                         <Typography gutterBottom>
-                          {getPendingLiquidity()} {amountADesired!} {getSymbolToken(token1!)} and {amountBDesired!} {getSymbolToken(token2!)}
+                          {getPendingLiquidity()} {amountADesired!} {getSymbolToken(token1!)} and {amountBDesired!}{' '}
+                          {getSymbolToken(token2!)}
                         </Typography>
                       </DialogContent>
                     </Box>
                   )}
-                  {status === Status.PENDING && !toggle &&(
-                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'primary.main' }}>
+                  {status === Status.PENDING && !toggle && (
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{ color: 'primary.main' }}>
                       <CircularProgress />
                       <DialogContent>
                         Waiting For Confirmation
@@ -934,9 +928,9 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     </Box>
                   )}
                   {status === Status.SUCCESS && (
-                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'success.main' }}>
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{ color: 'success.main' }}>
                       <CheckCircleIcon color="success" fontSize="large" />
-                      <DialogContent >
+                      <DialogContent>
                         Transaction Submitted
                         <Typography gutterBottom>
                           {getSuccessLiquidity()} {getSymbolToken(token1!)}/{getSymbolToken(token2!)} liquidity
@@ -945,22 +939,22 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
                     </Box>
                   )}
                   {status === Status.FAILED && (
-                    <Box display='flex' justifyContent='center' alignItems='center' sx={{ color: 'warning.main' }}>
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{ color: 'warning.main' }}>
                       <WarningAmberIcon color="warning" fontSize="large" />
-                      <DialogContent >
-                        Transaction Rejected
-                      </DialogContent>
+                      <DialogContent>Transaction Rejected</DialogContent>
                     </Box>
-
                   )}
                   <DialogActions>
-                    <button autoFocus onClick={handleClose} className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
-       text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300">
+                    <button
+                      autoFocus
+                      onClick={handleClose}
+                      className="justify-self-center w-32 h-10 rounded-full bg-[#6f7275]
+       text-textwhite outline outline-offset-1 outline-[#ffffff] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#6f7275] duration-300"
+                    >
                       Close
                     </button>
                   </DialogActions>
                 </BootstrapDialogTitle>
-
               </BootstrapDialog>
 
               <ToastContainer
@@ -980,8 +974,6 @@ text-textinvalid outline outline-offset-1 outline-textinvalid drop-shadow-xl"
           </div>
         </div>
       </div>
-
     </div>
-
   );
 }

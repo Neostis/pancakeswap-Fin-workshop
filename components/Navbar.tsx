@@ -65,7 +65,7 @@ function Navbar() {
   // };
 
 
-  useEffect(() => {
+  useEffect(() => {    
     const loadAccountData = async () => {
       const addr = getWalletAddress();
       setAddress(addr);

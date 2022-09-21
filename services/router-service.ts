@@ -17,7 +17,7 @@ import {
 } from '../services/wallet-service';
 
 const addr_Router = '0x500b47A2470175D81eB37295EF7a494bED33F889';
-const addr_Factory = '0x1858F08ce7425B2715d870c20e0e2c79899994aa';
+// const addr_Factory = '0x1858F08ce7425B2715d870c20e0e2c79899994aa';
 export const getSwapAmountsOut = async (amountIn: any, token1: any, token2: any) => {
   const path = [token1, token2]; //An array of token addresses
   const contract = new ethers.Contract(addr_Router, abi_Router, getProvider()!);
@@ -166,3 +166,4 @@ export const _removeLiquidityETH = async (token: string, liquidity: number) => {
     deadline,
   );
 };
+

@@ -18,5 +18,5 @@ export const pancakePairContract = (address: string, provider = getProvider()!) 
     return PancakePair__factory.connect(address, provider);
 }
 export const pancakeRouterContract = (address: string, provider = getProvider()!) =>{
-    PancakeRouter__factory.connect(address, provider);
+    return PancakeRouter__factory.connect(address, provider);
 }

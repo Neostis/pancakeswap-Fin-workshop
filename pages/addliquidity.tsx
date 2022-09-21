@@ -43,6 +43,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Status } from '../types/status';
 import { getPairsFilter } from '../services/pairToken.service';
+import { outputLiquidity,getPairToken } from '../services/factory-service';
 
 type Keyop = {
   value: any;
@@ -161,7 +162,7 @@ export default function addliquidity() {
 
   const [toggle, setToggle] = useState(true);
   const toggleClass = ' transform translate-x-6';
-
+  
   const modeName = () => {
     if (toggle) {
       return 'ADD Liquidity';
@@ -274,7 +275,6 @@ export default function addliquidity() {
 
     getEthereum()?.on('chainChanged', handleNetworkChange);
 
-    console.log('i fire once');
   }, []);
 
   const defaultValue = () => {
@@ -550,13 +550,30 @@ export default function addliquidity() {
     }
   };
 
-  const onChangeToken1Handle = (e: any) => {
+
+const getPairAddress =async(token1,token2)   =>{
+  const a=0
+}
+
+
+  const onChangeToken1Handle = async(e: any) => {
+    const addressTemp = await getPairToken(token1,token2)
+    console.log('addressTemp ',addressTemp);
+    console.log('input ',e);
+    
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountADesired(Number(balanceOfToken1));
+      console.log("quote max: ",await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0));
+      
+      // setAmountBDesired(Number(await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0)!))
     } else if (Number(balanceOfToken1) === 0) {
       setAmountADesired(0);
     } else {
       setAmountADesired(e);
+      console.log("quote e: ",await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0));
+
+      // setAmountBDesired(Number(await outputLiquidity(addressTemp.toString() ,e,0)!))
+
     }
   };
 
@@ -659,7 +676,7 @@ export default function addliquidity() {
                   {' '}
                   <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
                     <div className="grid grid-cols-5 text-textblack ">
-                      {token1 ? (
+                      {token1 && token2 ? (
                         <input
                           className="col-span-4 h-20 rounded-3xl"
                           type="number"
@@ -667,7 +684,7 @@ export default function addliquidity() {
                           onChange={(e) => onChangeToken1Handle(Number(e.target.value))}
                         ></input>
                       ) : (
-                        <input className="col-span-4 h-20 rounded-3xl" value={'Select Token 1'} disabled></input>
+                        <input className="col-span-4 h-20 rounded-3xl" value={'Select Tokens'} disabled></input>
                       )}
 
                       <div className="grid grid-cols-6 col-span-1 ">
@@ -678,7 +695,7 @@ export default function addliquidity() {
                           }}
                           options={token1List!}
                           autoFocus
-                          placeholder="Select Token 1"
+                          placeholder="Select Tokens"
                           className="col-span-6 w-auto h-auto cursor-pointer"
                         />
                       </div>
@@ -689,7 +706,7 @@ export default function addliquidity() {
                   </div>
                   <div className="bg-textwhite rounded-3xl w-11/12 justify-self-center">
                     <div className="grid grid-cols-5 text-textblack ">
-                      {token2 ? (
+                      {token1 && token2 ?(
                         <input
                           className="col-span-4 h-20 rounded-3xl"
                           type="number"
@@ -706,8 +723,8 @@ export default function addliquidity() {
                       ) : (
                         <input
                           className="col-span-4 h-20 rounded-3xl"
-                          placeholder={'Select Token 2'}
-                          value={'Select Token2'}
+                          placeholder={'Select Tokens'}
+                          value={'Select Tokens'}
                           disabled
                         ></input>
                       )}
@@ -719,7 +736,7 @@ export default function addliquidity() {
                           }}
                           options={token2List!}
                           autoFocus
-                          placeholder="Select Token 2"
+                          placeholder="Select Tokens"
                           className="col-span-6 w-auto h-auto cursor-pointer"
                         />
 

@@ -55,58 +55,55 @@ export const getAllPairsToken = async (pairList: []) => {
   return pairsTokens;
 };
 
-// const quote = (amountA: number, reserveA: number, reserveB: number) => {
-//   require(amountA > 0, 'PancakeLibrary: INSUFFICIENT_AMOUNT');
-//   require(reserveA > 0 && reserveB > 0, 'PancakeLibrary: INSUFFICIENT_LIQUIDITY');
-//   const amountB = amountA.mul(reserveB) / reserveA;
-//   return amountB;
-// };
+export const getQuote = async (getPairAdd: string, amountADesired: number, amountBDesired: number) => {
+  // const provider = getProvider()!;
+  // const signer = provider.getSigner();
+  // const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
+  const contractPair = pancakePairContract(getPairAdd);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
 
-// function _addLiquidity(
-//   address tokenA,
-//   address tokenB,
-//   uint256 amountADesired,
-//   uint256 amountBDesired,
-//   uint256 amountAMin,
-//   uint256 amountBMin
-// ) internal virtual returns (uint256 amountA, uint256 amountB) {
-//   // create the pair if it doesn't exist yet
-//   if (IPancakeFactory(factory).getPair(tokenA, tokenB) == address(0)) {
-//       IPancakeFactory(factory).createPair(tokenA, tokenB);
-//   }
-//   (uint256 reserveA, uint256 reserveB) = PancakeLibrary.getReserves(factory, tokenA, tokenB);
-//   if (reserveA == 0 && reserveB == 0) {
-//       (amountA, amountB) = (amountADesired, amountBDesired);
-//   } else {
-//       uint256 amountBOptimal = PancakeLibrary.quote(amountADesired, reserveA, reserveB);
-//       if (amountBOptimal <= amountBDesired) {
-//           require(amountBOptimal >= amountBMin, "PancakeRouter: INSUFFICIENT_B_AMOUNT");
-//           (amountA, amountB) = (amountADesired, amountBOptimal);
-//       } else {
-//           uint256 amountAOptimal = PancakeLibrary.quote(amountBDesired, reserveB, reserveA);
-//           assert(amountAOptimal <= amountADesired);
-//           require(amountAOptimal >= amountAMin, "PancakeRouter: INSUFFICIENT_A_AMOUNT");
-//           (amountA, amountB) = (amountAOptimal, amountBDesired);
-//       }
-//   }
-// }
+  const opReserves = await contractPair.getReserves();
+  // console.log("opReserves:",opReserves)
+
+  if (amountADesired !== 0)
+  {
+    const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
+    // console.log("amountBOptimal: ",amountBOptimal)
+    if(Number(amountBOptimal) >= Number(amountADesired)){
+      return amountBOptimal
+    }
+  }
+  else if (amountBDesired !== 0)
+  {
+    const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve1, opReserves._reserve0))
+    // console.log("amountAOptimal: ",amountAOptimal)
+    if(Number(amountAOptimal) >= Number(amountADesired)){
+      return amountAOptimal
+    }
+  }
+  // else{
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //     return amountAOptimal
+  // }
+};
+
 export const outputLiquidity = async (getPairAdd: string, amountADesired: number, amountBDesired: number) => {
   const provider = getProvider()!;
   const signer = provider.getSigner();
   const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
   const contractPair = pancakePairContract(getPairAdd);
-  const contractRounter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
   // const contractPair = PancakeFactory__factory.connect(getPairAdd, signer);
 
   const opReserves = await contractPair.getReserves();
   console.log("opReserves:",opReserves)
-  const amountBOptimal = ethers.utils.formatEther(await contractRounter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
+  const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
   console.log("amountBOptimal: ",amountBOptimal)
   if(Number(amountBOptimal) >= Number(amountBDesired)){
       return amountBOptimal
   }
   // else{
-  //   const amountAOptimal = await contractRounter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
   //     return amountAOptimal
   // }
 };

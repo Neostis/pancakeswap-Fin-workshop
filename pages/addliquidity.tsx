@@ -43,7 +43,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Status } from '../types/status';
 import { getPairsFilter } from '../services/pairToken.service';
-import { outputLiquidity,getPairToken } from '../services/factory-service';
+import { getQuote,getPairToken } from '../services/factory-service';
 
 type Keyop = {
   value: any;
@@ -550,40 +550,38 @@ export default function addliquidity() {
     }
   };
 
-
-const getPairAddress =async(token1,token2)   =>{
-  const a=0
-}
-
-
   const onChangeToken1Handle = async(e: any) => {
     const addressTemp = await getPairToken(token1,token2)
-    console.log('addressTemp ',addressTemp);
-    console.log('input ',e);
     
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountADesired(Number(balanceOfToken1));
-      console.log("quote max: ",await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0));
+      // console.log("quote max: ",await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0));
       
-      // setAmountBDesired(Number(await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0)!))
+      setAmountBDesired(Number(await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0)))
     } else if (Number(balanceOfToken1) === 0) {
       setAmountADesired(0);
     } else {
       setAmountADesired(e);
-      console.log("quote e: ",await outputLiquidity(addressTemp.toString() ,Number(balanceOfToken1),0));
+      // console.log("quote e: ",await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0));
 
-      // setAmountBDesired(Number(await outputLiquidity(addressTemp.toString() ,e,0)!))
+      setAmountBDesired(Number(await getQuote(addressTemp.toString() ,e,0)!))
 
     }
   };
 
-  const onChangeToken2Handle = (e: any) => {
+  const onChangeToken2Handle = async(e: any) => {
+    const addressTemp = await getPairToken(token1,token2)
+
     if (Number(e) > Number(balanceOfToken2) && !isNaN(e)) {
       setAmountBDesired(Number(balanceOfToken2));
+
+      setAmountADesired(Number(await getQuote(addressTemp.toString() ,0,Number(balanceOfToken1))))
     } else if (Number(balanceOfToken2) === 0) {
       setAmountBDesired(0);
     } else {
       setAmountBDesired(e);
+      setAmountADesired(Number(await getQuote(addressTemp.toString() ,0,e)))
+
     }
   };
 

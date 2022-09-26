@@ -55,7 +55,7 @@ export const getAllPairsToken = async (pairList: []) => {
   return pairsTokens;
 };
 
-export const getQuote = async (getPairAdd: string, amountADesired: number, amountBDesired: number) => {
+export const getOptimalA = async (getPairAdd: string, amountBDesired: number) => {
   // const provider = getProvider()!;
   // const signer = provider.getSigner();
   // const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
@@ -65,27 +65,81 @@ export const getQuote = async (getPairAdd: string, amountADesired: number, amoun
   const opReserves = await contractPair.getReserves();
   // console.log("opReserves:",opReserves)
 
-  if (amountADesired !== 0)
-  {
-    const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
-    // console.log("amountBOptimal: ",amountBOptimal)
-    if(Number(amountBOptimal) >= Number(amountADesired)){
+  
+  // if (amountBDesired !== 0)
+  // {
+    const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve0, opReserves._reserve1))
+    console.log('amountBOptimal',amountBOptimal);
+    
+    if(Number(amountBOptimal) <= Number(amountBDesired)){
       return amountBOptimal
     }
-  }
-  else if (amountBDesired !== 0)
-  {
-    const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve1, opReserves._reserve0))
-    // console.log("amountAOptimal: ",amountAOptimal)
-    if(Number(amountAOptimal) >= Number(amountADesired)){
+    else {
+      return amountBDesired
+    }
+
+  // }
+  // else if (amountBDesired !== 0)
+  // {
+  //   const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve1, opReserves._reserve0))
+  //   console.log("amountAOptimal: ",amountAOptimal)
+
+  //   if(Number(amountAOptimal) >= Number(amountBDesired)){
+  //     return amountAOptimal
+  //   }
+  //   else {
+  //     return amountBDesired
+  //   }
+  // }
+  // else{
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //     return amountAOptimal
+  // }
+
+};
+
+export const getOptimalB = async (getPairAdd: string, amountADesired: number) => {
+  // const provider = getProvider()!;
+  // const signer = provider.getSigner();
+  // const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
+  const contractPair = pancakePairContract(getPairAdd);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
+
+  const opReserves = await contractPair.getReserves();
+
+  // console.log('opReserves',opReserves);
+  // if (amountADesired !== 0)
+  // {
+  //   const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
+  //   console.log('amountBOptimal',amountBOptimal);
+    
+  //   if(Number(amountBOptimal) >= Number(amountADesired)){
+  //     return amountBOptimal
+  //   }
+  //   else {
+  //     return amountADesired
+  //   }
+  // }
+  // else if (amountADesired !== 0)
+  // {
+
+    const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve1, opReserves._reserve0))
+    console.log("amountAOptimal: ",amountAOptimal)
+
+    if(Number(amountAOptimal) <= Number(amountADesired)){
       return amountAOptimal
     }
-  }
+    else {
+      return amountADesired
+    }
+
+  // }
   // else{
   //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
   //     return amountAOptimal
   // }
 };
+
 
 export const outputLiquidity = async (getPairAdd: string, amountADesired: number, amountBDesired: number) => {
   const provider = getProvider()!;

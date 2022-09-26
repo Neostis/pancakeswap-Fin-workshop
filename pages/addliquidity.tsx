@@ -43,7 +43,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Status } from '../types/status';
 import { getPairsFilter } from '../services/pairToken.service';
-import { getQuote,getPairToken } from '../services/factory-service';
+import { getOptimalA,getOptimalB,getPairToken } from '../services/factory-service';
 
 type Keyop = {
   value: any;
@@ -553,18 +553,26 @@ export default function addliquidity() {
   const onChangeToken1Handle = async(e: any) => {
     const addressTemp = await getPairToken(token1,token2)
     
+    // Number(e) > Number(balanceOfToken1) checkBalance token do u have
+
     if (Number(e) > Number(balanceOfToken1) && !isNaN(e)) {
       setAmountADesired(Number(balanceOfToken1));
-      // console.log("quote max: ",await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0));
       
-      setAmountBDesired(Number(await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0)))
+      try{
+      // getOptimalB(addressTemp.toString(),<<Max of your token (balanceOfToken1)>>) 
+      setAmountBDesired(Number(await getOptimalB(addressTemp.toString() ,Number(balanceOfToken1))))
+      }
+      catch{}
     } else if (Number(balanceOfToken1) === 0) {
       setAmountADesired(0);
     } else {
       setAmountADesired(e);
       // console.log("quote e: ",await getQuote(addressTemp.toString() ,Number(balanceOfToken1),0));
 
-      setAmountBDesired(Number(await getQuote(addressTemp.toString() ,e,0)!))
+      try{
+      setAmountBDesired(Number(await getOptimalB(addressTemp.toString() ,e)!))
+      }
+      catch{}
 
     }
   };
@@ -575,13 +583,20 @@ export default function addliquidity() {
     if (Number(e) > Number(balanceOfToken2) && !isNaN(e)) {
       setAmountBDesired(Number(balanceOfToken2));
 
-      setAmountADesired(Number(await getQuote(addressTemp.toString() ,0,Number(balanceOfToken1))))
+      try{
+      setAmountADesired(Number(await getOptimalA(addressTemp.toString() ,Number(balanceOfToken2))))
+    }
+      catch{
+    }
     } else if (Number(balanceOfToken2) === 0) {
       setAmountBDesired(0);
     } else {
       setAmountBDesired(e);
-      setAmountADesired(Number(await getQuote(addressTemp.toString() ,0,e)))
-
+      try{
+        setAmountADesired(Number(await getOptimalA(addressTemp.toString() ,e)))
+      }
+      catch{
+      }
     }
   };
 

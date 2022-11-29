@@ -2,7 +2,9 @@ import * as ethers from 'ethers';
 import abi from '../ABI_CONTRACT/abi.json';
 import abi_erc20 from '../ABI_CONTRACT/abi-Erc20.json';
 import abi_Factory from '../ABI_CONTRACT/abi-Factory.json';
+import { ADDRESS_LIST } from "../constants/addressList";
 import { getToken0, getToken1 } from '../services/pair-service';
+import { pancakePairContract, pancakeRouterContract, pancakeFactoryContract } from '../contracts/index';
 import {
   connectWallet,
   getBalance,
@@ -15,6 +17,8 @@ import {
   getAllowance,
   getTokenBalance,
 } from '../services/wallet-service';
+import "../services/SafeMath";
+import { mul } from './SafeMath';
 
 type pairsToken = {
   token0: string;
@@ -50,3 +54,116 @@ export const getAllPairsToken = async (pairList: []) => {
   }
   return pairsTokens;
 };
+
+export const getOptimalA = async (getPairAdd: string, amountBDesired: number) => {
+  // const provider = getProvider()!;
+  // const signer = provider.getSigner();
+  // const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
+  const contractPair = pancakePairContract(getPairAdd);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
+
+  const opReserves = await contractPair.getReserves();
+  // console.log("opReserves:",opReserves)
+
+  
+  // if (amountBDesired !== 0)
+  // {
+    const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve0, opReserves._reserve1))
+    console.log('amountBOptimal',amountBOptimal);
+    
+    if(Number(amountBOptimal) <= Number(amountBDesired)){
+      return amountBOptimal
+    }
+    else {
+      return amountBDesired
+    }
+
+  // }
+  // else if (amountBDesired !== 0)
+  // {
+  //   const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()), opReserves._reserve1, opReserves._reserve0))
+  //   console.log("amountAOptimal: ",amountAOptimal)
+
+  //   if(Number(amountAOptimal) >= Number(amountBDesired)){
+  //     return amountAOptimal
+  //   }
+  //   else {
+  //     return amountBDesired
+  //   }
+  // }
+  // else{
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //     return amountAOptimal
+  // }
+
+};
+
+export const getOptimalB = async (getPairAdd: string, amountADesired: number) => {
+  // const provider = getProvider()!;
+  // const signer = provider.getSigner();
+  // const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
+  const contractPair = pancakePairContract(getPairAdd);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
+
+  const opReserves = await contractPair.getReserves();
+
+  // console.log('opReserves',opReserves);
+  // if (amountADesired !== 0)
+  // {
+  //   const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
+  //   console.log('amountBOptimal',amountBOptimal);
+    
+  //   if(Number(amountBOptimal) >= Number(amountADesired)){
+  //     return amountBOptimal
+  //   }
+  //   else {
+  //     return amountADesired
+  //   }
+  // }
+  // else if (amountADesired !== 0)
+  // {
+
+    const amountAOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve1, opReserves._reserve0))
+    console.log("amountAOptimal: ",amountAOptimal)
+
+    if(Number(amountAOptimal) <= Number(amountADesired)){
+      return amountAOptimal
+    }
+    else {
+      return amountADesired
+    }
+
+  // }
+  // else{
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //     return amountAOptimal
+  // }
+};
+
+
+export const outputLiquidity = async (getPairAdd: string, amountADesired: number, amountBDesired: number) => {
+  const provider = getProvider()!;
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(addr_Factory, abi_Factory, signer);
+  const contractPair = pancakePairContract(getPairAdd);
+  const contractRouter = pancakeRouterContract(ADDRESS_LIST["ROUTER"]);
+  // const contractPair = PancakeFactory__factory.connect(getPairAdd, signer);
+
+  const opReserves = await contractPair.getReserves();
+  console.log("opReserves:",opReserves)
+  const amountBOptimal = ethers.utils.formatEther(await contractRouter.quote(ethers.utils.parseEther(amountADesired.toString()), opReserves._reserve0, opReserves._reserve1))
+  console.log("amountBOptimal: ",amountBOptimal)
+  if(Number(amountBOptimal) >= Number(amountBDesired)){
+      return amountBOptimal
+  }
+  // else{
+  //   const amountAOptimal = await contractRouter.quote(ethers.utils.parseEther(amountBDesired.toString()),opReserves._reserve1, opReserves._reserve0)
+  //     return amountAOptimal
+  // }
+};
+
+  export const getPairToken = async (token1: string, token2: string) => {
+      const contractFactory = pancakeFactoryContract(ADDRESS_LIST["FACTORY"])
+      return await contractFactory.getPair(token1, token2);
+
+  }

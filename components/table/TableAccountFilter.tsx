@@ -9,46 +9,79 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from 'material-ui-search-bar';
+import { getPairsFilter } from '../../services/pairToken.service';
+import { formatEther, parseEther } from "ethers/lib/utils";
+import {
+    connectWallet,
+    getBalance,
+    getChainId,
+    getEthereum,
+    getProvider,
+    getWalletAddress,
+    changeNetwork,
+  } from '../../services/wallet-service';
 
+  
 interface pairsToken {
   img1: string;
   img2: string;
   token1: string;
   token2: string;
   addrPair: string;
-  total: string;
+  balanceOf: string;
 }
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
 });
-function TableConstants() {
+function TableAccountFilter() {
+    const [address, setAddress] = useState<string | null>(null);
+    const [network, setNetwork] = useState<string | null>(null);
   const [rows, setRows] = useState<pairsToken[]>([]);
 
   const [searched, setSearched] = useState<string>('');
+  const [dataPair, setDataPair] = useState<any[]>([]);
+
   const classes = useStyles();
 
-  const requestSearch = (searchedVal: string) => {
+  const requestSearch = async (searchedVal: string) => {
+
     let mappingData: pairsToken[] = [];
-    const filteredRows = PairsList.filter((item) => {
-      const ob = {
-        img1: item.token0.imageUrl,
-        img2: item.token1.imageUrl,
-        token1: item.token0.symbol,
-        token2: item.token1.symbol,
-        addrPair: item.addressPair,
-        total: item.total,
-      };
-      // const mappingData = [...rows, ob];
+    const filteredRows = dataPair!.filter((x) => {
+      let ob;
+      PairsList.forEach(element => {
+        
+        if (element.addressPair == x!.address) {
+          ob = {
+            img1: element.token0.imageUrl,
+            img2: element.token1.imageUrl,
+            token1: element.token0.symbol,
+            token2: element.token1.symbol,
+            addrPair: element.addressPair,
+            balanceOf: formatEther(x.balanceOf),
+
+          };
+        }
+
+      });
+
       if (
         ob.token1.toLowerCase().includes(searchedVal.toLowerCase()) ||
         ob.token2.toLowerCase().includes(searchedVal.toLowerCase())
       ) {
-        // return ob;
-        mappingData.push(ob);
+        if (Array.isArray(mappingData)) {
+          // return ob;
+          mappingData.push(ob);
+        }
+
+
+
       }
+      return ob;
     });
+
+
     setRows(mappingData);
   };
 
@@ -58,28 +91,70 @@ function TableConstants() {
   };
 
   useEffect(() => {
-    // const interval = setInterval(() => {
-    const fetchData = async () => {
-      const dataAll = await PairsList.map((item) => {
-        const ob = {
-          img1: item.token0.imageUrl,
-          img2: item.token1.imageUrl,
-          token1: item.token0.symbol,
-          token2: item.token1.symbol,
-          addrPair: item.addressPair,
-          total: item.total,
-        };
-        // const mappingData = [...rows, ob];
+
+    const getData = async () => {
+      const temp = await getPairsFilter();      
+      const dataAll = temp.map((x) => {
+        let ob;
+        PairsList.forEach(element => {
+          if (element.addressPair == x.address) {
+            ob = {
+              img1: element.token0.imageUrl,
+              img2: element.token1.imageUrl,
+              token1: element.token0.symbol,
+              token2: element.token1.symbol,
+              addrPair: element.addressPair,
+              balanceOf: formatEther(x.balanceOf),
+
+            };
+          }
+
+        });
 
         return ob;
       });
+
       setRows(dataAll);
+
     };
-    fetchData();
+    const loadDataPair = async () => {
+      setDataPair(await getPairsFilter())
+    }
+
+ 
+
+    const fetchData = async () => {
+        // await getData();
+        // await loadAccountData();
+        await loadDataPair()
+        await getData();
+      };
+    const handleAccountChange = async (addresses: string[]) => {
+        setAddress(addresses[0]);
+        await fetchData();
+      };
+
+      const handleNetworkChange = async (networkId: string) => {
+        setNetwork(networkId);
+        await fetchData();
+      };
+
+      getEthereum()?.on('accountsChanged', handleAccountChange);
+
+      getEthereum()?.on('chainChanged', handleNetworkChange);
+      fetchData();
   }, []);
+
   return (
+
+
+
+
+    
     <div>
+        {rows.length > 0 ?(  
       <Paper className="rounded-lg shrink hover:shrink-0">
+      
         <SearchBar
           value={searched}
           onChange={(searchVal) => requestSearch(searchVal)}
@@ -97,8 +172,8 @@ function TableConstants() {
                 {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
               </TableRow>
             </TableHead>
-            <TableBody>
-              {rows.map((row) => (
+
+                    <TableBody>{rows.map((row) => (
                 <TableRow key={row.addrPair}>
                   {/* <TableCell component="th" scope="row">
                     {row.name}
@@ -107,23 +182,26 @@ function TableConstants() {
                     <div className="flex space-x-px text-base">
                       <img src={row.img1} height="35px" width="35px" />
                       <img src={row.img2} height="35px" width="35px" />
- 
+
                       {row.token1}/{row.token2}
                     </div>
                   </TableCell>
                   {/* <TableCell align="center">{row.token1}/{row.token2}</TableCell> */}
                   {/* <TableCell align="center">{row.token2}</TableCell> */}
                   <TableCell align="center"><div className="text-base">{row.addrPair}</div></TableCell>
-                  <TableCell align="right"><div className="text-base">{row.total}</div></TableCell>
+                  <TableCell align="right"><div className="text-base">{row.balanceOf}</div></TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
+                
+              ))}</TableBody>
           </Table>
         </TableContainer>
+    
       </Paper>
-
+    ):(
+        <div>no items</div>
+      )}
     </div>
   );
 }
 
-export default TableConstants;
+export default TableAccountFilter;

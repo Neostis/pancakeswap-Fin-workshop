@@ -13,7 +13,7 @@ import { _allPairsLength, AllPairs, getAllPairsToken } from '../services/factory
 import { getBalanceOf } from '../services/pair-service';
 import { ETH_TOKENS, PairsList } from '../constants/tokens';
 import { getTokenPairsDetails } from '../constants/tokens';
-import { formatEther, BigNumber, parseUnits } from 'ethers/lib/utils';
+import { formatEther } from 'ethers/lib/utils';
 
 type Keyop = {
   value: any;
@@ -48,15 +48,15 @@ type token1 = {
 
 export const pairModule = async ()=> {
 
-    const dataList = []
+    const dataList:any[] = []
 
     const addr = getWalletAddress();
     const length = await _allPairsLength();
     const data = [];
   
-    const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
-    let ordersData = (
-      await getAllPairsToken(await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString())),
+    const allPair:any = await AllPairs(Number(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString()));
+    let ordersData:any[] = (
+      await getAllPairsToken(allPair)
     ).map(async (e,index) => {
       const balances = 10;
       return (
@@ -73,6 +73,36 @@ export const pairModule = async ()=> {
 
   return dataList
 }
+
+// export const poolFilter = async () => {
+//   const dataDetail = [];
+
+//   PairsList.map(async (item) => {
+//     return dataDetail.push({
+//       [`${item.addressPair}`]: {
+//         token0: item.token0,
+//         token1: item.token1,
+//       },
+//     });
+//   });
+//   return dataDetail;
+// };
+
+// export const poolList = async () => {
+//   const dataDetail = [];
+//   PairsList.map(async (item) => {
+//     return dataDetail.push({
+//       [`${item.addressPair}`]: {
+//         token0: item.token0,
+//         token1: item.token1,
+//       },
+//     });
+//   });
+//   return dataDetail;
+// };
+
+
+
 // export const pairModule = async () => {
 //   //   const [dataList, setDataList] = useState([{}]);
 
@@ -133,32 +163,7 @@ export const pairModule = async ()=> {
 //   return dataList;
 // };
 
-export const poolFilter = async () => {
-  const dataDetail = [];
 
-  PairsList.map(async (item) => {
-    return dataDetail.push({
-      [`${item.addressPair}`]: {
-        token0: item.token0,
-        token1: item.token1,
-      },
-    });
-  });
-  return dataDetail;
-};
-
-export const poolList = async () => {
-  const dataDetail = [];
-  PairsList.map(async (item) => {
-    return dataDetail.push({
-      [`${item.addressPair}`]: {
-        token0: item.token0,
-        token1: item.token1,
-      },
-    });
-  });
-  return dataDetail;
-};
 
 //     const allPair = await AllPairs(ethers.utils.parseUnits(formatEther(length).toString(), 18).toString());
 //     let ordersData = (

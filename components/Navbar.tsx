@@ -9,8 +9,13 @@ import {
   getEthereum,
   getProvider,
   getWalletAddress,
+  getAllowance,
+  changeNetwork,
+  callApprove,
+  getTokenBalance,
 } from '../services/wallet-service';
 import { pairModule } from './pairModule';
+import { ContactlessOutlined } from '@material-ui/icons';
 
 function Navbar() {
   const [address, setAddress] = useState<string | null>(null);
@@ -41,32 +46,33 @@ function Navbar() {
   //   }
   // };
 
-  const loadAccountData = async () => {
-    const addr = getWalletAddress();
-    setAddress(addr);
-    const chainId = await getChainId();
-    setNetwork(chainId);
-  };
+  // const loadAccountData = async () => {
+  //   const addr = getWalletAddress();
+  //   const chainId = await getChainId();
 
-  useEffect(() => {
-    loadAccountData();
-    const handleAccountChange = (addresses: string[]) => {
-      setAddress(addresses[0]);
+  //   if (addr === null) {
+  //     await connectWallet();
+  //   } else {
 
-      loadAccountData();
+  //   }
+  //   if (chainId !== '0x4') {
+  //     await changeNetwork();
+  //   } else {
+  //     // setNetwork(chainId);
+  //   }
+  //   setAddress(addr);
+  //   setNetwork(chainId);
+  // };
+
+
+  useEffect(() => {    
+    const loadAccountData = async () => {
+      const addr = getWalletAddress();
+      setAddress(addr);
+      const chainId = await getChainId();
+      setNetwork(chainId);
     };
 
-    const handleNetworkChange = (networkId: string) => {
-      setNetwork(networkId);
-
-      loadAccountData();
-    };
-    getEthereum()?.on('accountsChanged', handleAccountChange);
-
-    getEthereum()?.on('chainChanged', handleNetworkChange);
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       // let savedDataList = window.localStorage.getItem('ownerDataList');
 
@@ -88,7 +94,27 @@ function Navbar() {
         } catch (error) {}
       }
     };
-    fetchData();
+    const loadingData = async()=>{
+
+      await loadAccountData();
+      await fetchData();
+    }
+    const handleAccountChange = (addresses: string[]) => {
+      setAddress(addresses[0]);
+
+      loadAccountData();
+    };
+    const handleNetworkChange = (networkId: string) => {
+      setNetwork(networkId);
+
+      loadAccountData();
+    };
+    getEthereum()?.on('accountsChanged', handleAccountChange);
+
+    getEthereum()?.on('chainChanged', handleNetworkChange);
+    
+    loadingData();
+    
   }, []);
 
   // // interval
@@ -126,6 +152,7 @@ function Navbar() {
   //   // }, 3000);
   //   // return () => clearInterval(interval);
   // }, []);
+
 
   return (
     <div>
@@ -168,8 +195,8 @@ function Navbar() {
                     Pool
                   </Link>
                   {address ? (
-                    <div>
-                      {network === '0x4' ? (
+                    <div> 
+                      {network == '0x4' ? (
                         <div className="p-4  font-serif bg-gradient-to-r from-blueclean via-bluesky to-bluebg text-textwhite  utline outline-offset-1 text-back-700 rounded-lg  outline-[#2f5c6d] drop-shadow-xl  top-3 right-6 transition ease-in-out delay-150 bg-[#00A8E8 hover:-translate-y-1 hover:scale-110 hover:bg-[#4E9CE3] duration-300">
                           {address}
                         </div>

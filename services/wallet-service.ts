@@ -9,10 +9,21 @@ declare global {
 }
 
 export const getEthereum = () => {
-  if (typeof window.ethereum !== 'undefined') {
-    return window.ethereum;
+  // if (typeof window.ethereum !== 'undefined') {
+  //   return window.ethereum;
+  // }
+  // return null;
+  
+  if (typeof window !== 'undefined') {
+    let tempWindow = window.ethereum;
+
+    if (typeof tempWindow !== 'undefined') {
+      return tempWindow
+    }
+    else{
+      return null
+    }
   }
-  return null;
 };
 
 export const getProvider = () => {
@@ -21,6 +32,10 @@ export const getProvider = () => {
     return new ethers.providers.Web3Provider(getEthereum());
   }
   return null;
+};
+export const getProviderMulticall = () => {
+  const url = `https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`;
+  return new ethers.providers.JsonRpcProvider(url);
 };
 
 export const connectWallet = () => {
@@ -76,7 +91,9 @@ export const callApprove = async (tokenAddress: string, spender: string) => {
   const contract = new ethers.Contract(tokenAddress, abi_erc20, signer);
   return await contract.approve(
     spender,
-    '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    // '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+    ethers.constants.MaxUint256,
+    // '115792089237316195423570985008687907853269984665640564039457584007913129639935',
   );
 
   // await txResponse.wait();

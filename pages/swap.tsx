@@ -140,7 +140,7 @@ const swap = () => {
       setToken2List(getDataList(token1!));
     }
     if (chainId !== '0x4') {
-      await changeNetwork();
+      await checkHandle();
       defaultValue();
     } else {
       setToken1List(getDataList(token2!));

@@ -196,7 +196,7 @@ export default function addliquidity() {
       setPairLPList(getPoolList());
     }
     if (chainId !== '0x4') {
-      await changeNetwork();
+      await checkHandle();
       defaultValue();
     } else {
       // setNetwork(chainId);
